@@ -10,33 +10,196 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminPeopleRouteImport } from './routes/_authenticated/admin/people'
+import { Route as AuthenticatedAdminTeamsRouteImport } from './routes/_authenticated/admin/teams'
+import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
+import { Route as AuthenticatedAppLogRouteImport } from './routes/_authenticated/app/log'
+import { Route as AuthenticatedAppMapRouteImport } from './routes/_authenticated/app/map'
+import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app/portfolio'
+import { Route as AuthenticatedAppTimelineRouteImport } from './routes/_authenticated/app/timeline'
+import { Route as AuthenticatedMentorIndexRouteImport } from './routes/_authenticated/mentor/index'
+import { Route as AuthenticatedMentorTeamsRouteImport } from './routes/_authenticated/mentor/teams'
+import { Route as AuthenticatedMentorVerifyRouteImport } from './routes/_authenticated/mentor/verify'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminPeopleRoute =
+  AuthenticatedAdminPeopleRouteImport.update({
+    id: '/admin/people',
+    path: '/admin/people',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminTeamsRoute = AuthenticatedAdminTeamsRouteImport.update({
+  id: '/admin/teams',
+  path: '/admin/teams',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
+  id: '/app/',
+  path: '/app/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppLogRoute = AuthenticatedAppLogRouteImport.update({
+  id: '/app/log',
+  path: '/app/log',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppMapRoute = AuthenticatedAppMapRouteImport.update({
+  id: '/app/map',
+  path: '/app/map',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppPortfolioRoute =
+  AuthenticatedAppPortfolioRouteImport.update({
+    id: '/app/portfolio',
+    path: '/app/portfolio',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppTimelineRoute =
+  AuthenticatedAppTimelineRouteImport.update({
+    id: '/app/timeline',
+    path: '/app/timeline',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMentorIndexRoute =
+  AuthenticatedMentorIndexRouteImport.update({
+    id: '/mentor/',
+    path: '/mentor/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMentorTeamsRoute =
+  AuthenticatedMentorTeamsRouteImport.update({
+    id: '/mentor/teams',
+    path: '/mentor/teams',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMentorVerifyRoute =
+  AuthenticatedMentorVerifyRouteImport.update({
+    id: '/mentor/verify',
+    path: '/mentor/verify',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin/people': typeof AuthenticatedAdminPeopleRoute
+  '/admin/teams': typeof AuthenticatedAdminTeamsRoute
+  '/app/log': typeof AuthenticatedAppLogRoute
+  '/app/map': typeof AuthenticatedAppMapRoute
+  '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
+  '/mentor/verify': typeof AuthenticatedMentorVerifyRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/app/': typeof AuthenticatedAppIndexRoute
+  '/mentor/': typeof AuthenticatedMentorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin/people': typeof AuthenticatedAdminPeopleRoute
+  '/admin/teams': typeof AuthenticatedAdminTeamsRoute
+  '/app/log': typeof AuthenticatedAppLogRoute
+  '/app/map': typeof AuthenticatedAppMapRoute
+  '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
+  '/mentor/verify': typeof AuthenticatedMentorVerifyRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/app': typeof AuthenticatedAppIndexRoute
+  '/mentor': typeof AuthenticatedMentorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/admin/people': typeof AuthenticatedAdminPeopleRoute
+  '/_authenticated/admin/teams': typeof AuthenticatedAdminTeamsRoute
+  '/_authenticated/app/log': typeof AuthenticatedAppLogRoute
+  '/_authenticated/app/map': typeof AuthenticatedAppMapRoute
+  '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/_authenticated/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/_authenticated/mentor/teams': typeof AuthenticatedMentorTeamsRoute
+  '/_authenticated/mentor/verify': typeof AuthenticatedMentorVerifyRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/mentor/': typeof AuthenticatedMentorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/admin/people'
+    | '/admin/teams'
+    | '/app/log'
+    | '/app/map'
+    | '/app/portfolio'
+    | '/app/timeline'
+    | '/mentor/teams'
+    | '/mentor/verify'
+    | '/admin/'
+    | '/app/'
+    | '/mentor/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/admin/people'
+    | '/admin/teams'
+    | '/app/log'
+    | '/app/map'
+    | '/app/portfolio'
+    | '/app/timeline'
+    | '/mentor/teams'
+    | '/mentor/verify'
+    | '/admin'
+    | '/app'
+    | '/mentor'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/admin/people'
+    | '/_authenticated/admin/teams'
+    | '/_authenticated/app/log'
+    | '/_authenticated/app/map'
+    | '/_authenticated/app/portfolio'
+    | '/_authenticated/app/timeline'
+    | '/_authenticated/mentor/teams'
+    | '/_authenticated/mentor/verify'
+    | '/_authenticated/admin/'
+    | '/_authenticated/app/'
+    | '/_authenticated/mentor/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +211,135 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/people': {
+      id: '/_authenticated/admin/people'
+      path: '/admin/people'
+      fullPath: '/admin/people'
+      preLoaderRoute: typeof AuthenticatedAdminPeopleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/teams': {
+      id: '/_authenticated/admin/teams'
+      path: '/admin/teams'
+      fullPath: '/admin/teams'
+      preLoaderRoute: typeof AuthenticatedAdminTeamsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/': {
+      id: '/_authenticated/app/'
+      path: '/app'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/log': {
+      id: '/_authenticated/app/log'
+      path: '/app/log'
+      fullPath: '/app/log'
+      preLoaderRoute: typeof AuthenticatedAppLogRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/map': {
+      id: '/_authenticated/app/map'
+      path: '/app/map'
+      fullPath: '/app/map'
+      preLoaderRoute: typeof AuthenticatedAppMapRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/portfolio': {
+      id: '/_authenticated/app/portfolio'
+      path: '/app/portfolio'
+      fullPath: '/app/portfolio'
+      preLoaderRoute: typeof AuthenticatedAppPortfolioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/timeline': {
+      id: '/_authenticated/app/timeline'
+      path: '/app/timeline'
+      fullPath: '/app/timeline'
+      preLoaderRoute: typeof AuthenticatedAppTimelineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mentor/': {
+      id: '/_authenticated/mentor/'
+      path: '/mentor'
+      fullPath: '/mentor/'
+      preLoaderRoute: typeof AuthenticatedMentorIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mentor/teams': {
+      id: '/_authenticated/mentor/teams'
+      path: '/mentor/teams'
+      fullPath: '/mentor/teams'
+      preLoaderRoute: typeof AuthenticatedMentorTeamsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mentor/verify': {
+      id: '/_authenticated/mentor/verify'
+      path: '/mentor/verify'
+      fullPath: '/mentor/verify'
+      preLoaderRoute: typeof AuthenticatedMentorVerifyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminPeopleRoute: typeof AuthenticatedAdminPeopleRoute
+  AuthenticatedAdminTeamsRoute: typeof AuthenticatedAdminTeamsRoute
+  AuthenticatedAppLogRoute: typeof AuthenticatedAppLogRoute
+  AuthenticatedAppMapRoute: typeof AuthenticatedAppMapRoute
+  AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
+  AuthenticatedAppTimelineRoute: typeof AuthenticatedAppTimelineRoute
+  AuthenticatedMentorTeamsRoute: typeof AuthenticatedMentorTeamsRoute
+  AuthenticatedMentorVerifyRoute: typeof AuthenticatedMentorVerifyRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedMentorIndexRoute: typeof AuthenticatedMentorIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminPeopleRoute: AuthenticatedAdminPeopleRoute,
+  AuthenticatedAdminTeamsRoute: AuthenticatedAdminTeamsRoute,
+  AuthenticatedAppLogRoute: AuthenticatedAppLogRoute,
+  AuthenticatedAppMapRoute: AuthenticatedAppMapRoute,
+  AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,
+  AuthenticatedAppTimelineRoute: AuthenticatedAppTimelineRoute,
+  AuthenticatedMentorTeamsRoute: AuthenticatedMentorTeamsRoute,
+  AuthenticatedMentorVerifyRoute: AuthenticatedMentorVerifyRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedMentorIndexRoute: AuthenticatedMentorIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
