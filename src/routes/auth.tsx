@@ -1,15 +1,14 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { GraduationCap, Loader2, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Flame, GraduationCap, Loader2, MapPin, ShieldCheck } from "lucide-react";
 
-import { DockoMark } from "@/components/docko/app-shell";
+import { DockoLogo } from "@/components/docko/app-shell";
 import { BentoCard } from "@/components/docko/bento";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { cn } from "@/lib/utils";
 
 type Mode = "signin" | "signup";
@@ -20,16 +19,16 @@ export const Route = createFileRoute("/auth")({
   }),
   head: () => ({
     meta: [
-      { title: "Sign in to Docko" },
+      { title: "Sign in — docko." },
       {
         name: "description",
         content:
-          "Sign in or create a Docko account to log verified fieldwork, review student logs and manage placement teams.",
+          "Sign in or create your docko. account to track your academic journey and get achievements verified daily.",
       },
-      { property: "og:title", content: "Sign in to Docko" },
+      { property: "og:title", content: "Sign in — docko." },
       {
         property: "og:description",
-        content: "Access your Docko field log book, review queue or institution dashboard.",
+        content: "Access your academic journal, daily milestones, and mentor review portal.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -93,48 +92,116 @@ function AuthPage() {
 
   async function google() {
     try {
-      await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/app`,
+        },
+      });
+      if (error) throw error;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Google sign-in failed");
     }
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="hidden flex-col justify-between border-r border-border bg-sidebar p-10 lg:flex">
-        <Link to="/" className="flex items-center gap-2.5">
-          <DockoMark />
-          <span className="text-lg font-semibold tracking-tight">Docko</span>
-        </Link>
-        <div>
-          <h2 className="max-w-sm text-3xl leading-tight font-semibold tracking-tight">
-            Every log carries its own proof.
-          </h2>
-          <p className="mt-3 max-w-sm text-muted-foreground">
-            Photo, place and time captured as you work — verified by your mentor, not reconstructed
-            from memory.
-          </p>
+    <div className="grid min-h-screen w-full lg:h-screen lg:grid-cols-[1fr_1fr] xl:grid-cols-[1.1fr_1fr] lg:overflow-hidden">
+      {/* Left Column: Visual Showcase & Brand Story (visible on desktop lg/xl screens) */}
+      <div className="relative hidden flex-col justify-between overflow-hidden border-r border-border bg-sidebar p-6 lg:flex lg:p-8 xl:p-12">
+        {/* Ambient background glow */}
+        <div
+          className="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rounded-full bg-primary/10 blur-3xl"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute -bottom-20 -right-20 h-80 w-80 rounded-full bg-accent/10 blur-3xl"
+          aria-hidden="true"
+        />
+
+        {/* Top Branding */}
+        <div className="relative flex items-center">
+          <Link to="/" className="group flex items-center">
+            <DockoLogo className="text-2xl sm:text-3xl" />
+          </Link>
         </div>
-        <p className="text-sm text-muted-foreground">Built for placements, fieldwork and clinicals.</p>
+
+        {/* Showcase Content */}
+        <div className="relative my-auto max-w-md space-y-5 py-4 xl:max-w-lg">
+          <h2 className="font-display text-2xl font-extrabold leading-snug tracking-tight sm:text-3xl xl:text-4xl">
+            Every achievement carries verified proof.
+          </h2>
+          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+            Photo evidence, campus coordinates, and exact timestamps — verified by your mentors in real time.
+          </p>
+
+          {/* Interactive Preview Card */}
+          <div className="rounded-2xl border border-border bg-card/90 p-4 shadow-[var(--shadow-lift)] backdrop-blur-sm sm:p-5">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <div className="flex items-center gap-2.5">
+                <span className="grid size-7 place-items-center rounded-lg bg-primary-soft text-primary sm:size-8">
+                  <CheckCircle2 className="size-4" />
+                </span>
+                <div>
+                  <p className="text-xs font-bold sm:text-sm">Robotics Lab Milestone</p>
+                  <p className="text-[11px] text-muted-foreground">Alex Rivera · Engineering</p>
+                </div>
+              </div>
+              <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-[10px] font-bold text-primary sm:text-xs">
+                Verified
+              </span>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5 font-medium text-foreground/80">
+                <MapPin className="size-3.5 text-primary" /> Engineering Lab 4
+              </span>
+              <span>Today · 10:15 AM</span>
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-2 pt-1">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-secondary px-2 py-0.5 text-[11px] font-semibold text-foreground/80">
+                <Flame className="size-3 text-orange-500" /> 14-Day streak
+              </span>
+              <span className="rounded-lg bg-secondary px-2 py-0.5 text-[11px] font-semibold text-foreground/80">
+                94% verified same day
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Tagline */}
+        <p className="relative text-xs text-muted-foreground">
+          Built for research labs, project teams, coursework, and capstones.
+        </p>
       </div>
 
-      <div className="flex items-center justify-center px-4 py-12 sm:px-8">
-        <div className="w-full max-w-md">
-          <Link to="/" className="mb-8 flex items-center gap-2.5 lg:hidden">
-            <DockoMark />
-            <span className="text-lg font-semibold tracking-tight">Docko</span>
+      {/* Right Column: Auth Form with persistent top logo on mobile */}
+      <div className="flex min-h-screen flex-col lg:h-screen lg:min-h-0 lg:p-6 xl:p-10">
+        {/* Mobile top bar - ALWAYS at the top of the mobile screen */}
+        <div className="flex items-center px-5 pt-5 pb-2 lg:hidden">
+          <Link to="/" className="flex items-center">
+            <DockoLogo className="text-2xl" />
           </Link>
+        </div>
 
-          {sentTo ? (
-            <BentoCard>
-              <h1 className="text-xl font-semibold tracking-tight">Check your inbox</h1>
-              <p className="mt-2 text-sm text-muted-foreground">
-                We sent a confirmation link to <span className="font-medium">{sentTo}</span>. Open it
-                to activate your Docko account, then come back and sign in.
+        {/* Form Container */}
+        <div className="flex flex-1 items-center justify-center p-3 sm:p-6 md:p-8">
+          <div className="w-full max-w-sm sm:max-w-md">
+            {sentTo ? (
+            <BentoCard className="p-5 sm:p-6 text-center">
+              <div className="mx-auto mb-3 grid size-11 place-items-center rounded-2xl bg-primary-soft text-primary">
+                <CheckCircle2 className="size-6" />
+              </div>
+              <h1 className="font-display text-xl font-bold tracking-tight">
+                Check your inbox
+              </h1>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                We sent a confirmation link to <span className="font-semibold text-foreground">{sentTo}</span>. Open it
+                to activate your docko. account, then sign in.
               </p>
               <Button
                 variant="outline"
-                className="press mt-5 w-full rounded-2xl"
+                className="press mt-5 h-10 w-full rounded-xl text-xs font-semibold sm:text-sm"
                 onClick={() => {
                   setSentTo(null);
                   setMode("signin");
@@ -144,84 +211,154 @@ function AuthPage() {
               </Button>
             </BentoCard>
           ) : (
-            <BentoCard>
-              <h1 className="text-2xl font-semibold tracking-tight">
-                {mode === "signup" ? "Create your account" : "Welcome back"}
-              </h1>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                {mode === "signup"
-                  ? "Start logging fieldwork in under a minute."
-                  : "Sign in to pick up your log book."}
-              </p>
+            <BentoCard className="p-4 sm:p-6 shadow-[var(--shadow-lift)]">
+              {/* Header Title & Subtitle */}
+              <div>
+                <h1 className="font-display text-lg font-extrabold tracking-tight sm:text-2xl">
+                  {mode === "signup" ? "Create your account" : "Welcome back"}
+                </h1>
+                <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">
+                  {mode === "signup"
+                    ? "Start tracking your academic journey."
+                    : "Sign in to access your journal."}
+                </p>
+              </div>
 
+              {/* Segmented Mode Switcher */}
+              <div className="mt-4 grid grid-cols-2 rounded-2xl bg-secondary/80 p-1">
+                <button
+                  type="button"
+                  onClick={() => setMode("signin")}
+                  className={cn(
+                    "press flex h-10 items-center justify-center rounded-xl text-xs sm:text-sm font-bold transition-all",
+                    mode === "signin"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  Sign in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode("signup")}
+                  className={cn(
+                    "press flex h-10 items-center justify-center rounded-xl text-xs sm:text-sm font-bold transition-all",
+                    mode === "signup"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  Create account
+                </button>
+              </div>
+
+              {/* Google Social OAuth Button */}
               <Button
                 type="button"
                 variant="outline"
                 onClick={google}
-                className="press mt-6 w-full rounded-2xl"
+                className="press mt-3.5 h-9 w-full rounded-xl border-border bg-card text-xs font-semibold shadow-xs sm:h-10 sm:text-sm"
               >
+                <svg className="mr-2 size-3.5 sm:size-4" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                  />
+                </svg>
                 Continue with Google
               </Button>
 
-              <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="my-3 flex items-center gap-2 text-[11px] text-muted-foreground">
                 <span className="h-px flex-1 bg-border" />
-                or use email
+                <span>or email</span>
                 <span className="h-px flex-1 bg-border" />
               </div>
 
-              <form onSubmit={submit} className="space-y-4">
+              {/* Main Form */}
+              <form onSubmit={submit} className="space-y-2.5 sm:space-y-3">
                 {mode === "signup" ? (
                   <>
-                    <div className="grid grid-cols-2 gap-3">
-                      {(
-                        [
-                          { key: "student", label: "Student", icon: GraduationCap },
-                          { key: "mentor", label: "Mentor", icon: ShieldCheck },
-                        ] as const
-                      ).map((option) => (
-                        <button
-                          key={option.key}
-                          type="button"
-                          onClick={() => setRole(option.key)}
-                          className={cn(
-                            "press flex flex-col items-start gap-1 rounded-2xl border p-3 text-left",
-                            role === option.key
-                              ? "border-primary bg-primary-soft text-primary"
-                              : "border-border hover:bg-accent",
-                          )}
-                          aria-pressed={role === option.key}
-                        >
-                          <option.icon className="size-4" />
-                          <span className="text-sm font-medium">{option.label}</span>
-                        </button>
-                      ))}
+                    {/* Role Selection */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setRole("student")}
+                        className={cn(
+                          "press flex items-center justify-center gap-1.5 rounded-xl border p-2 text-center transition-all",
+                          role === "student"
+                            ? "border-primary bg-primary-soft text-primary font-bold shadow-xs"
+                            : "border-border bg-card text-muted-foreground hover:text-foreground",
+                        )}
+                        aria-pressed={role === "student"}
+                      >
+                        <GraduationCap className="size-3.5 sm:size-4 shrink-0" />
+                        <span className="text-xs sm:text-sm font-semibold">Student</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRole("mentor")}
+                        className={cn(
+                          "press flex items-center justify-center gap-1.5 rounded-xl border p-2 text-center transition-all",
+                          role === "mentor"
+                            ? "border-primary bg-primary-soft text-primary font-bold shadow-xs"
+                            : "border-border bg-card text-muted-foreground hover:text-foreground",
+                        )}
+                        aria-pressed={role === "mentor"}
+                      >
+                        <ShieldCheck className="size-3.5 sm:size-4 shrink-0" />
+                        <span className="text-xs sm:text-sm font-semibold">Faculty / Mentor</span>
+                      </button>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="fullName">Full name</Label>
-                      <Input
-                        id="fullName"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        required
-                        autoComplete="name"
-                        className="rounded-2xl"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="institution">Institution</Label>
-                      <Input
-                        id="institution"
-                        value={institution}
-                        onChange={(e) => setInstitution(e.target.value)}
-                        placeholder="e.g. Barkatullah University"
-                        className="rounded-2xl"
-                      />
+
+                    {/* Full Name & Institution in 2-col compact grid */}
+                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                      <div className="space-y-1">
+                        <Label htmlFor="fullName" className="text-[11px] font-semibold sm:text-xs">
+                          Full name
+                        </Label>
+                        <Input
+                          id="fullName"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          required
+                          autoComplete="name"
+                          placeholder="Alex Rivera"
+                          className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="institution" className="text-[11px] font-semibold sm:text-xs">
+                          Institution
+                        </Label>
+                        <Input
+                          id="institution"
+                          value={institution}
+                          onChange={(e) => setInstitution(e.target.value)}
+                          placeholder="University / Lab"
+                          className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
+                        />
+                      </div>
                     </div>
                   </>
                 ) : null}
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="email">Email</Label>
+                {/* Email Field */}
+                <div className="space-y-1">
+                  <Label htmlFor="email" className="text-[11px] font-semibold sm:text-xs">
+                    Email address
+                  </Label>
                   <Input
                     id="email"
                     type="email"
@@ -229,11 +366,16 @@ function AuthPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
-                    className="rounded-2xl"
+                    placeholder="name@university.edu"
+                    className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="password">Password</Label>
+
+                {/* Password Field */}
+                <div className="space-y-1">
+                  <Label htmlFor="password" className="text-[11px] font-semibold sm:text-xs">
+                    Password
+                  </Label>
                   <Input
                     id="password"
                     type="password"
@@ -242,21 +384,28 @@ function AuthPage() {
                     required
                     minLength={8}
                     autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                    className="rounded-2xl"
+                    placeholder="••••••••"
+                    className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
                   />
                 </div>
 
-                <Button type="submit" disabled={busy} className="press w-full rounded-2xl">
-                  {busy ? <Loader2 className="size-4 animate-spin" /> : null}
+                {/* Submit Action */}
+                <Button
+                  type="submit"
+                  disabled={busy}
+                  className="press mt-1 h-9.5 w-full rounded-xl text-xs font-bold shadow-[var(--shadow-lift)] sm:h-10 sm:text-sm"
+                >
+                  {busy ? <Loader2 className="mr-2 size-3.5 animate-spin" /> : null}
                   {mode === "signup" ? "Create account" : "Sign in"}
                 </Button>
               </form>
 
-              <p className="mt-5 text-center text-sm text-muted-foreground">
-                {mode === "signup" ? "Already have an account?" : "New to Docko?"}{" "}
+              {/* Switch Mode Prompt */}
+              <p className="mt-3.5 text-center text-xs text-muted-foreground">
+                {mode === "signup" ? "Already have an account?" : "New to docko.?"}{" "}
                 <button
                   type="button"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  className="font-bold text-primary underline-offset-4 hover:underline"
                   onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
                 >
                   {mode === "signup" ? "Sign in" : "Create one"}
@@ -264,6 +413,7 @@ function AuthPage() {
               </p>
             </BentoCard>
           )}
+          </div>
         </div>
       </div>
     </div>

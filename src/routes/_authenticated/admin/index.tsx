@@ -30,7 +30,7 @@ function AdminOverview() {
   const verified = all.filter((entry) => entry.status === "verified");
 
   return (
-    <AppShell title="Institution" subtitle="Everything happening across your cohorts">
+    <AppShell title="Institution" subtitle="Everything happening across your teams and students">
       <BentoGrid>
         <StatTile className="lg:col-span-2" label="Members" value={people?.length ?? 0} icon={<Users className="size-4" />} />
         <StatTile className="lg:col-span-2" label="Hours logged" value={sumHours(all)} unit="h" icon={<Clock className="size-4" />} />

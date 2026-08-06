@@ -22,6 +22,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { isDevModeActive } from "@/lib/dev-mode";
 import { initials } from "@/lib/docko";
 import { meQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
@@ -48,19 +49,22 @@ const adminNav: NavItem[] = [
   { to: "/admin/teams", label: "Teams", icon: <Settings className="size-4" /> },
 ];
 
-export function DockoMark({ className }: { className?: string }) {
+export function DockoLogo({ className }: { className?: string | undefined }) {
   return (
     <span
       className={cn(
-        "grid size-9 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground",
-        "shadow-[0_6px_14px_-6px_var(--color-primary)]",
+        "font-['Outfit',sans-serif] text-xl sm:text-2xl font-black tracking-[-0.045em] text-foreground select-none leading-none inline-flex items-baseline",
         className,
       )}
-      aria-hidden
     >
-      <MapPin className="size-5" strokeWidth={2.4} />
+      <span>docko</span>
+      <span className="text-primary font-black ml-[1px]">.</span>
     </span>
   );
+}
+
+export function DockoMark({ className }: { className?: string | undefined }) {
+  return <DockoLogo className={className} />;
 }
 
 export function useTheme() {
@@ -140,10 +144,11 @@ export function AppShell({
   }, [pathname]);
 
   const roles = me?.roles ?? [];
+  const devActive = isDevModeActive();
   const sections = [
-    { label: "Student", items: studentNav, show: roles.length === 0 || roles.includes("student") },
-    { label: "Mentor", items: mentorNav, show: roles.includes("mentor") || roles.includes("admin") },
-    { label: "Admin", items: adminNav, show: roles.includes("admin") },
+    { label: "Student", items: studentNav, show: devActive || roles.length === 0 || roles.includes("student") },
+    { label: "Mentor", items: mentorNav, show: devActive || roles.includes("mentor") || roles.includes("admin") },
+    { label: "Admin", items: adminNav, show: devActive || roles.includes("admin") },
   ].filter((s) => s.show);
 
   async function signOut() {
@@ -153,9 +158,8 @@ export function AppShell({
 
   const sidebar = (
     <div className="flex h-full flex-col gap-6 p-4">
-      <Link to="/app" className="flex items-center gap-2.5">
-        <DockoMark />
-        <span className="text-lg font-semibold tracking-tight">Docko</span>
+      <Link to="/app" className="flex items-center px-1">
+        <DockoLogo className="text-2xl" />
       </Link>
 
       <div className="flex flex-1 flex-col gap-5 overflow-y-auto">
@@ -196,7 +200,7 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-sidebar-border bg-sidebar lg:block">
         {sidebar}
       </aside>
@@ -225,7 +229,34 @@ export function AppShell({
 
       <div className="lg:pl-64">
         <header className="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur-md">
-          <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
+          {/* Mobile header — avatar + greeting + action */}
+          <div className="flex items-center gap-3 px-4 py-3 sm:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="press rounded-2xl shrink-0"
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu className="size-4" />
+            </Button>
+            <div className="flex flex-1 items-center gap-2.5 min-w-0">
+              <Avatar className="size-8 shrink-0 ring-2 ring-primary/20">
+                {me?.avatarUrl ? <AvatarImage src={me.avatarUrl} alt="" /> : null}
+                <AvatarFallback className="bg-primary-soft text-[11px] font-bold text-primary">
+                  {initials(me?.fullName)}
+                </AvatarFallback>
+              </Avatar>
+              <h1 className="truncate text-base font-bold tracking-tight text-foreground">{title}</h1>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {actions}
+              <ThemeToggle />
+            </div>
+          </div>
+
+          {/* Desktop/tablet header — standard title + subtitle */}
+          <div className="mx-auto hidden max-w-6xl items-center gap-3 px-4 sm:flex sm:py-3 sm:px-6">
             <Button
               variant="ghost"
               size="icon"
@@ -246,7 +277,7 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+        <main className="mx-auto max-w-6xl px-3 py-5 sm:px-4 sm:py-6 md:px-6 md:py-8">{children}</main>
       </div>
     </div>
   );

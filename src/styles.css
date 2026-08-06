@@ -5,14 +5,15 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Docko design system — soft skeuomorphic bento.
- * Off-white canvas, gently raised cards, blue accent, emerald verified,
- * amber pending, muted red rejected. Motion lives at 180–300ms.
- * All colors are oklch tokens; never hardcode colors in components.
+ * Docko design system — unified skeuomorphic bento canvas.
+ * Off-white background, layered shadows, glass highlights, and vibrant micro-interactions.
+ * All colors are oklch tokens.
  */
 
 @theme inline {
-  --font-sans: "Inter var", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-logo: "Outfit", "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 3px);
@@ -37,15 +38,18 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-warning-soft: var(--warning-soft);
-  --color-destructive-soft: var(--destructive-soft);
+  --color-clay: var(--clay);
+  --color-sky: var(--sky);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -95,6 +99,7 @@
 
   --accent: oklch(0.955 0.012 250);
   --accent-foreground: oklch(0.3 0.02 255);
+  --accent-soft: oklch(0.94 0.05 80);
 
   --success: oklch(0.62 0.1 160);
   --success-foreground: oklch(0.99 0.003 160);
@@ -107,6 +112,9 @@
   --destructive: oklch(0.58 0.14 22);
   --destructive-foreground: oklch(0.99 0.003 22);
   --destructive-soft: oklch(0.955 0.028 22);
+
+  --clay: oklch(0.72 0.09 40);
+  --sky: oklch(0.8 0.075 225);
 
   --border: oklch(0.918 0.005 260);
   --input: oklch(0.905 0.006 260);
@@ -135,6 +143,27 @@
     0 18px 34px -14px oklch(0.24 0.02 265 / 0.12);
   --inset-top: inset 0 1px 0 oklch(1 0 0 / 0.9);
   --press: inset 0 2px 6px oklch(0.24 0.02 265 / 0.1);
+
+  --shadow-soft:
+    0 1px 2px oklch(0.3 0.03 150 / 0.05), 0 8px 20px -12px oklch(0.3 0.03 150 / 0.16);
+  --shadow-lift:
+    0 2px 4px oklch(0.3 0.03 150 / 0.06), 0 24px 48px -24px oklch(0.3 0.03 150 / 0.28);
+  --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.9);
+  --gradient-warm: linear-gradient(
+    160deg,
+    oklch(0.995 0.006 95) 0%,
+    oklch(0.965 0.016 92) 100%
+  );
+  --gradient-field: linear-gradient(
+    135deg,
+    oklch(0.58 0.13 250) 0%,
+    oklch(0.46 0.098 158) 100%
+  );
+  --gradient-sun: linear-gradient(
+    135deg,
+    oklch(0.86 0.13 85) 0%,
+    oklch(0.75 0.14 55) 100%
+  );
 }
 
 .dark {
@@ -161,6 +190,7 @@
 
   --accent: oklch(0.3 0.02 255);
   --accent-foreground: oklch(0.95 0.004 260);
+  --accent-soft: oklch(0.32 0.05 70);
 
   --success: oklch(0.72 0.11 160);
   --success-foreground: oklch(0.2 0.03 160);
@@ -173,6 +203,9 @@
   --destructive: oklch(0.66 0.14 22);
   --destructive-foreground: oklch(0.2 0.03 22);
   --destructive-soft: oklch(0.3 0.05 22);
+
+  --clay: oklch(0.68 0.08 40);
+  --sky: oklch(0.72 0.07 225);
 
   --border: oklch(1 0 0 / 0.1);
   --input: oklch(1 0 0 / 0.14);
@@ -190,11 +223,38 @@
   --raise-1: 0 1px 1px oklch(0 0 0 / 0.3), 0 8px 20px -10px oklch(0 0 0 / 0.5);
   --raise-2: 0 2px 4px oklch(0 0 0 / 0.35), 0 20px 38px -16px oklch(0 0 0 / 0.55);
   --inset-top: inset 0 1px 0 oklch(1 0 0 / 0.06);
+
+  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 20px -12px oklch(0 0 0 / 0.45);
+  --shadow-lift: 0 2px 4px oklch(0 0 0 / 0.35), 0 24px 48px -24px oklch(0 0 0 / 0.6);
+  --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.06);
+  --gradient-warm: linear-gradient(
+    160deg,
+    oklch(0.24 0.014 265) 0%,
+    oklch(0.2 0.012 265) 100%
+  );
+  --gradient-field: linear-gradient(
+    135deg,
+    oklch(0.55 0.12 250) 0%,
+    oklch(0.42 0.09 158) 100%
+  );
+  --gradient-sun: linear-gradient(
+    135deg,
+    oklch(0.7 0.12 85) 0%,
+    oklch(0.6 0.13 55) 100%
+  );
 }
 
 @layer base {
+  html, body {
+    overflow-x: hidden;
+  }
+
   * {
     border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
@@ -207,14 +267,35 @@
 
   h1,
   h2,
-  h3 {
-    letter-spacing: -0.02em;
+  h3,
+  h4 {
+    letter-spacing: -0.025em;
   }
 
   :focus-visible {
     outline: 2px solid var(--color-ring);
     outline-offset: 2px;
   }
+}
+
+/* Bento card: paper surface, soft depth, top highlight */
+@utility bento {
+  position: relative;
+  border-radius: var(--radius-3xl);
+  background: var(--gradient-warm);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft), var(--shadow-inset);
+  overflow: hidden;
+}
+
+@utility bento-dark {
+  position: relative;
+  border-radius: var(--radius-3xl);
+  background: var(--gradient-field);
+  color: var(--color-primary-foreground);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  box-shadow: var(--shadow-lift), inset 0 1px 0 oklch(1 0 0 / 0.18);
+  overflow: hidden;
 }
 
 /* Raised bento surface */
@@ -238,17 +319,17 @@
 /* Gentle lift on hover, physical press on click */
 @utility lift {
   transition:
-    transform 220ms var(--ease-soft),
-    box-shadow 220ms var(--ease-soft);
+    transform 240ms var(--ease-soft),
+    box-shadow 240ms var(--ease-soft);
   will-change: transform;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--raise-2), var(--inset-top);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lift), var(--shadow-inset);
   }
 
   &:active {
-    transform: translateY(0) scale(0.995);
+    transform: translateY(-1px) scale(0.995);
   }
 }
 
@@ -260,6 +341,20 @@
 
   &:active {
     transform: scale(0.97);
+  }
+}
+
+@utility grain-glow {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -35%;
+    background:
+      radial-gradient(40% 40% at 20% 20%, oklch(0.58 0.13 250 / 0.15), transparent 70%),
+      radial-gradient(35% 35% at 80% 10%, oklch(0.72 0.12 62 / 0.15), transparent 70%),
+      radial-gradient(45% 45% at 60% 90%, oklch(0.8 0.075 225 / 0.12), transparent 70%);
+    filter: blur(24px);
+    pointer-events: none;
   }
 }
 
@@ -280,6 +375,34 @@
     opacity: 1;
     transform: none;
   }
+}
+
+@keyframes docko-float-a {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+@keyframes docko-float-b {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+@utility animate-float-a {
+  animation: docko-float-a 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+@utility animate-float-b {
+  animation: docko-float-b 7s ease-in-out infinite 1.5s;
+  will-change: transform;
 }
 
 @utility rise {

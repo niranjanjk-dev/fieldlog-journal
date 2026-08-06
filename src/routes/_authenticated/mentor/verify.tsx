@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { BellRing, CheckCircle2, Inbox, XCircle } from "lucide-react";
+import { BellRing, CheckCircle2, Inbox, MapPin, XCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -11,14 +11,15 @@ import { Button } from "@/components/ui/button";
 import { reviewEntry, sendNudge } from "@/lib/entries";
 import type { EntryStatus } from "@/lib/docko";
 import { photoUrlsQuery, reviewQueueQuery } from "@/lib/queries";
+import { saveApprovedWorkspace } from "@/lib/workspace-matcher";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/mentor/verify")({
   head: () => ({
     meta: [
-      { title: "Verify logs · Docko" },
+      { title: "Verify logs · docko." },
       { name: "description", content: "Approve or request changes on student field logs in one tap." },
-      { property: "og:title", content: "Verify logs · Docko" },
+      { property: "og:title", content: "Verify logs · docko." },
       { property: "og:description", content: "Approve or request changes on student field logs." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -46,11 +47,33 @@ function VerifyPage() {
   );
 
   const review = useMutation({
-    mutationFn: (input: { id: string; status: "verified" | "rejected"; note: string | null }) =>
-      reviewEntry(input.id, input.status, input.note),
+    mutationFn: (input: {
+      id: string;
+      status: "verified" | "rejected";
+      note: string | null;
+      asWorkspace?: boolean;
+      entryData?: { latitude: number | null; longitude: number | null; address: string | null; title: string; team_id: string | null };
+    }) => {
+      if (input.status === "verified" && input.entryData?.latitude && input.entryData?.longitude) {
+        saveApprovedWorkspace({
+          id: input.id,
+          name: input.entryData.address || input.entryData.title || "Approved Workspace",
+          latitude: input.entryData.latitude,
+          longitude: input.entryData.longitude,
+          teamId: input.entryData.team_id ?? undefined,
+        });
+      }
+      return reviewEntry(input.id, input.status, input.note);
+    },
     onSuccess: (_data, input) => {
       queryClient.invalidateQueries({ queryKey: ["entries"] });
-      toast.success(input.status === "verified" ? "Log verified" : "Changes requested");
+      toast.success(
+        input.status === "verified"
+          ? input.asWorkspace
+            ? "Log verified & saved as approved workspace location"
+            : "Log verified"
+          : "Changes requested",
+      );
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -63,7 +86,7 @@ function VerifyPage() {
   });
 
   return (
-    <AppShell title="Verify" subtitle="One queue for every student you mentor">
+    <AppShell title="Verify" subtitle="One review queue for all your assigned students">
       <div className="mb-6 flex flex-wrap gap-2">
         {tabs.map((item) => (
           <button
@@ -101,7 +124,7 @@ function VerifyPage() {
               author={entry.student}
               photoUrl={entry.photo_path ? photos?.[entry.photo_path] : undefined}
               footer={
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     size="sm"
                     variant="ghost"
@@ -126,7 +149,21 @@ function VerifyPage() {
                   <Button
                     size="sm"
                     className="press rounded-xl"
-                    onClick={() => review.mutate({ id: entry.id, status: "verified", note: null })}
+                    onClick={() =>
+                      review.mutate({
+                        id: entry.id,
+                        status: "verified",
+                        note: null,
+                        asWorkspace: true,
+                        entryData: {
+                          latitude: entry.latitude,
+                          longitude: entry.longitude,
+                          address: entry.address,
+                          title: entry.title,
+                          team_id: entry.team_id,
+                        },
+                      })
+                    }
                   >
                     <CheckCircle2 className="size-4" />
                     Verify

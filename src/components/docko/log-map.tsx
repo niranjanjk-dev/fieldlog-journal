@@ -42,12 +42,8 @@ export default function LogMap({ entries }: { entries: Entry[] }) {
   const markersRef = useRef<google.maps.Marker[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const apiKey = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"] as
-    | string
-    | undefined;
-  const channel = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID"] as
-    | string
-    | undefined;
+  const apiKey = import.meta.env["VITE_GOOGLE_MAPS_API_KEY"] as string | undefined;
+  const channel = import.meta.env["VITE_GOOGLE_MAPS_TRACKING_ID"] as string | undefined;
 
   const located = entries.filter(
     (entry) => entry.latitude != null && entry.longitude != null,
@@ -55,7 +51,7 @@ export default function LogMap({ entries }: { entries: Entry[] }) {
 
   useEffect(() => {
     if (!apiKey) {
-      setError("Maps are not connected yet.");
+      setError("Maps API key not configured yet.");
       return;
     }
     let cancelled = false;
@@ -113,7 +109,7 @@ export default function LogMap({ entries }: { entries: Entry[] }) {
         <div>
           <p className="font-medium">{error}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Your logs still keep their coordinates — the map appears once Maps is connected.
+            Your logs still keep their coordinates — add VITE_GOOGLE_MAPS_API_KEY in .env to enable map view.
           </p>
         </div>
       </div>

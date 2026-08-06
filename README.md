@@ -1,800 +1,182 @@
-# FieldLog Journal
+# Docko — Field Logs Students Actually Keep
 
-You are a world-class Senior Product Designer, UX Researcher, Full-Stack Software Engineer, and SaaS Architect.
+> Verified, photo-and-GPS field journaling for internships, fieldwork, and clinicals.
 
-Your mission is to design and build a complete production-ready web application called **FieldLog**. This is NOT just another dashboard. It must feel like a premium modern SaaS product that students actually enjoy using every day while remaining extremely simple for mentors and educational institutions.
+Docko bridges the gap between students on site and faculty mentors back on campus. With automatic GPS coordinates, timestamps, and in-app photo capture, every log carries its own proof. Mentors verify submissions in one tap, and placement coordinators get audit-ready portfolios with 0 paperwork.
 
-The final experience should feel like a blend of Apple, Linear, Notion, Arc Browser, and modern productivity tools while maintaining its own identity.
+---
 
-The design philosophy is:
+## Features
 
-• Clean
+- 📸 **Verified Visual Journaling**: Capture field notes with real-time photo capture, GPS coordinates, and device timestamps.
+- ⚡ **9-Second Fast Logging**: Streamlined logging workflow designed specifically for students working in active fieldwork environments.
+- 🛡️ **One-Tap Mentor Verification**: Dedicated mentor review queue with instant approval, feedback comments, or rework requests.
+- 🗺️ **Interactive Map of Proof**: Geographic visualization of all field entries with coordinate accuracy overlays.
+- 📈 **Automated Hours & Milestones**: Live tracking of weekly hours, skill development, streaks, and completion percentages.
+- 👥 **Role-Based Portals**:
+  - **Public Landing Page**: (`/`) Full interactive overview, animations, and feature breakdowns.
+  - **Student Workspace**: (`/app`, `/app/log`, `/app/timeline`, `/app/map`, `/app/portfolio`) Daily logging, personal timeline, map, and exportable portfolio.
+  - **Mentor Workspace**: (`/mentor`, `/mentor/verify`, `/mentor/teams`) Queue verification and team oversight.
+  - **Admin / Institution Workspace**: (`/admin`, `/admin/people`, `/admin/teams`) Cohort, user, and program management.
+- 🌐 **Offline Resilience**: Field entries can be captured offline and automatically synced once connection is restored.
 
-• Lightweight
+---
 
-• Fast
+## Tech Stack
 
-• Friendly
+- **Framework**: [TanStack Start](https://tanstack.com/start) & [TanStack Router](https://tanstack.com/router)
+- **UI & Components**: React 19, [Tailwind CSS v4](https://tailwindcss.com), Radix UI primitives, Lucide Icons, Sonner toasts
+- **Animations**: [GSAP](https://greensock.com/gsap/) with ScrollTrigger for smooth reveals, floating cards, and count-up stats
+- **Data Fetching**: [TanStack Query v5](https://tanstack.com/query)
+- **Database & Auth**: [Supabase](https://supabase.com) (`@supabase/supabase-js`)
+- **Server Engine**: [Nitro](https://nitro.unjs.io/) / Vite
 
-• Fun
+---
 
-• Minimal
+## Quick Start (Local Development)
 
-• Premium
+### 1. Prerequisites
+- **Node.js** >= 20.x or **Bun** >= 1.1.x
+- **npm**, **pnpm**, or **bun**
 
-• Human
+### 2. Clone and Install Dependencies
+```bash
+git clone <your-repo-url>
+cd fieldlog-journal
 
-• Delightful
+# Install dependencies with npm
+npm install
 
-• Professional
+# (Alternatively with Bun)
+# bun install
+```
 
-The website should immediately communicate trust, simplicity and productivity.
+### 3. Configure Environment Variables
+Copy `.env.example` to `.env`:
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Windows Command Prompt (cmd)**:
+```cmd
+copy .env.example .env
+```
 
-PRODUCT OVERVIEW
+**PowerShell**:
+```powershell
+Copy-Item .env.example .env
+```
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**macOS / Linux**:
+```bash
+cp .env.example .env
+```
 
-FieldLog is a location-verified visual journaling platform that replaces traditional internship logbooks and paper signatures.
+Set your Supabase credentials in `.env`:
+```env
+# Supabase Configuration
+SUPABASE_URL="https://your-project-id.supabase.co"
+SUPABASE_PUBLISHABLE_KEY="your-anon-or-publishable-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 
-Students simply:
+# Client Vite Variables (must match SUPABASE_URL & PUBLISHABLE_KEY)
+VITE_SUPABASE_URL="https://your-project-id.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY="your-anon-or-publishable-key"
 
-Take a photo →
+# Optional: Google Maps API Key for interactive map view and geocoding
+VITE_GOOGLE_MAPS_API_KEY=""
+GOOGLE_MAPS_API_KEY=""
+```
 
-Automatically capture GPS →
+> **Note**: If `GOOGLE_MAPS_API_KEY` is not provided, geocoding automatically falls back to OpenStreetMap Nominatim reverse geocoding so coordinates still resolve into readable addresses.
 
-Automatically capture time →
-
-Write a short note →
-
-Submit
-
-Mentors later verify entries digitally instead of physically signing logbooks.
-
-The application creates a beautiful visual journey of the student's entire internship or project while making mentor verification effortless.
-
-This product should feel enjoyable rather than administrative.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-DESIGN PHILOSOPHY
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-The entire UI should use a modern Bento Box layout combined with soft Skeuomorphism.
-
-The interface must feel tactile without looking outdated.
-
-Every card should feel slightly raised.
-
-Soft shadows.
-
-Rounded corners.
-
-Beautiful spacing.
-
-Large white spaces.
-
-Very light gradients.
-
-Soft borders.
-
-Subtle depth.
-
-Gentle highlights.
-
-Minimal noise.
-
-Elegant typography.
-
-The website should never feel crowded.
-
-Every screen should breathe.
-
-Use intelligent spacing everywhere.
-
-Every section should feel like its own premium widget.
-
-Avoid flat boring rectangles.
-
-Avoid overly futuristic cyberpunk effects.
-
-Avoid glassmorphism overload.
-
-Avoid heavy neumorphism.
-
-Use tasteful skeuomorphic elements.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-VISUAL STYLE
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-The interface should feel alive through tiny delightful interactions.
-
-Every hover should slightly lift.
-
-Buttons should softly press.
-
-Cards should react naturally.
-
-Images should animate subtly.
-
-Micro-interactions should exist everywhere but remain extremely lightweight.
-
-Use smooth easing curves.
-
-Nothing should bounce aggressively.
-
-Animations should feel physical.
-
-Scrolling should feel buttery smooth.
-
-Transitions should be around 180ms–300ms.
-
-Use premium motion principles.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-LAYOUT SYSTEM
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Every page should be composed using a Bento Grid.
-
-Large cards.
-
-Medium cards.
-
-Small utility cards.
-
-Statistics.
-
-Maps.
-
-Timelines.
-
-Photos.
-
-Notifications.
-
-Progress.
-
-Everything should naturally fit into the grid.
-
-Cards should align perfectly.
-
-Consistent spacing.
-
-Perfect rhythm.
-
-Responsive at every breakpoint.
-
-No awkward empty spaces.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-COLOR SYSTEM
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Primary colors should be soft.
-
-Off-white backgrounds.
-
-Very subtle greys.
-
-Gentle blue accents.
-
-Soft emerald success colors.
-
-Warm orange notifications.
-
-Muted red warnings.
-
-Everything should remain elegant.
-
-Avoid saturated colors.
-
-Avoid rainbow gradients.
-
-Only use gradients when they genuinely improve hierarchy.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-TYPOGRAPHY
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Use premium typography hierarchy.
-
-Large confident headlines.
-
-Readable body text.
-
-Excellent spacing.
-
-Perfect line heights.
-
-Clear visual hierarchy.
-
-Font suggestions:
-
-Inter
-
-Geist
-
-SF Pro equivalent
-
-Manrope
-
-Use variable fonts if possible.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-LIGHTWEIGHT PERFORMANCE
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-This is one of the MOST IMPORTANT REQUIREMENTS.
-
-The website MUST feel unbelievably lightweight.
-
-Optimize absolutely everything.
-
-Minimize JavaScript.
-
-Avoid unnecessary libraries.
-
-Use lazy loading.
-
-Use code splitting.
-
-Tree shaking.
-
-Dynamic imports.
-
-Image optimization.
-
-Modern formats.
-
-Prefetch intelligently.
-
-Use GPU acceleration only where beneficial.
-
-Avoid layout shifts.
-
-Avoid unnecessary re-renders.
-
-Optimize React components.
-
-Memoize expensive calculations.
-
-Virtualize long lists.
-
-Only render visible content.
-
-No unnecessary API calls.
-
-Reduce bundle size aggressively.
-
-Minimize CSS.
-
-Use reusable components.
-
-Avoid duplicated logic.
-
-Animations should never drop below 60fps.
-
-Target Lighthouse scores:
-
-Performance:
-
-100
-
-Accessibility:
-
-100
-
-Best Practices:
-
-100
-
-SEO:
-
-100
-
-The website should load almost instantly even on slower laptops.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-RESPONSIVENESS
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-The website MUST be fully responsive.
-
-Do not simply scale elements.
-
-Actually redesign layouts for each breakpoint.
-
-Desktop
-
-Laptop
-
-Tablet
-
-Mobile
-
-Small mobile
-
-Everything should feel intentionally designed.
-
-The Bento layout should intelligently reorganize.
-
-No overflow.
-
-No broken grids.
-
-No clipped shadows.
-
-Perfect touch targets.
-
-Perfect spacing.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-CORE FEATURES
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-STUDENT
-
-• Dashboard
-
-• Daily submissions
-
-• Camera capture
-
-• GPS verification
-
-• Timestamp
-
-• Address detection
-
-• Timeline
-
-• Calendar
-
-• Journey map
-
-• Multiple logs per day
-
-• Notes
-
-• Time tracking
-
-• Team tagging
-
-• Portfolio
-
-• PDF export
-
-• Offline mode
-
-• Streak tracking
-
-• Productivity analytics
-
-MENTOR
-
-• Dashboard
-
-• Student overview
-
-• Team management
-
-• Verification feed
-
-• Batch approval
-
-• Comments
-
-• Nudges
-
-• Productivity Snap inbox
-
-• Geo verification
-
-• Progress charts
-
-• Attendance
-
-• Engagement analytics
-
-ADMIN
-
-• Institution management
-
-• User management
-
-• Teams
-
-• Courses
-
-• Departments
-
-• Analytics
-
-• Export center
-
-• Settings
-
-• Security
-
-• Reports
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-COLLABORATION FEATURES
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Students can:
-
-Tag teammates
-
-Create collaborative logs
-
-Share one submission among multiple people
-
-Send temporary productivity snaps
-
-Receive mentor nudges
-
-Track multiple tasks daily
-
-Track hours
-
-Organize projects
-
-Mentors can:
-
-Create teams
-
-Assign students
-
-Review groups
-
-Send reminders
-
-Approve logs
-
-Leave comments
-
-Monitor progress
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-DASHBOARDS
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Every dashboard should feel like a premium productivity workspace.
-
-Use Bento cards for:
-
-Today's progress
-
-Hours logged
-
-Weekly activity
-
-Current streak
-
-Pending approvals
-
-Recent photos
-
-Journey map
-
-Timeline
-
-Analytics
-
-Upcoming milestones
-
-Quick actions
-
-Weather (optional)
-
-Location
-
-Calendar
-
-Notifications
-
-Everything should be instantly understandable.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-MAP EXPERIENCE
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Integrate beautiful maps.
-
-Display:
-
-Visited locations
-
-Submission markers
-
-Journey paths
-
-Current location
-
-Verified workplaces
-
-Animated map pins.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-TIMELINE
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Create a visually beautiful journey timeline.
-
-Each submission becomes a card.
-
-Photo.
-
-Location.
-
-Time.
-
-Description.
-
-Verification status.
-
-Mentor comments.
-
-The timeline should feel like a visual story instead of a boring logbook.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-CAMERA EXPERIENCE
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-The camera interface should feel modern.
-
-Simple.
-
-Fast.
-
-One-handed.
-
-Large capture button.
-
-Beautiful preview.
-
-Auto GPS.
-
-Auto timestamp.
-
-Auto address.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-USER EXPERIENCE
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Minimize friction.
-
-Every action should require as few taps as possible.
-
-Students should be able to complete a daily log in under 30 seconds.
-
-Mentors should verify dozens of submissions in under five minutes.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-MICRO INTERACTIONS
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Use subtle delightful interactions:
-
-Soft button presses
-
-Card lift
-
-Hover glow
-
-Loading skeletons
-
-Animated counters
-
-Progress rings
-
-Map marker animations
-
-Smooth page transitions
-
-Elegant empty states
-
-Friendly success animations
-
-Gentle notification toasts
-
-Beautiful loading experiences
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-ACCESSIBILITY
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Keyboard navigation
-
-Screen reader friendly
-
-High contrast support
-
-Proper ARIA labels
-
-Focus indicators
-
-Reduced motion support
-
-Large touch targets
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-TECH STACK
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Frontend
-
-• Next.js (App Router)
-
-• TypeScript
-
-• Tailwind CSS
-
-• Framer Motion (only where necessary)
-
-• React Hook Form
-
-• TanStack Query
-
-• PWA Support
-
-Backend
-
-• Supabase
-
-• PostgreSQL
-
-• Supabase Auth
-
-• Supabase Storage
-
-• Edge Functions
-
-Maps
-
-• Mapbox (preferred)
-
-Camera
-
-• HTML5 Camera API
-
-Location
-
-• HTML5 Geolocation API
-
-PDF
-
-• React PDF
-
-Offline
-
-• Service Workers
-
-• IndexedDB
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-CODE QUALITY
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Write production-grade code.
-
-Component-driven architecture.
-
-Reusable UI system.
-
-Consistent design tokens.
-
-Maintainable folder structure.
-
-Scalable architecture.
-
-Strict TypeScript.
-
-Proper error handling.
-
-Loading states.
-
-Empty states.
-
-Skeleton screens.
-
-Form validation.
-
-Optimistic UI.
-
-Security best practices.
-
-Clean APIs.
-
-Reusable hooks.
-
-No duplicated logic.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-FINAL OBJECTIVE
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Do not build a generic internship logbook.
-
-Build an experience that students genuinely enjoy opening every day.
-
-The product should feel premium, effortless, visually delightful, incredibly fast, and intelligently designed.
-
-Every pixel should have purpose.
-
-Every animation should improve usability.
-
-Every interaction should feel satisfying.
-
-Every page should look polished enough to compete with the best modern SaaS products.
-
-Prioritize clarity over decoration.
-
-Prioritize speed over unnecessary effects.
-
-Prioritize user experience over complexity.
-
-The final result should be lightweight, elegant, scalable, responsive, accessible, production-ready, and memorable while showcasing an exceptional Bento Box layout with subtle Skeuomorphic design principles that create a clean, fun, modern, and delightful user experience.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/cf2c9089-b2e7-4864-abd4-fe2db5ce3a97).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+### 4. Run Development Server
+```bash
 npm run dev
 ```
+
+Open your browser at `http://localhost:8080` (or the port indicated in terminal).
+
+---
+
+## Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Starts the local development server with HMR |
+| `npm run build` | Builds the production server and client bundle |
+| `npm run preview` | Runs the production build locally |
+| `npm run lint` | Runs ESLint to check code quality |
+| `npm run format` | Formats the codebase with Prettier |
+
+---
+
+## Cloud Deployment Guide
+
+TanStack Start is powered by Nitro and can be deployed anywhere JavaScript runs.
+
+### Option 1: Vercel
+
+1. Push your repository to GitHub / GitLab / Bitbucket.
+2. Import the repository in [Vercel](https://vercel.com).
+3. Set the **Framework Preset** to `Other` or `Vite`.
+4. Configure the Environment Variables in Vercel Project Settings:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - `SUPABASE_URL`
+   - `SUPABASE_PUBLISHABLE_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `VITE_GOOGLE_MAPS_API_KEY` (optional)
+5. Click **Deploy**. Vercel will automatically run `npm run build` and provision the serverless endpoints.
+
+---
+
+### Option 2: Netlify
+
+1. Connect your repository in [Netlify](https://netlify.com).
+2. Set Build Command to `npm run build` and Publish Directory to `.output/public` (or dist).
+3. Set your environment variables in Netlify Site Configuration.
+4. Deploy site.
+
+---
+
+### Option 3: Docker / Node.js Server (VPS / AWS / Render / Railway)
+
+You can run the production Nitro output using standard Node.js:
+
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/.output ./.output
+EXPOSE 3000
+CMD ["node", ".output/server/index.mjs"]
+```
+
+Build and run:
+```bash
+docker build -t docko-app .
+docker run -p 3000:3000 --env-file .env docko-app
+```
+
+---
+
+## Supabase Schema & Setup
+
+Docko expects standard Supabase tables for profiles, teams, and entries:
+- `profiles`: user metadata (name, role `student | mentor | admin`, institution)
+- `teams`: placement groups and assigned mentors
+- `entries`: field log items (title, content, photo URL, latitude, longitude, hours, status `pending | verified | changes_requested`)
+- `entry_skills`: tagged skills per entry
+
+RLS (Row Level Security) policies ensure students manage only their entries, mentors review assigned cohort entries, and institution admins oversee their domains.
+
+---
+
+## License
+
+MIT

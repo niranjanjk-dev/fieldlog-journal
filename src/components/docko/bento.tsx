@@ -20,7 +20,7 @@ export function BentoCard({
   return (
     <Tag
       className={cn(
-        "relative overflow-hidden rounded-3xl p-5 sm:p-6",
+        "relative overflow-hidden rounded-3xl p-3.5 sm:p-5 lg:p-6",
         tone === "sunken" ? "sunken border border-border" : "raised",
         tone === "primary" && "soft-veil",
         interactive && "lift cursor-pointer",
@@ -34,7 +34,7 @@ export function BentoCard({
 
 export function BentoGrid({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6", className)}>
+    <div className={cn("grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-6", className)}>
       {children}
     </div>
   );
@@ -76,22 +76,22 @@ export function StatTile({
   className?: string;
 }) {
   return (
-    <BentoCard className={cn("flex flex-col justify-between", className)}>
+    <BentoCard className={cn("flex flex-col justify-between min-h-[100px]", className)}>
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        <span className="text-[11px] sm:text-xs font-medium tracking-wide text-muted-foreground uppercase leading-tight">
           {label}
         </span>
         {icon ? (
-          <span className="grid size-8 place-items-center rounded-full bg-primary-soft text-primary">
+          <span className="grid size-7 sm:size-8 place-items-center rounded-full bg-primary-soft text-primary shrink-0">
             {icon}
           </span>
         ) : null}
       </div>
-      <div className="mt-6 flex items-baseline gap-1">
-        <span className="text-3xl font-semibold tabular-nums">{value}</span>
-        {unit ? <span className="text-sm text-muted-foreground">{unit}</span> : null}
+      <div className="mt-3 sm:mt-6 flex items-baseline gap-1">
+        <span className="text-2xl sm:text-3xl font-semibold tabular-nums">{value}</span>
+        {unit ? <span className="text-xs sm:text-sm text-muted-foreground">{unit}</span> : null}
       </div>
-      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-[11px] sm:text-xs text-muted-foreground leading-tight">{hint}</p> : null}
     </BentoCard>
   );
 }
@@ -117,11 +117,13 @@ export function ProgressRing({
   size = 96,
   label,
   sublabel,
+  textSize = "text-lg",
 }: {
   value: number;
   size?: number;
   label?: string;
   sublabel?: string;
+  textSize?: string;
 }) {
   const clamped = Math.max(0, Math.min(100, value));
   const stroke = 10;
@@ -151,12 +153,14 @@ export function ProgressRing({
           style={{ transition: "stroke-dashoffset 300ms var(--ease-soft)" }}
         />
       </svg>
-      <div className="absolute text-center">
-        <div className="text-lg font-semibold tabular-nums">
-          {label ?? `${Math.round(clamped)}%`}
+      {label !== "" ? (
+        <div className="absolute text-center">
+          <div className={`${textSize} font-semibold tabular-nums`}>
+            {label ?? `${Math.round(clamped)}%`}
+          </div>
+          {sublabel ? <div className="text-[11px] text-muted-foreground">{sublabel}</div> : null}
         </div>
-        {sublabel ? <div className="text-[11px] text-muted-foreground">{sublabel}</div> : null}
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -164,18 +168,18 @@ export function ProgressRing({
 export function MiniBars({ data }: { data: { label: string; logs: number }[] }) {
   const max = Math.max(1, ...data.map((d) => d.logs));
   return (
-    <div className="flex h-24 items-end gap-2">
+    <div className="flex h-20 sm:h-24 items-end gap-1.5 sm:gap-2">
       {data.map((d, i) => (
-        <div key={`${d.label}-${i}`} className="flex flex-1 flex-col items-center gap-2">
+        <div key={`${d.label}-${i}`} className="flex flex-1 flex-col items-center gap-1.5 sm:gap-2">
           <div
-            className="w-full rounded-t-lg bg-primary/85"
+            className="w-full rounded-t-md sm:rounded-t-lg bg-primary/85"
             style={{
               height: `${Math.max(6, (d.logs / max) * 100)}%`,
               transition: "height 300ms var(--ease-soft)",
             }}
             title={`${d.logs} logs`}
           />
-          <span className="text-[11px] text-muted-foreground">{d.label}</span>
+          <span className="text-[10px] sm:text-[11px] text-muted-foreground">{d.label}</span>
         </div>
       ))}
     </div>

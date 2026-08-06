@@ -11,9 +11,9 @@ import { reviewQueueQuery, teamsQuery } from "@/lib/queries";
 export const Route = createFileRoute("/_authenticated/mentor/")({
   head: () => ({
     meta: [
-      { title: "Mentor overview · Docko" },
-      { name: "description", content: "Team activity, pending verifications and logged hours." },
-      { property: "og:title", content: "Mentor overview · Docko" },
+      { title: "Mentor overview · docko." },
+      { name: "description", content: "Review queue, team progress, and active student journals." },
+      { property: "og:title", content: "Mentor overview · docko." },
       { property: "og:description", content: "Team activity and pending verifications." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -40,29 +40,71 @@ function MentorOverview() {
         </Button>
       }
     >
-      <BentoGrid>
+      {/* ── Mobile Stats Layout (phone only) ───────────────────────── */}
+      <div className="sm:hidden space-y-3">
+        {/* Horizontal stat strip */}
+        <div className="raised rounded-3xl p-4 flex items-stretch divide-x divide-border/60 overflow-hidden">
+          <div className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 py-2 min-w-0">
+            <span className="flex items-center gap-1 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+              <CheckCircle2 className="size-3 text-primary" /> Queue
+            </span>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-xl font-bold tabular-nums text-foreground">{pending.length}</span>
+              <span className="text-[11px] text-muted-foreground">logs</span>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 py-2 min-w-0">
+            <span className="flex items-center gap-1 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+              <Clock className="size-3 text-primary" /> Hours
+            </span>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-xl font-bold tabular-nums text-foreground">{sumHours(all)}</span>
+              <span className="text-[11px] text-muted-foreground">h</span>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 py-2 min-w-0">
+            <span className="flex items-center gap-1 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+              <Users className="size-3 text-primary" /> Students
+            </span>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-xl font-bold tabular-nums text-foreground">{students.size}</span>
+              <span className="text-[11px] text-muted-foreground">active</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Activity chart compact */}
+        <div className="raised rounded-3xl p-4">
+          <p className="text-xs font-semibold text-foreground mb-0.5">Team activity</p>
+          <p className="text-[11px] text-muted-foreground mb-3">Logs per day across your students</p>
+          <MiniBars data={weeklyActivity(all)} />
+        </div>
+      </div>
+
+      {/* ── Desktop Stats Layout (sm and above) ─────────────────────── */}
+      <BentoGrid className="hidden sm:grid">
         <StatTile
-          className="lg:col-span-2"
+          className="col-span-1 lg:col-span-2"
           label="Awaiting you"
           value={pending.length}
           hint="Logs needing verification"
           icon={<CheckCircle2 className="size-4" />}
         />
         <StatTile
-          className="lg:col-span-2"
-          label="Hours this cohort"
+          className="col-span-1 lg:col-span-2"
+          label="Total team hours"
           value={sumHours(all)}
           unit="h"
           icon={<Clock className="size-4" />}
         />
         <StatTile
-          className="lg:col-span-2"
+          className="col-span-2 md:col-span-1 lg:col-span-2"
           label="Active students"
           value={students.size}
           hint={`${teams?.length ?? 0} teams`}
           icon={<Users className="size-4" />}
         />
-        <BentoCard className="lg:col-span-6">
+        <BentoCard className="col-span-2 lg:col-span-6">
           <SectionTitle title="Team activity" hint="Logs captured per day across your students" />
           <MiniBars data={weeklyActivity(all)} />
         </BentoCard>

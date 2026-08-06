@@ -1,6 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DEV_QUEUE_ENTRIES,
+  DEV_STUDENT_ENTRIES,
+  getDevMe,
+  isDevModeActive,
+} from "./dev-mode";
 import type { AppRole, Entry } from "./docko";
 
 export type Me = {
@@ -17,40 +23,59 @@ export type Me = {
 
 export const meQuery = queryOptions({
   queryKey: ["me"],
-  staleTime: 60_000,
+  staleTime: 5_000,
   queryFn: async (): Promise<Me | null> => {
-    const { data: auth } = await supabase.auth.getUser();
-    const user = auth.user;
-    if (!user) return null;
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const user = auth.user;
+      if (user) {
+        const [{ data: profile }, { data: roles }] = await Promise.all([
+          supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
+          supabase.from("user_roles").select("role").eq("user_id", user.id),
+        ]);
 
-    const [{ data: profile }, { data: roles }] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
-      supabase.from("user_roles").select("role").eq("user_id", user.id),
-    ]);
+        return {
+          id: user.id,
+          email: user.email ?? null,
+          fullName: profile?.full_name ?? user.email?.split("@")[0] ?? "Member",
+          avatarUrl: profile?.avatar_url ?? null,
+          headline: profile?.headline ?? null,
+          institution: profile?.institution ?? null,
+          course: profile?.course ?? null,
+          department: profile?.department ?? null,
+          roles: ((roles ?? []).map((r) => r.role) as AppRole[]) ?? [],
+        };
+      }
+    } catch {
+      // Fall through to dev mode fallback
+    }
 
-    return {
-      id: user.id,
-      email: user.email ?? null,
-      fullName: profile?.full_name ?? user.email?.split("@")[0] ?? "Member",
-      avatarUrl: profile?.avatar_url ?? null,
-      headline: profile?.headline ?? null,
-      institution: profile?.institution ?? null,
-      course: profile?.course ?? null,
-      department: profile?.department ?? null,
-      roles: ((roles ?? []).map((r) => r.role) as AppRole[]) ?? [],
-    };
+    if (isDevModeActive()) {
+      return getDevMe();
+    }
+    return null;
   },
 });
 
 export const myEntriesQuery = queryOptions({
   queryKey: ["entries", "mine"],
   queryFn: async (): Promise<Entry[]> => {
-    const { data, error } = await supabase
-      .from("entries")
-      .select("*")
-      .order("captured_at", { ascending: false });
-    if (error) throw error;
-    return (data ?? []) as Entry[];
+    try {
+      const { data, error } = await supabase
+        .from("entries")
+        .select("*")
+        .order("captured_at", { ascending: false });
+      if (!error && data && data.length > 0) {
+        return data as Entry[];
+      }
+    } catch {
+      // Fall through
+    }
+
+    if (isDevModeActive()) {
+      return DEV_STUDENT_ENTRIES;
+    }
+    return [];
   },
 });
 
@@ -61,13 +86,23 @@ export type QueueEntry = Entry & {
 export const reviewQueueQuery = queryOptions({
   queryKey: ["entries", "queue"],
   queryFn: async (): Promise<QueueEntry[]> => {
-    const { data, error } = await supabase
-      .from("entries")
-      .select("*, student:profiles!entries_student_profile_fkey (full_name, avatar_url, course)")
-      .order("captured_at", { ascending: false })
-      .limit(200);
-    if (error) throw error;
-    return (data ?? []) as unknown as QueueEntry[];
+    try {
+      const { data, error } = await supabase
+        .from("entries")
+        .select("*, student:profiles!entries_student_profile_fkey (full_name, avatar_url, course)")
+        .order("captured_at", { ascending: false })
+        .limit(200);
+      if (!error && data && data.length > 0) {
+        return data as unknown as QueueEntry[];
+      }
+    } catch {
+      // Fall through
+    }
+
+    if (isDevModeActive()) {
+      return DEV_QUEUE_ENTRIES;
+    }
+    return [];
   },
 });
 

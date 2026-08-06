@@ -16,9 +16,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export const Route = createFileRoute("/_authenticated/mentor/teams")({
   head: () => ({
     meta: [
-      { title: "Teams · Docko" },
-      { name: "description", content: "Group students into placement teams and assign mentors." },
-      { property: "og:title", content: "Teams · Docko" },
+      { title: "Teams · docko." },
+      { name: "description", content: "Team rosters, student progress, and verification metrics." },
+      { property: "og:title", content: "Teams · docko." },
       { property: "og:description", content: "Group students into placement teams." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -73,7 +73,7 @@ function TeamsPage() {
   return (
     <AppShell title="Teams" subtitle="Placement groups you look after">
       <BentoCard className="mb-6">
-        <SectionTitle title="New team" hint="Name it after the placement or cohort." />
+        <SectionTitle title="New team" hint="Name it after the placement, site, or project group." />
         <form
           className="flex gap-2"
           onSubmit={(event) => {
