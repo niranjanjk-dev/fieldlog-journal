@@ -130,10 +130,22 @@ TanStack Start is powered by Nitro and can be deployed anywhere JavaScript runs.
 
 ### Option 2: Netlify
 
+Docko is pre-configured with `@netlify/vite-plugin-tanstack-start` and `netlify.toml`.
+
 1. Connect your repository in [Netlify](https://netlify.com).
-2. Set Build Command to `npm run build` and Publish Directory to `.output/public` (or dist).
-3. Set your environment variables in Netlify Site Configuration.
-4. Deploy site.
+2. Netlify will automatically detect the settings from `netlify.toml`:
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist/client`
+   - **Functions**: Netlify SSR server function (`.netlify/v1/functions/server.mjs`)
+3. Add your environment variables in Netlify Site Settings (**Site configuration > Environment variables**):
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - `SUPABASE_URL`
+   - `SUPABASE_PUBLISHABLE_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `VITE_GOOGLE_MAPS_API_KEY` (optional)
+   - `GOOGLE_MAPS_API_KEY` (optional)
+4. Click **Deploy site**. Netlify will build the client assets and deploy the SSR serverless functions automatically.
 
 ---
 
