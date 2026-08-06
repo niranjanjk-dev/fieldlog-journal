@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 
 import type { Entry } from "@/lib/docko";
 
+/// <reference types="google.maps" />
+
 type MapsWindow = typeof window & {
-  google?: typeof google;
+  google?: typeof globalThis.google;
   __dockoMapsReady?: boolean;
   __dockoMapsInit?: () => void;
 };
