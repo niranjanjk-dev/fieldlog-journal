@@ -1,4 +1,4 @@
-# FieldLog — location-verified visual journaling
+# Docko — location-verified visual journaling
 
 A premium, bento-grid SaaS for internship logging: students capture photo + GPS + time, mentors verify digitally, admins manage the institution.
 
