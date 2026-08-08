@@ -101,13 +101,13 @@ export function StatusChip({ status, className }: { status: EntryStatus; classNa
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
+        "inline-flex items-center gap-1.5 rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-medium whitespace-nowrap shrink-0 leading-none",
         meta.chip,
         className,
       )}
     >
-      <span className={cn("size-1.5 rounded-full", meta.dot)} aria-hidden />
-      {meta.label}
+      <span className={cn("size-1.5 rounded-full shrink-0", meta.dot)} aria-hidden />
+      <span>{meta.label}</span>
     </span>
   );
 }
@@ -165,23 +165,54 @@ export function ProgressRing({
   );
 }
 
-export function MiniBars({ data }: { data: { label: string; logs: number }[] }) {
-  const max = Math.max(1, ...data.map((d) => d.logs));
+export function MiniBars({
+  data,
+}: {
+  data: { label: string; fullLabel?: string; logs: number; hours?: number; isToday?: boolean }[];
+}) {
+  const maxHours = Math.max(6, ...data.map((d) => Number(d.hours ?? 0)));
   return (
-    <div className="flex h-20 sm:h-24 items-end gap-1.5 sm:gap-2">
-      {data.map((d, i) => (
-        <div key={`${d.label}-${i}`} className="flex flex-1 flex-col items-center gap-1.5 sm:gap-2">
-          <div
-            className="w-full rounded-t-md sm:rounded-t-lg bg-primary/85"
-            style={{
-              height: `${Math.max(6, (d.logs / max) * 100)}%`,
-              transition: "height 300ms var(--ease-soft)",
-            }}
-            title={`${d.logs} logs`}
-          />
-          <span className="text-[10px] sm:text-[11px] text-muted-foreground">{d.label}</span>
-        </div>
-      ))}
+    <div className="flex h-24 sm:h-28 items-end gap-2 sm:gap-3 pt-2">
+      {data.map((d, i) => {
+        const hours = Number(d.hours ?? 0);
+        const heightPct = hours > 0 ? Math.max(14, Math.min(100, Math.round((hours / maxHours) * 100))) : 0;
+        return (
+          <div key={`${d.label}-${i}`} className="group/bar relative flex flex-1 h-full flex-col items-center justify-end">
+            {/* Background track & active baseline-aligned bar */}
+            <div className="relative flex h-[68px] sm:h-[76px] w-full items-end justify-center rounded-xl bg-muted/25 p-1">
+              {hours > 0 ? (
+                <div
+                  className={cn(
+                    "w-full rounded-lg transition-all duration-300",
+                    d.isToday ? "bg-primary shadow-xs" : "bg-primary/80 group-hover/bar:bg-primary",
+                  )}
+                  style={{ height: `${heightPct}%` }}
+                />
+              ) : (
+                <div className="h-1.5 w-full rounded-full bg-muted/40" />
+              )}
+            </div>
+
+            {/* Day Label with Today dot indicator */}
+            <div className="mt-1.5 flex flex-col items-center">
+              <span
+                className={cn(
+                  "text-[10px] sm:text-[11px] font-medium leading-none",
+                  d.isToday ? "font-bold text-primary" : "text-muted-foreground",
+                )}
+              >
+                {d.label}
+              </span>
+              {d.isToday ? <span className="mt-0.5 size-1 rounded-full bg-primary" /> : null}
+            </div>
+
+            {/* Hover Tooltip - ONLY appears for the specific hovered bar */}
+            <div className="pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 rounded-md bg-foreground px-2 py-0.5 text-[10px] font-medium text-background opacity-0 transition-opacity duration-150 group-hover/bar:opacity-100 whitespace-nowrap shadow-md z-30 pointer-events-none">
+              {d.fullLabel ?? d.label}: {hours}h{d.logs > 0 ? ` · ${d.logs} ${d.logs === 1 ? "log" : "logs"}` : ""}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

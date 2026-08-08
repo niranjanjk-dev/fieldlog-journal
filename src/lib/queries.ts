@@ -60,22 +60,37 @@ export const meQuery = queryOptions({
 export const myEntriesQuery = queryOptions({
   queryKey: ["entries", "mine"],
   queryFn: async (): Promise<Entry[]> => {
+    const localCustom: Entry[] = [];
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("docko_custom_entries");
+        if (stored) localCustom.push(...JSON.parse(stored));
+      } catch {
+        // ignore
+      }
+    }
+
     try {
       const { data, error } = await supabase
         .from("entries")
         .select("*")
         .order("captured_at", { ascending: false });
       if (!error && data && data.length > 0) {
-        return data as Entry[];
+        // Merge Supabase entries with local custom entries, avoiding duplicates
+        const ids = new Set(data.map((d) => d.id));
+        const extra = localCustom.filter((e) => !ids.has(e.id));
+        return [...extra, ...(data as Entry[])];
       }
     } catch {
       // Fall through
     }
 
     if (isDevModeActive()) {
-      return DEV_STUDENT_ENTRIES;
+      const ids = new Set(DEV_STUDENT_ENTRIES.map((d) => d.id));
+      const extra = localCustom.filter((e) => !ids.has(e.id));
+      return [...extra, ...DEV_STUDENT_ENTRIES];
     }
-    return [];
+    return localCustom;
   },
 });
 
@@ -162,6 +177,14 @@ export function commentsQuery(entryId: string) {
   });
 }
 
+const SAMPLE_PHOTO_MAP: Record<string, string> = {
+  "samples/actuator-test.jpg": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80",
+  "samples/emg-graph.jpg": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format&fit=crop&q=80",
+  "samples/carbon-socket.jpg": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&auto=format&fit=crop&q=80",
+  "samples/battery-test.jpg": "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&auto=format&fit=crop&q=80",
+  "samples/circuit-board.jpg": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
+};
+
 /** Signed URLs for private log photos, cached per path set. */
 export function photoUrlsQuery(paths: string[]) {
   const unique = [...new Set(paths.filter(Boolean))].sort();
@@ -171,14 +194,43 @@ export function photoUrlsQuery(paths: string[]) {
     staleTime: 45 * 60 * 1000,
     queryFn: async (): Promise<Record<string, string>> => {
       if (unique.length === 0) return {};
-      const { data, error } = await supabase.storage
-        .from("entry-photos")
-        .createSignedUrls(unique, 60 * 60);
-      if (error) throw error;
       const map: Record<string, string> = {};
-      for (const item of data ?? []) {
-        if (item.path && item.signedUrl) map[item.path] = item.signedUrl;
+
+      // 1. Check local photo cache first (for uploaded user photos)
+      if (typeof window !== "undefined") {
+        for (const p of unique) {
+          try {
+            const cached = localStorage.getItem(`docko_photo_${p}`);
+            if (cached) map[p] = cached;
+          } catch {
+            // ignore
+          }
+        }
       }
+
+      // 2. Check sample photos
+      for (const p of unique) {
+        if (!map[p] && SAMPLE_PHOTO_MAP[p]) {
+          map[p] = SAMPLE_PHOTO_MAP[p];
+        }
+      }
+
+      const nonCachedPaths = unique.filter((p) => !map[p]);
+      if (nonCachedPaths.length > 0) {
+        try {
+          const { data, error } = await supabase.storage
+            .from("entry-photos")
+            .createSignedUrls(nonCachedPaths, 60 * 60);
+          if (!error && data) {
+            for (const item of data) {
+              if (item.path && item.signedUrl) map[item.path] = item.signedUrl;
+            }
+          }
+        } catch {
+          // Ignore storage fetch error in dev mode
+        }
+      }
+
       return map;
     },
   });

@@ -10,9 +10,10 @@ import { EntryCard } from "@/components/docko/entry-card";
 import { Button } from "@/components/ui/button";
 import { reviewEntry, sendNudge } from "@/lib/entries";
 import type { EntryStatus } from "@/lib/docko";
-import { photoUrlsQuery, reviewQueueQuery } from "@/lib/queries";
+import { photoUrlsQuery, reviewQueueQuery, meQuery } from "@/lib/queries";
 import { saveApprovedWorkspace } from "@/lib/workspace-matcher";
 import { cn } from "@/lib/utils";
+import { UserCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/mentor/verify")({
   head: () => ({
@@ -36,10 +37,19 @@ const tabs: { key: EntryStatus; label: string }[] = [
 
 function VerifyPage() {
   const queryClient = useQueryClient();
+  const { data: me } = useQuery(meQuery);
   const { data: queue, isLoading } = useQuery(reviewQueueQuery);
   const [tab, setTab] = useState<EntryStatus>("pending");
+  const [assignedOnly, setAssignedOnly] = useState<boolean>(false);
 
-  const visible = (queue ?? []).filter((entry) => entry.status === tab);
+  const allVisible = (queue ?? []).filter((entry) => entry.status === tab);
+  const visible = assignedOnly
+    ? allVisible.filter((entry) => {
+        if (!entry.assigned_mentor_ids || entry.assigned_mentor_ids.length === 0) return true;
+        return me?.id ? entry.assigned_mentor_ids.includes(me.id) : true;
+      })
+    : allVisible;
+
   const { data: photos } = useQuery(
     photoUrlsQuery(
       visible.slice(0, 30).map((entry) => entry.photo_path).filter((p): p is string => Boolean(p)),
@@ -87,21 +97,52 @@ function VerifyPage() {
 
   return (
     <AppShell title="Verify" subtitle="One review queue for all your assigned students">
-      <div className="mb-6 flex flex-wrap gap-2">
-        {tabs.map((item) => (
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setTab(item.key)}
+              className={cn(
+                "press rounded-2xl border px-3.5 py-1.5 text-sm font-medium",
+                tab === item.key
+                  ? "border-primary bg-primary-soft text-primary"
+                  : "border-border hover:bg-accent",
+              )}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Assigned filter toggle */}
+        <div className="flex items-center gap-1.5 bg-muted/60 p-1 rounded-2xl">
           <button
-            key={item.key}
-            onClick={() => setTab(item.key)}
+            type="button"
+            onClick={() => setAssignedOnly(false)}
             className={cn(
-              "press rounded-2xl border px-3.5 py-1.5 text-sm font-medium",
-              tab === item.key
-                ? "border-primary bg-primary-soft text-primary"
-                : "border-border hover:bg-accent",
+              "px-3 py-1 rounded-xl text-xs font-semibold transition-all",
+              !assignedOnly
+                ? "bg-background text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
-            {item.label}
+            All Queue ({allVisible.length})
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={() => setAssignedOnly(true)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold transition-all",
+              assignedOnly
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <UserCheck className="size-3.5" />
+            <span>Assigned to Me</span>
+          </button>
+        </div>
       </div>
 
       {isLoading ? (

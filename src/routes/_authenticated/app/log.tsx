@@ -3,11 +3,15 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Building2,
   Camera,
+  Check,
   CheckCircle2,
   Crosshair,
   Loader2,
   MapPin,
+  ShieldCheck,
   Sparkles,
+  UserCheck,
+  Users,
   WifiOff,
   X,
 } from "lucide-react";
@@ -47,7 +51,52 @@ export const Route = createFileRoute("/_authenticated/app/log")({
   component: NewLogPage,
 });
 
-const quickHours = [0.5, 1, 2, 4, 8];
+const quickHours = [0.5, 1, 1.5, 2, 2.5, 3];
+const MAX_LOG_HOURS = 3;
+
+export interface FieldMentor {
+  id: string;
+  name: string;
+  role: string;
+  department: string;
+  avatarLetter: string;
+  email: string;
+}
+
+export const AVAILABLE_MENTORS: FieldMentor[] = [
+  {
+    id: "dev-mentor-elena",
+    name: "Dr. Elena Vance",
+    role: "Primary Faculty Lead",
+    department: "Biomechanics & Autonomous Systems",
+    avatarLetter: "E",
+    email: "dr.vance@stanford.edu",
+  },
+  {
+    id: "dev-mentor-marcus",
+    name: "Marcus Sterling",
+    role: "On-Site Field Supervisor",
+    department: "Field Safety & Site Operations",
+    avatarLetter: "M",
+    email: "marcus.sterling@contractors.org",
+  },
+  {
+    id: "dev-mentor-williams",
+    name: "Prof. H. Williams",
+    role: "Geotechnical & Survey Lead",
+    department: "Civil & Environmental Engineering",
+    avatarLetter: "W",
+    email: "h.williams@metropolitan.edu",
+  },
+  {
+    id: "dev-admin-marcus",
+    name: "Dean Marcus Holloway",
+    role: "Academic Accreditation Dean",
+    department: "Office of Academic Affairs",
+    avatarLetter: "D",
+    email: "dean.holloway@stanford.edu",
+  },
+];
 
 type OfflineDraft = {
   id: string;
@@ -55,6 +104,8 @@ type OfflineDraft = {
   note: string;
   hours: number;
   teamId: string | null;
+  assignedMentorIds?: string[] | null;
+  assignedMentors?: string[] | null;
   latitude: number | null;
   longitude: number | null;
   address: string | null;
@@ -102,7 +153,7 @@ function NewLogPage() {
 
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
-  const [hours, setHours] = useState(1);
+  const [hours, setHours] = useState(2);
   const [teamId, setTeamId] = useState<string | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -111,10 +162,33 @@ function NewLogPage() {
   const [locating, setLocating] = useState(false);
   const [matchedWorkspace, setMatchedWorkspace] = useState<WorkspaceLocation | null>(null);
   const [offlineDrafts, setOfflineDrafts] = useState<OfflineDraft[]>([]);
+  const [selectedMentorIds, setSelectedMentorIds] = useState<string[]>([
+    "dev-mentor-elena",
+    "dev-mentor-marcus",
+  ]);
 
   useEffect(() => {
     setOfflineDrafts(getLocalDrafts());
   }, []);
+
+  function toggleMentor(id: string) {
+    setSelectedMentorIds((prev) =>
+      prev.includes(id) ? (prev.length > 1 ? prev.filter((m) => m !== id) : prev) : [...prev, id],
+    );
+  }
+
+  function selectAllMentors() {
+    setSelectedMentorIds(AVAILABLE_MENTORS.map((m) => m.id));
+  }
+
+  function selectSingleMentor(id: string) {
+    setSelectedMentorIds([id]);
+  }
+
+  const selectedMentorsList = AVAILABLE_MENTORS.filter((m) =>
+    selectedMentorIds.includes(m.id),
+  );
+  const selectedMentorNames = selectedMentorsList.map((m) => m.name);
 
   const myTeams = (teams ?? []).filter((team) =>
     (team.team_members as { student_id: string }[] | null)?.some(
@@ -141,9 +215,28 @@ function NewLogPage() {
       setPreview(null);
       return;
     }
-    const url = URL.createObjectURL(photo);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
+    let isMounted = true;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (isMounted && typeof e.target?.result === "string") {
+        setPreview(e.target.result);
+      }
+    };
+    reader.onerror = () => {
+      if (isMounted) {
+        // Fallback to object URL if FileReader fails
+        try {
+          const url = URL.createObjectURL(photo);
+          setPreview(url);
+        } catch {
+          setPreview(null);
+        }
+      }
+    };
+    reader.readAsDataURL(photo);
+    return () => {
+      isMounted = false;
+    };
   }, [photo]);
 
   // Check workspace matching whenever coordinates update
@@ -213,6 +306,8 @@ function NewLogPage() {
           note: note.trim(),
           hours,
           teamId,
+          assignedMentorIds: selectedMentorIds,
+          assignedMentors: selectedMentorNames,
           latitude: coords?.lat ?? null,
           longitude: coords?.lng ?? null,
           address: entryAddress,
@@ -228,6 +323,8 @@ function NewLogPage() {
         note: note.trim(),
         hours,
         teamId,
+        assignedMentorIds: selectedMentorIds,
+        assignedMentors: selectedMentorNames,
         latitude: coords?.lat ?? null,
         longitude: coords?.lng ?? null,
         address: entryAddress,
@@ -240,7 +337,8 @@ function NewLogPage() {
         toast.success("No connection: Log saved to offline drafts on your device.");
       } else {
         queryClient.invalidateQueries({ queryKey: ["entries"] });
-        toast.success("Log saved — sent to your mentor for review.");
+        const mentorList = selectedMentorNames.length > 0 ? selectedMentorNames.join(", ") : "your mentors";
+        toast.success(`Log saved — routed to ${mentorList} for sign-off.`);
         navigate({ to: "/app/timeline" });
       }
     },
@@ -252,6 +350,8 @@ function NewLogPage() {
         note: note.trim(),
         hours,
         teamId,
+        assignedMentorIds: selectedMentorIds,
+        assignedMentors: selectedMentorNames,
         latitude: coords?.lat ?? null,
         longitude: coords?.lng ?? null,
         address,
@@ -271,6 +371,8 @@ function NewLogPage() {
         note: draft.note,
         hours: draft.hours,
         teamId: draft.teamId,
+        assignedMentorIds: draft.assignedMentorIds || selectedMentorIds,
+        assignedMentors: draft.assignedMentors || selectedMentorNames,
         latitude: draft.latitude,
         longitude: draft.longitude,
         address: draft.address,
@@ -310,7 +412,7 @@ function NewLogPage() {
       ) : null}
 
       <form
-        className="flex flex-col lg:grid lg:gap-4 lg:grid-cols-3 w-full min-w-0"
+        className="grid gap-5 grid-cols-1 lg:grid-cols-3 lg:items-stretch w-full min-w-0"
         onSubmit={(event) => {
           event.preventDefault();
           if (!title.trim()) {
@@ -320,9 +422,10 @@ function NewLogPage() {
           save.mutate();
         }}
       >
-        <BentoCard className="order-2 lg:order-none lg:col-span-2 min-w-0 w-full mb-4 lg:mb-0 shrink-0">
-          <SectionTitle title="What did you do?" hint="A short title and notes about the task." />
-          <div className="space-y-4">
+        {/* Main Details Card (Left / Order 2 on mobile, matches height of right column in desktop mode) */}
+        <BentoCard className="order-2 lg:order-1 lg:col-span-2 min-w-0 w-full p-4 sm:p-6 flex flex-col justify-between h-auto lg:h-full space-y-4">
+          <div className="space-y-4 pt-1 flex-1">
+            <SectionTitle title="What did you do?" hint="A short title and notes about the task." />
             <div className="space-y-1.5">
               <Label htmlFor="title">Title</Label>
               <Input
@@ -342,12 +445,15 @@ function NewLogPage() {
                 onChange={(event) => setNote(event.target.value)}
                 rows={4}
                 placeholder="Observations, tasks completed, method, mentors/peers worked with…"
-                className="rounded-2xl"
+                className="rounded-2xl resize-y min-h-[90px] lg:min-h-[110px]"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Hours</Label>
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center justify-between">
+                <Label>Hours (Max 3h per log)</Label>
+                <span className="text-[11px] text-muted-foreground">Recommended: 2h block</span>
+              </div>
               <div className="flex flex-wrap items-center gap-2">
                 {quickHours.map((value) => (
                   <button
@@ -355,30 +461,44 @@ function NewLogPage() {
                     type="button"
                     onClick={() => setHours(value)}
                     className={cn(
-                      "press rounded-2xl border px-3.5 py-2 text-sm font-medium",
+                      "press rounded-2xl border px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium",
                       hours === value
-                        ? "border-primary bg-primary-soft text-primary"
+                        ? "border-primary bg-primary-soft text-primary shadow-xs"
                         : "border-border hover:bg-accent",
                     )}
                   >
                     {value} h
                   </button>
                 ))}
-                <Input
-                  type="number"
-                  min={0}
-                  max={24}
-                  step={0.5}
-                  value={hours}
-                  onChange={(event) => setHours(Number(event.target.value))}
-                  className="w-24 rounded-2xl"
-                  aria-label="Custom hours"
-                />
+                <div className="flex items-center gap-1.5 pl-1">
+                  <Input
+                    type="number"
+                    min={0.5}
+                    max={MAX_LOG_HOURS}
+                    step={0.5}
+                    value={hours}
+                    onChange={(event) => {
+                      const val = Number(event.target.value);
+                      if (val > MAX_LOG_HOURS) {
+                        setHours(MAX_LOG_HOURS);
+                        toast.info("Maximum limit is 3 hours per log.");
+                      } else {
+                        setHours(Math.max(0.5, val || 0.5));
+                      }
+                    }}
+                    className="w-20 rounded-2xl text-xs sm:text-sm"
+                    aria-label="Custom hours"
+                  />
+                  <span className="text-xs text-muted-foreground">hrs</span>
+                </div>
               </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                For safety reasons, kindly send multiple logs throughout your session every 2–3 hours.
+              </p>
             </div>
 
             {myTeams.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-2 pt-1">
                 <Label>Team / Placement</Label>
                 <div className="flex flex-wrap gap-2">
                   {myTeams.map((team) => (
@@ -399,11 +519,119 @@ function NewLogPage() {
                 </div>
               </div>
             ) : null}
+
+            {/* Approving Mentors Selector (Single or Multiple) */}
+            <div className="space-y-3 pt-3 border-t border-border/60">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-1.5">
+                      <UserCheck className="size-4 text-primary" />
+                      <span>Select Approving Mentors</span>
+                    </Label>
+                    <span className="text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full">
+                      {selectedMentorIds.length === AVAILABLE_MENTORS.length
+                        ? "All Mentors (Broadcast)"
+                        : `${selectedMentorIds.length} Selected`}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Select single or multiple supervisors to receive this log for sign-off.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={selectAllMentors}
+                    className="text-[11px] h-7 px-2.5 rounded-xl font-semibold text-primary hover:bg-primary/10"
+                  >
+                    Select All
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {AVAILABLE_MENTORS.map((mentor) => {
+                  const isSelected = selectedMentorIds.includes(mentor.id);
+                  return (
+                    <div
+                      key={mentor.id}
+                      onClick={() => toggleMentor(mentor.id)}
+                      className={cn(
+                        "press cursor-pointer p-3 rounded-2xl border transition-all flex items-start justify-between gap-3 text-left select-none",
+                        isSelected
+                          ? "border-primary bg-primary/5 shadow-xs"
+                          : "border-border/80 hover:border-border bg-card hover:bg-muted/30 opacity-75",
+                      )}
+                    >
+                      <div className="flex items-start gap-2.5 min-w-0">
+                        <span
+                          className={cn(
+                            "size-8 rounded-xl font-bold text-xs grid place-items-center shrink-0 mt-0.5 transition-colors",
+                            isSelected
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          {mentor.avatarLetter}
+                        </span>
+                        <div className="min-w-0">
+                          <h4 className="text-xs font-bold text-foreground truncate">{mentor.name}</h4>
+                          <p className="text-[11px] font-medium text-primary truncate mt-0.5">
+                            {mentor.role}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            {mentor.department}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <div
+                          className={cn(
+                            "size-5 rounded-lg border grid place-items-center transition-all",
+                            isSelected
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : "border-border bg-background",
+                          )}
+                        >
+                          {isSelected ? <Check className="size-3.5 stroke-[3]" /> : null}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            selectSingleMentor(mentor.id);
+                          }}
+                          className="text-[10px] text-muted-foreground hover:text-primary font-medium underline underline-offset-2"
+                        >
+                          Only
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="rounded-xl bg-muted/40 border border-border/70 p-2.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span>
+                  {selectedMentorNames.length > 0
+                    ? `Routing sign-off queue directly to: ${selectedMentorNames.join(", ")}.`
+                    : "Please select at least one mentor to route this submission."}
+                </span>
+              </div>
+            </div>
           </div>
         </BentoCard>
 
-        <div className="contents lg:block space-y-0 lg:space-y-4 min-w-0 w-full">
-          <BentoCard className="order-1 lg:order-none min-w-0 w-full mb-4 lg:mb-0 shrink-0">
+        {/* Side Column: Photo, Location & Submit (Clean separated gap) */}
+        <div className="order-1 lg:order-2 flex flex-col gap-5 min-w-0 w-full h-auto lg:h-full">
+          {/* Photo Box */}
+          <BentoCard className="min-w-0 w-full p-4 sm:p-5 space-y-3">
             <SectionTitle title="Photo" hint="Photo taken on site during the activity." />
             <input
               ref={fileRef}
@@ -414,38 +642,64 @@ function NewLogPage() {
               onChange={(event) => setPhoto(event.target.files?.[0] ?? null)}
             />
             {preview ? (
-              <div className="relative overflow-hidden rounded-2xl">
-                <img src={preview} alt="Selected log photo" className="h-44 w-full object-cover" />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="secondary"
-                  className="press absolute right-2 top-2 rounded-xl"
-                  onClick={() => setPhoto(null)}
-                  aria-label="Remove photo"
-                >
-                  <X className="size-4" />
-                </Button>
+              <div className="relative overflow-hidden rounded-2xl sunken bg-muted/20 mt-2">
+                <img
+                  src={preview}
+                  alt="Selected log photo preview"
+                  className="h-44 sm:h-48 w-full object-cover rounded-2xl"
+                  onError={() => setPreview(null)}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-auto">
+                  <span className="rounded-lg bg-black/60 backdrop-blur-md px-2.5 py-1 text-[11px] font-medium text-white shadow-xs">
+                    Photo attached
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      className="press rounded-xl text-xs h-7 px-2.5 bg-background/90 hover:bg-background text-foreground shadow-xs"
+                      onClick={() => fileRef.current?.click()}
+                    >
+                      Change
+                    </Button>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="press size-7 rounded-xl shadow-xs"
+                      onClick={() => {
+                        setPhoto(null);
+                        setPreview(null);
+                      }}
+                      aria-label="Remove photo"
+                    >
+                      <X className="size-3.5" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="sunken press grid h-40 w-full place-items-center rounded-2xl border border-dashed border-border text-muted-foreground"
+                className="sunken press grid h-36 sm:h-40 w-full place-items-center rounded-2xl border border-dashed border-border text-muted-foreground mt-2 hover:bg-muted/10 transition-colors"
               >
                 <span className="flex flex-col items-center gap-2 text-sm">
-                  <Camera className="size-5" />
+                  <Camera className="size-5 text-primary" />
                   Take photo
                 </span>
               </button>
             )}
           </BentoCard>
 
-          <BentoCard className="order-3 lg:order-none min-w-0 w-full mb-4 lg:mb-0 shrink-0">
+          {/* Location Box */}
+          <BentoCard className="min-w-0 w-full p-4 sm:p-5 space-y-3">
             <SectionTitle title="Location" hint="Recorded when you submit for review." />
 
             {matchedWorkspace ? (
-              <div className="mb-3 flex items-center gap-2 rounded-2xl border border-primary/30 bg-primary-soft p-2.5 text-xs text-primary">
+              <div className="flex items-center gap-2 rounded-2xl border border-primary/30 bg-primary-soft p-2.5 text-xs text-primary">
                 <Sparkles className="size-4 shrink-0" />
                 <div>
                   <p className="font-semibold">Auto-matched Workspace</p>
@@ -478,20 +732,21 @@ function NewLogPage() {
               variant="outline"
               onClick={detectLocation}
               disabled={locating}
-              className="press mt-3 w-full rounded-2xl"
+              className="press w-full rounded-2xl text-xs h-9"
             >
-              {locating ? <Loader2 className="size-4 animate-spin" /> : <Crosshair className="size-4" />}
+              {locating ? <Loader2 className="size-3.5 animate-spin mr-1.5" /> : <Crosshair className="size-3.5 mr-1.5" />}
               Refresh location
             </Button>
           </BentoCard>
 
+          {/* Submit Button */}
           <Button
             type="submit"
             size="lg"
             disabled={save.isPending}
-            className="order-4 lg:order-none press w-full rounded-2xl shrink-0"
+            className="press w-full rounded-2xl h-11 text-sm font-semibold shadow-sm"
           >
-            {save.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
+            {save.isPending ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
             Submit for review
           </Button>
         </div>

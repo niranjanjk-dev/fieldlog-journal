@@ -10,8 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R404RouteImport } from './routes/404'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as MaintenanceRouteImport } from './routes/maintenance'
+import { Route as PHandleRouteImport } from './routes/p.$handle'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminPeopleRouteImport } from './routes/_authenticated/admin/people'
 import { Route as AuthenticatedAdminTeamsRouteImport } from './routes/_authenticated/admin/teams'
@@ -21,12 +24,19 @@ import { Route as AuthenticatedAppMapRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app/portfolio'
 import { Route as AuthenticatedAppTimelineRouteImport } from './routes/_authenticated/app/timeline'
 import { Route as AuthenticatedMentorIndexRouteImport } from './routes/_authenticated/mentor/index'
+import { Route as AuthenticatedMentorPairRouteImport } from './routes/_authenticated/mentor/pair'
 import { Route as AuthenticatedMentorTeamsRouteImport } from './routes/_authenticated/mentor/teams'
 import { Route as AuthenticatedMentorVerifyRouteImport } from './routes/_authenticated/mentor/verify'
+import { Route as AuthenticatedTeamsJoinRouteImport } from './routes/_authenticated/teams/join'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404Route = R404RouteImport.update({
+  id: '/404',
+  path: '/404',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -36,6 +46,16 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaintenanceRoute = MaintenanceRouteImport.update({
+  id: '/maintenance',
+  path: '/maintenance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PHandleRoute = PHandleRouteImport.update({
+  id: '/p/$handle',
+  path: '/p/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
@@ -87,6 +107,11 @@ const AuthenticatedMentorIndexRoute =
     path: '/mentor/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMentorPairRoute = AuthenticatedMentorPairRouteImport.update({
+  id: '/mentor/pair',
+  path: '/mentor/pair',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMentorTeamsRoute =
   AuthenticatedMentorTeamsRouteImport.update({
     id: '/mentor/teams',
@@ -99,33 +124,48 @@ const AuthenticatedMentorVerifyRoute =
     path: '/mentor/verify',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTeamsJoinRoute = AuthenticatedTeamsJoinRouteImport.update({
+  id: '/teams/join',
+  path: '/teams/join',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/auth': typeof AuthRoute
+  '/maintenance': typeof MaintenanceRoute
+  '/p/$handle': typeof PHandleRoute
   '/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/admin/teams': typeof AuthenticatedAdminTeamsRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
   '/mentor/verify': typeof AuthenticatedMentorVerifyRoute
+  '/teams/join': typeof AuthenticatedTeamsJoinRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/mentor/': typeof AuthenticatedMentorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/auth': typeof AuthRoute
+  '/maintenance': typeof MaintenanceRoute
+  '/p/$handle': typeof PHandleRoute
   '/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/admin/teams': typeof AuthenticatedAdminTeamsRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
   '/mentor/verify': typeof AuthenticatedMentorVerifyRoute
+  '/teams/join': typeof AuthenticatedTeamsJoinRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/mentor': typeof AuthenticatedMentorIndexRoute
@@ -134,15 +174,20 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/404': typeof R404Route
   '/auth': typeof AuthRoute
+  '/maintenance': typeof MaintenanceRoute
+  '/p/$handle': typeof PHandleRoute
   '/_authenticated/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/_authenticated/admin/teams': typeof AuthenticatedAdminTeamsRoute
   '/_authenticated/app/log': typeof AuthenticatedAppLogRoute
   '/_authenticated/app/map': typeof AuthenticatedAppMapRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/_authenticated/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/_authenticated/mentor/teams': typeof AuthenticatedMentorTeamsRoute
   '/_authenticated/mentor/verify': typeof AuthenticatedMentorVerifyRoute
+  '/_authenticated/teams/join': typeof AuthenticatedTeamsJoinRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/mentor/': typeof AuthenticatedMentorIndexRoute
@@ -151,30 +196,40 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/404'
     | '/auth'
+    | '/maintenance'
+    | '/p/$handle'
     | '/admin/people'
     | '/admin/teams'
     | '/app/log'
     | '/app/map'
     | '/app/portfolio'
     | '/app/timeline'
+    | '/mentor/pair'
     | '/mentor/teams'
     | '/mentor/verify'
+    | '/teams/join'
     | '/admin/'
     | '/app/'
     | '/mentor/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/404'
     | '/auth'
+    | '/maintenance'
+    | '/p/$handle'
     | '/admin/people'
     | '/admin/teams'
     | '/app/log'
     | '/app/map'
     | '/app/portfolio'
     | '/app/timeline'
+    | '/mentor/pair'
     | '/mentor/teams'
     | '/mentor/verify'
+    | '/teams/join'
     | '/admin'
     | '/app'
     | '/mentor'
@@ -182,15 +237,20 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/404'
     | '/auth'
+    | '/maintenance'
+    | '/p/$handle'
     | '/_authenticated/admin/people'
     | '/_authenticated/admin/teams'
     | '/_authenticated/app/log'
     | '/_authenticated/app/map'
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/timeline'
+    | '/_authenticated/mentor/pair'
     | '/_authenticated/mentor/teams'
     | '/_authenticated/mentor/verify'
+    | '/_authenticated/teams/join'
     | '/_authenticated/admin/'
     | '/_authenticated/app/'
     | '/_authenticated/mentor/'
@@ -199,7 +259,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  R404Route: typeof R404Route
   AuthRoute: typeof AuthRoute
+  MaintenanceRoute: typeof MaintenanceRoute
+  PHandleRoute: typeof PHandleRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -209,6 +272,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -223,6 +293,20 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/maintenance': {
+      id: '/maintenance'
+      path: '/maintenance'
+      fullPath: '/maintenance'
+      preLoaderRoute: typeof MaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p/$handle': {
+      id: '/p/$handle'
+      path: '/p/$handle'
+      fullPath: '/p/$handle'
+      preLoaderRoute: typeof PHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
@@ -288,6 +372,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMentorIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mentor/pair': {
+      id: '/_authenticated/mentor/pair'
+      path: '/mentor/pair'
+      fullPath: '/mentor/pair'
+      preLoaderRoute: typeof AuthenticatedMentorPairRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/mentor/teams': {
       id: '/_authenticated/mentor/teams'
       path: '/mentor/teams'
@@ -302,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMentorVerifyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/teams/join': {
+      id: '/_authenticated/teams/join'
+      path: '/teams/join'
+      fullPath: '/teams/join'
+      preLoaderRoute: typeof AuthenticatedTeamsJoinRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -312,8 +410,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppMapRoute: typeof AuthenticatedAppMapRoute
   AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
   AuthenticatedAppTimelineRoute: typeof AuthenticatedAppTimelineRoute
+  AuthenticatedMentorPairRoute: typeof AuthenticatedMentorPairRoute
   AuthenticatedMentorTeamsRoute: typeof AuthenticatedMentorTeamsRoute
   AuthenticatedMentorVerifyRoute: typeof AuthenticatedMentorVerifyRoute
+  AuthenticatedTeamsJoinRoute: typeof AuthenticatedTeamsJoinRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedMentorIndexRoute: typeof AuthenticatedMentorIndexRoute
@@ -326,8 +426,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppMapRoute: AuthenticatedAppMapRoute,
   AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,
   AuthenticatedAppTimelineRoute: AuthenticatedAppTimelineRoute,
+  AuthenticatedMentorPairRoute: AuthenticatedMentorPairRoute,
   AuthenticatedMentorTeamsRoute: AuthenticatedMentorTeamsRoute,
   AuthenticatedMentorVerifyRoute: AuthenticatedMentorVerifyRoute,
+  AuthenticatedTeamsJoinRoute: AuthenticatedTeamsJoinRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedMentorIndexRoute: AuthenticatedMentorIndexRoute,
@@ -339,7 +441,10 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  R404Route: R404Route,
   AuthRoute: AuthRoute,
+  MaintenanceRoute: MaintenanceRoute,
+  PHandleRoute: PHandleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -7,6 +7,8 @@ export type Entry = {
   id: string;
   student_id: string;
   team_id: string | null;
+  assigned_mentor_ids?: string[] | null;
+  assigned_mentors?: string[] | null;
   title: string;
   note: string | null;
   photo_path: string | null;
@@ -41,35 +43,50 @@ export const statusMeta: Record<
   },
 };
 
-export function dayKey(value: string | Date): string {
+export function dayKey(value: string | Date | null | undefined): string {
+  if (!value) return "";
   const d = typeof value === "string" ? new Date(value) : value;
+  if (!d || isNaN(d.getTime())) return "";
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
     d.getDate(),
   ).padStart(2, "0")}`;
 }
 
-export function formatTime(value: string): string {
-  return new Date(value).toLocaleTimeString(undefined, {
+export function formatTime(value: string | null | undefined): string {
+  if (!value) return "";
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString(undefined, {
     hour: "numeric",
     minute: "2-digit",
   });
 }
 
-export function formatDay(value: string): string {
-  return new Date(value).toLocaleDateString(undefined, {
+export function formatDay(value: string | null | undefined): string {
+  if (!value) return "";
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(undefined, {
     weekday: "short",
     day: "numeric",
     month: "short",
   });
 }
 
-export function sumHours(entries: Pick<Entry, "hours">[]): number {
-  return Math.round(entries.reduce((total, e) => total + Number(e.hours ?? 0), 0) * 10) / 10;
+export function sumHours(entries: (Pick<Entry, "hours"> | null | undefined)[]): number {
+  if (!Array.isArray(entries)) return 0;
+  return Math.round(entries.reduce((total, e) => total + Number(e?.hours ?? 0), 0) * 10) / 10;
 }
 
 /** Consecutive days (ending today or yesterday) that have at least one log. */
-export function currentStreak(entries: Pick<Entry, "captured_at">[]): number {
-  const days = new Set(entries.map((e) => dayKey(e.captured_at)));
+export function currentStreak(entries: (Pick<Entry, "captured_at"> | null | undefined)[]): number {
+  if (!Array.isArray(entries)) return 0;
+  const days = new Set(
+    entries
+      .filter((e): e is Pick<Entry, "captured_at"> => Boolean(e?.captured_at))
+      .map((e) => dayKey(e.captured_at))
+      .filter(Boolean),
+  );
   if (days.size === 0) return 0;
   const cursor = new Date();
   if (!days.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
@@ -83,19 +100,24 @@ export function currentStreak(entries: Pick<Entry, "captured_at">[]): number {
 
 /** Logs per day for the last `days` days, oldest first. */
 export function weeklyActivity(
-  entries: Pick<Entry, "captured_at" | "hours">[],
+  entries: (Pick<Entry, "captured_at" | "hours"> | null | undefined)[],
   days = 7,
-): { label: string; logs: number; hours: number }[] {
-  const buckets: { label: string; logs: number; hours: number }[] = [];
+): { label: string; fullLabel: string; logs: number; hours: number; isToday: boolean; dateStr: string }[] {
+  const buckets: { label: string; fullLabel: string; logs: number; hours: number; isToday: boolean; dateStr: string }[] = [];
+  const safeEntries = Array.isArray(entries) ? entries.filter((e): e is Pick<Entry, "captured_at" | "hours"> => Boolean(e?.captured_at)) : [];
+  const todayKey = dayKey(new Date());
   for (let i = days - 1; i >= 0; i -= 1) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const key = dayKey(d);
-    const matched = entries.filter((e) => dayKey(e.captured_at) === key);
+    const matched = safeEntries.filter((e) => dayKey(e.captured_at) === key);
     buckets.push({
       label: d.toLocaleDateString(undefined, { weekday: "narrow" }),
+      fullLabel: d.toLocaleDateString(undefined, { weekday: "short" }),
       logs: matched.length,
       hours: sumHours(matched),
+      isToday: key === todayKey,
+      dateStr: key,
     });
   }
   return buckets;
