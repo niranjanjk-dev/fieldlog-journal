@@ -284,14 +284,7 @@ function AuthPage() {
                 </button>
               </div>
 
-              {/* Google Social OAuth Button */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={google}
-                className="press mt-3.5 h-9 w-full rounded-xl border-border bg-card text-xs font-semibold shadow-xs sm:h-10 sm:text-sm"
-              >
-                <svg className="mr-2 size-3.5 sm:size-4" viewBox="0 0 24 24" aria-hidden="true">
+
               {/* Social Logins - Only for signin/signup */}
               {mode !== "request" && (
                 <div className="mt-5 space-y-3">
