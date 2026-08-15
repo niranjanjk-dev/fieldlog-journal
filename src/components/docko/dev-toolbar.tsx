@@ -90,6 +90,10 @@ export function DevToolbar() {
         navigate({ to: "/mentor" });
       } else if (newRole === "admin" && !location.pathname.startsWith("/admin")) {
         navigate({ to: "/admin" });
+      } else if (newRole === "institution" && !location.pathname.startsWith("/institution")) {
+        navigate({ to: "/institution" });
+      } else if (newRole === "pending") {
+        navigate({ to: "/onboarding" });
       }
     }
   }
@@ -164,7 +168,7 @@ export function DevToolbar() {
             <label className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
               Switch Persona / Mode
             </label>
-            <div className="grid grid-cols-3 gap-1 rounded-2xl bg-muted/50 p-1">
+            <div className="grid grid-cols-5 gap-1 rounded-2xl bg-muted/50 p-1">
               <button
                 type="button"
                 onClick={() => handleSwitchRole("student", "/app")}
@@ -205,6 +209,34 @@ export function DevToolbar() {
               >
                 <BadgeCheck className="size-4" />
                 <span>Admin</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSwitchRole("institution", "/institution")}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 rounded-xl py-2 px-1 text-xs font-bold transition-all",
+                  role === "institution"
+                    ? "bg-background text-primary shadow-sm ring-1 ring-border/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-background/40",
+                )}
+              >
+                <FolderOpen className="size-4" />
+                <span>Inst</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSwitchRole("pending", "/onboarding")}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 rounded-xl py-2 px-1 text-xs font-bold transition-all",
+                  role === "pending"
+                    ? "bg-background text-primary shadow-sm ring-1 ring-border/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-background/40",
+                )}
+              >
+                <Sparkles className="size-4" />
+                <span>Pending</span>
               </button>
             </div>
           </div>

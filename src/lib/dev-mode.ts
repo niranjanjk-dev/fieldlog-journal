@@ -1,7 +1,7 @@
 import type { AppRole, Entry } from "./docko";
 import type { Me, QueueEntry } from "./queries";
 
-export type DevRole = "student" | "mentor" | "admin";
+export type DevRole = "student" | "mentor" | "institution" | "admin" | "pending";
 
 const DEV_MODE_KEY = "docko_dev_mode_enabled";
 const DEV_ROLE_KEY = "docko_dev_role";
@@ -22,7 +22,7 @@ export function setDevModeActive(active: boolean): void {
 export function getDevRole(): DevRole {
   if (typeof window === "undefined") return "student";
   const stored = localStorage.getItem(DEV_ROLE_KEY);
-  if (stored === "mentor" || stored === "admin" || stored === "student") return stored;
+  if (stored === "mentor" || stored === "admin" || stored === "student" || stored === "institution" || stored === "pending") return stored as DevRole;
   return "student";
 }
 
@@ -77,9 +77,41 @@ export const DEV_ADMIN: Me = {
   roles: ["admin"],
 };
 
+export const DEV_INSTITUTION: Me = {
+  id: "e50bdb5e-9823-4d8b-bd3c-0feb2b2483ef",
+  email: "dean.holloway@stanford.edu",
+  fullName: "Dean Marcus Holloway",
+  avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+  headline: "Institution Administrator",
+  institution: "Stanford University",
+  course: null,
+  department: "Administration",
+  phone: null,
+  position: "Program Director",
+  hasChangedName: false,
+  roles: ["institution"],
+};
+
+export const DEV_PENDING: Me = {
+  id: "pending-user-1234",
+  email: "new.user@university.edu",
+  fullName: "New User",
+  avatarUrl: null,
+  headline: null,
+  institution: null,
+  course: null,
+  department: null,
+  phone: null,
+  position: null,
+  hasChangedName: false,
+  roles: ["pending"],
+};
+
 export function getDevMe(role = getDevRole()): Me {
   if (role === "mentor") return DEV_MENTOR;
   if (role === "admin") return DEV_ADMIN;
+  if (role === "institution") return DEV_INSTITUTION;
+  if (role === "pending") return DEV_PENDING;
   return DEV_STUDENT;
 }
 
