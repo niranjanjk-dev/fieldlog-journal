@@ -1,7 +1,7 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Flame, GraduationCap, Loader2, MapPin, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Flame, Loader2, MapPin } from "lucide-react";
 
 import { DockoLogo } from "@/components/docko/app-shell";
 import { BentoCard } from "@/components/docko/bento";
@@ -41,8 +41,6 @@ function AuthPage() {
   const { mode: initialMode } = Route.useSearch();
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>(initialMode === "signup" ? "signup" : "signin");
-  const [role, setRole] = useState<"student" | "mentor">("student");
-  const [fullName, setFullName] = useState("");
   const [institution, setInstitution] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,7 +67,7 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { full_name: fullName, institution, role },
+            data: { role: "pending" },
           },
         });
         if (error) throw error;
@@ -347,71 +345,8 @@ function AuthPage() {
 
               {/* Main Form */}
               <form onSubmit={submit} className="space-y-2.5 sm:space-y-3">
-                {mode === "signup" ? (
-                  <>
-                    {/* Role Selection */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setRole("student")}
-                        className={cn(
-                          "press flex items-center justify-center gap-1.5 rounded-xl border p-2 text-center transition-all",
-                          role === "student"
-                            ? "border-primary bg-primary-soft text-primary font-bold shadow-xs"
-                            : "border-border bg-card text-muted-foreground hover:text-foreground",
-                        )}
-                        aria-pressed={role === "student"}
-                      >
-                        <GraduationCap className="size-3.5 sm:size-4 shrink-0" />
-                        <span className="text-xs sm:text-sm font-semibold">Student</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRole("mentor")}
-                        className={cn(
-                          "press flex items-center justify-center gap-1.5 rounded-xl border p-2 text-center transition-all",
-                          role === "mentor"
-                            ? "border-primary bg-primary-soft text-primary font-bold shadow-xs"
-                            : "border-border bg-card text-muted-foreground hover:text-foreground",
-                        )}
-                        aria-pressed={role === "mentor"}
-                      >
-                        <ShieldCheck className="size-3.5 sm:size-4 shrink-0" />
-                        <span className="text-xs sm:text-sm font-semibold">Faculty / Mentor</span>
-                      </button>
-                    </div>
-
-                    {/* Full Name & Institution in 2-col compact grid */}
-                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                      <div className="space-y-1">
-                        <Label htmlFor="fullName" className="text-[11px] font-semibold sm:text-xs">
-                          Full name
-                        </Label>
-                        <Input
-                          id="fullName"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          required
-                          autoComplete="name"
-                          placeholder="Alex Rivera"
-                          className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label htmlFor="institution" className="text-[11px] font-semibold sm:text-xs">
-                          Institution
-                        </Label>
-                        <Input
-                          id="institution"
-                          value={institution}
-                          onChange={(e) => setInstitution(e.target.value)}
-                          placeholder="e.g. Mechatronics Lab"
-                          className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
-                        />
-                      </div>
-                    </div>
-                  </>
-                ) : null}
+                {/* We removed the Role, Full Name, and Institution fields from the signup flow. */}
+                {/* Users will now fill those out in the Onboarding flow instead. */}
 
                 {mode === "request" && (
                   <div className="space-y-1">
