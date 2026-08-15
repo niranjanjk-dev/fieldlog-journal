@@ -375,7 +375,7 @@ function NewLogPage() {
                 list="categories-list"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                placeholder="e.g. Lab Analysis, Clinical Rotation..."
+                placeholder="e.g. ROS2, Embedded Systems, CAD..."
                 className="rounded-2xl"
               />
               <datalist id="categories-list">
