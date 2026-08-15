@@ -7,9 +7,10 @@ const DEV_MODE_KEY = "docko_dev_mode_enabled";
 const DEV_ROLE_KEY = "docko_dev_role";
 
 export function isDevModeActive(): boolean {
-  if (typeof window === "undefined") return true;
+  if (typeof window === "undefined") return false;
+  if (import.meta.env?.PROD) return false;
   const stored = localStorage.getItem(DEV_MODE_KEY);
-  return stored !== "false"; // Default to true for easy dev workflow
+  return stored !== "false"; // Default to true in dev mode only
 }
 
 export function setDevModeActive(active: boolean): void {
