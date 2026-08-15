@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   BadgeCheck,
   Building2,
@@ -12,6 +13,7 @@ import {
   Globe,
   HardHat,
   MapPin,
+  PieChart,
   Printer,
   ShieldCheck,
   Sparkles,
@@ -60,7 +62,23 @@ function PublicPortfolioPage() {
 
   const totalVerifiedHours = Number(sumHours(verified)) || 0;
 
+  // Calculate category breakdowns
+  const categoryHours = verified.reduce((acc, entry) => {
+    const cat = entry.category || "Uncategorized";
+    acc[cat] = (acc[cat] || 0) + Number(entry.hours);
+    return acc;
+  }, {} as Record<string, number>);
 
+  const categoryBreakdown = Object.entries(categoryHours)
+    .map(([category, hours]) => ({
+      category,
+      hours,
+      percentage: totalVerifiedHours > 0 ? Math.round((hours / totalVerifiedHours) * 100) : 0,
+    }))
+    .sort((a, b) => b.hours - a.hours);
+
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const visibleCategories = showAllCategories ? categoryBreakdown : categoryBreakdown.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between">
@@ -115,6 +133,51 @@ function PublicPortfolioPage() {
           </div>
         </div>
 
+        {/* Fieldwork Category Breakdown */}
+        {categoryBreakdown.length > 0 && (
+          <div>
+            <SectionTitle
+              title="Fieldwork Breakdown"
+              hint="Verified hours grouped by domain or skill category."
+            />
+            <div className="bg-card border border-border rounded-3xl p-6 shadow-sm space-y-4">
+              <div className="space-y-4">
+                {visibleCategories.map((item) => (
+                  <div key={item.category} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-semibold text-foreground flex items-center gap-2">
+                        <PieChart className="size-4 text-primary" />
+                        {item.category}
+                      </span>
+                      <span className="text-muted-foreground font-medium">
+                        {item.percentage}% <span className="text-xs">({item.hours}h)</span>
+                      </span>
+                    </div>
+                    <div className="h-2 w-full bg-muted/50 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full"
+                        style={{ width: `${item.percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {categoryBreakdown.length > 3 && (
+                <div className="pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-2xl press text-xs font-semibold"
+                    onClick={() => setShowAllCategories(!showAllCategories)}
+                  >
+                    {showAllCategories ? "Show less" : `View all ${categoryBreakdown.length} categories`}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Verified Record Items */}
         <div>
@@ -130,6 +193,7 @@ function PublicPortfolioPage() {
                     {
                       id: "v-1",
                       title: "Geotechnical Core Sampling & Borehole Logging",
+                      category: "Geotechnical Survey",
                       captured_at: new Date().toISOString(),
                       hours: 6.5,
                       address: "North Sector Construction Zone A",
@@ -137,6 +201,7 @@ function PublicPortfolioPage() {
                     {
                       id: "v-2",
                       title: "Subsurface Moisture & Soil Compaction Testing",
+                      category: "Soil Analysis",
                       captured_at: new Date(Date.now() - 86400000).toISOString(),
                       hours: 5.0,
                       address: "Metro Infrastructure Station 4",
@@ -144,6 +209,7 @@ function PublicPortfolioPage() {
                     {
                       id: "v-3",
                       title: "Environmental Runoff & Water Sampling Protocol",
+                      category: "Environmental Testing",
                       captured_at: new Date(Date.now() - 172800000).toISOString(),
                       hours: 4.5,
                       address: "East River Monitoring Basin",

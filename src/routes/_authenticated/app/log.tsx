@@ -15,7 +15,7 @@ import {
   WifiOff,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/docko/app-shell";
@@ -57,6 +57,7 @@ const MAX_LOG_HOURS = 3;
 type OfflineDraft = {
   id: string;
   title: string;
+  category: string | null;
   note: string;
   hours: number;
   teamId: string | null;
@@ -106,6 +107,7 @@ function NewLogPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
   const [note, setNote] = useState("");
   const [hours, setHours] = useState(2);
   const [teamId, setTeamId] = useState<string | null>(null);
@@ -136,6 +138,13 @@ function NewLogPage() {
         teamId: e.team_id ?? undefined,
       })),
   ];
+
+  const uniqueCategories = useMemo(() => {
+    if (!entries) return [];
+    const set = new Set<string>();
+    entries.forEach((e) => e.category && set.add(e.category));
+    return Array.from(set).sort();
+  }, [entries]);
 
   useEffect(() => {
     if (!photo) {
@@ -230,6 +239,7 @@ function NewLogPage() {
         const draft: OfflineDraft = {
           id: crypto.randomUUID(),
           title: title.trim(),
+          category: category.trim() || null,
           note: note.trim(),
           hours,
           teamId,
@@ -245,6 +255,7 @@ function NewLogPage() {
 
       return createEntry(me.id, {
         title: title.trim(),
+        category: category.trim() || null,
         note: note.trim(),
         hours,
         teamId,
@@ -289,6 +300,7 @@ function NewLogPage() {
     try {
       await createEntry(me.id, {
         title: draft.title,
+        category: draft.category,
         note: draft.note,
         hours: draft.hours,
         teamId: draft.teamId,
@@ -355,6 +367,22 @@ function NewLogPage() {
                 className="rounded-2xl"
                 required
               />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="category">Category (Optional)</Label>
+              <Input
+                id="category"
+                list="categories-list"
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
+                placeholder="e.g. Lab Analysis, Clinical Rotation..."
+                className="rounded-2xl"
+              />
+              <datalist id="categories-list">
+                {uniqueCategories.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="note">Notes</Label>

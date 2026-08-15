@@ -10,6 +10,7 @@ export type Entry = {
   assigned_mentor_ids?: string[] | null;
   assigned_mentors?: string[] | null;
   title: string;
+  category: string | null;
   note: string | null;
   photo_path: string | null;
   hours: number;
