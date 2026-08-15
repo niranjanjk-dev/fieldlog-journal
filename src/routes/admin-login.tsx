@@ -74,32 +74,31 @@ function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-4 sm:p-8 dark">
-      {/* Forced dark mode for the admin portal for a distinct, "system" look */}
+    <div className="flex min-h-screen items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-sm">
-        <div className="mb-8 flex justify-center text-zinc-50">
-          <DockoLogo className="text-3xl text-zinc-50" />
+        <div className="mb-8 flex justify-center text-foreground">
+          <DockoLogo className="text-3xl text-foreground" />
           <span className="ml-3 mt-1.5 rounded bg-red-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-500">
             System Admin
           </span>
         </div>
 
-        <BentoCard className="border-zinc-800 bg-zinc-900/50 p-6 sm:p-8 backdrop-blur-xl">
+        <BentoCard className="p-6 sm:p-8 shadow-[var(--shadow-lift)]">
           <div className="mb-6 flex flex-col items-center text-center">
             <div className="mb-4 grid size-12 place-items-center rounded-full bg-red-500/10 text-red-500">
               <ShieldAlert className="size-6" />
             </div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-zinc-100">
+            <h1 className="font-display text-xl font-bold tracking-tight">
               Restricted Access
             </h1>
-            <p className="mt-1.5 text-xs text-zinc-400">
+            <p className="mt-1.5 text-xs text-muted-foreground">
               Please authenticate to access the Docko administration controls.
             </p>
           </div>
 
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-semibold text-zinc-300">
+              <Label htmlFor="email" className="text-xs font-semibold">
                 Admin Email
               </Label>
               <Input
@@ -110,12 +109,12 @@ function AdminLoginPage() {
                 required
                 autoComplete="email"
                 placeholder="sysadmin@docko.app"
-                className="h-10 rounded-xl border-zinc-800 bg-zinc-950 px-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-red-500/50"
+                className="h-10 rounded-xl px-3 text-sm focus-visible:ring-red-500/50"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-xs font-semibold text-zinc-300">
+              <Label htmlFor="password" className="text-xs font-semibold">
                 Password
               </Label>
               <Input
@@ -126,23 +125,23 @@ function AdminLoginPage() {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="h-10 rounded-xl border-zinc-800 bg-zinc-950 px-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-red-500/50"
+                className="h-10 rounded-xl px-3 text-sm focus-visible:ring-red-500/50"
               />
             </div>
 
             <Button
               type="submit"
               disabled={busy}
-              className="press mt-2 h-10 w-full rounded-xl bg-zinc-100 text-sm font-bold text-zinc-900 hover:bg-zinc-200"
+              className="press mt-2 h-10 w-full rounded-xl text-sm font-bold shadow-sm"
             >
-              {busy ? <Loader2 className="mr-2 size-4 animate-spin text-zinc-900" /> : null}
+              {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
               Authenticate
             </Button>
           </form>
         </BentoCard>
         
-        <p className="mt-6 text-center text-xs text-zinc-600">
-          This portal is strictly for authorized personnel. <br/> Not an admin? <a href="/auth" className="text-zinc-400 hover:text-zinc-300 underline underline-offset-4">Go to the main app</a>.
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          This portal is strictly for authorized personnel. <br/> Not an admin? <a href="/auth" className="text-primary hover:underline underline-offset-4">Go to the main app</a>.
         </p>
       </div>
     </div>
