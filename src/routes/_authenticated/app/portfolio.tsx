@@ -11,6 +11,7 @@ import {
   FolderOpen,
   Printer,
   ShieldCheck,
+  Edit2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -78,6 +79,7 @@ export default function PortfolioPage() {
   const { data: teams } = useQuery(myTeamsQuery);
 
   const [name, setName] = useState("");
+  const [isEditingName, setIsEditingName] = useState(false);
 
   useEffect(() => {
     if (me?.fullName) {
@@ -100,6 +102,7 @@ export default function PortfolioPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
       toast.success("Name updated successfully!");
+      setIsEditingName(false);
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -214,47 +217,71 @@ export default function PortfolioPage() {
         </div>
       }
     >
-      {/* 0. Personal Information */}
-      <div className="mb-6">
-        <SectionTitle title="Personal Details" hint="Manage your account profile." />
-        <BentoCard className="p-6">
-          <div className="space-y-3">
-            <Label>Full name</Label>
-            <div className="flex gap-2">
-              <Input 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                disabled={me?.hasChangedName || updateName.isPending}
-                className="rounded-2xl flex-1 max-w-sm"
-                placeholder="Enter your full name"
-              />
-              {!me?.hasChangedName && (
+      {/* 1. Header Metrics Grid */}
+      <BentoGrid className="mb-8">
+        
+        {/* Compact Profile Card */}
+        <BentoCard className="lg:col-span-2 p-5 flex flex-col justify-center">
+          {!isEditingName ? (
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-bold truncate">{me?.fullName}</p>
+                <p className="text-xs text-muted-foreground truncate">{me?.institution || "Student"}</p>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 shrink-0 rounded-xl bg-muted/50 text-muted-foreground hover:text-foreground"
+                onClick={() => setIsEditingName(true)}
+              >
+                <Edit2 className="size-3.5" />
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <Input 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  disabled={me?.hasChangedName || updateName.isPending}
+                  className="rounded-xl h-8 text-sm flex-1"
+                  placeholder="Enter your full name"
+                />
+                {!me?.hasChangedName && (
+                  <Button 
+                    onClick={() => name.trim() !== me?.fullName && updateName.mutate()}
+                    disabled={name.trim() === me?.fullName || !name.trim() || updateName.isPending}
+                    className="press rounded-xl h-8 text-xs px-3"
+                  >
+                    Save
+                  </Button>
+                )}
                 <Button 
-                  onClick={() => name.trim() !== me?.fullName && updateName.mutate()}
-                  disabled={name.trim() === me?.fullName || !name.trim() || updateName.isPending}
-                  className="press rounded-2xl"
+                  variant="ghost"
+                  onClick={() => {
+                    setName(me?.fullName ?? "");
+                    setIsEditingName(false);
+                  }}
+                  className="press rounded-xl h-8 px-2 text-xs text-muted-foreground"
                 >
-                  Save
+                  Cancel
                 </Button>
+              </div>
+              {me?.hasChangedName ? (
+                <p className="text-[10px] text-muted-foreground flex items-start gap-1 leading-tight">
+                  <AlertCircle className="size-3 text-warning shrink-0 mt-0.5" />
+                  Already changed once. Contact support.
+                </p>
+              ) : (
+                <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                  <CheckCircle2 className="size-3 text-success" />
+                  Can be changed exactly once.
+                </p>
               )}
             </div>
-            {me?.hasChangedName ? (
-              <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
-                <AlertCircle className="size-3.5 text-warning" />
-                You have already changed your name once. Please contact your Institution's support to change it again.
-              </p>
-            ) : (
-              <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
-                <CheckCircle2 className="size-3.5 text-success" />
-                You may update your name exactly once.
-              </p>
-            )}
-          </div>
+          )}
         </BentoCard>
-      </div>
 
-      {/* 1. Header Metrics Grid */}
-      <BentoGrid>
         <StatTile
           className="lg:col-span-2"
           label="Verified hours"
