@@ -42,6 +42,8 @@ function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>(initialMode === "signup" ? "signup" : "signin");
   const [institution, setInstitution] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [proofDetails, setProofDetails] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -90,7 +92,9 @@ function AuthPage() {
           const { error: reqError } = await supabase.from("institution_requests").insert({
             user_id: data.user.id,
             institution_name: institution,
-            email
+            email,
+            phone_number: phoneNumber,
+            proof_details: proofDetails
           });
           if (reqError) throw reqError;
         }
@@ -349,37 +353,86 @@ function AuthPage() {
                 {/* Users will now fill those out in the Onboarding flow instead. */}
 
                 {mode === "request" && (
+                  <>
+                    <div className="space-y-1">
+                      <Label htmlFor="institutionName" className="text-[11px] font-semibold sm:text-xs">
+                        Institution name
+                      </Label>
+                      <Input
+                        id="institutionName"
+                        value={institution}
+                        onChange={(e) => setInstitution(e.target.value)}
+                        required
+                        placeholder="University of Science"
+                        className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                      <div className="space-y-1">
+                        <Label htmlFor="phoneNumber" className="text-[11px] font-semibold sm:text-xs">
+                          Phone number
+                        </Label>
+                        <Input
+                          id="phoneNumber"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          required
+                          placeholder="+1 (555) 000-0000"
+                          className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="email" className="text-[11px] font-semibold sm:text-xs">
+                          Contact email
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          autoComplete="email"
+                          placeholder="name@university.edu"
+                          className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <Label htmlFor="proofDetails" className="text-[11px] font-semibold sm:text-xs">
+                        Proof of affiliation
+                      </Label>
+                      <Input
+                        id="proofDetails"
+                        value={proofDetails}
+                        onChange={(e) => setProofDetails(e.target.value)}
+                        required
+                        placeholder="LinkedIn profile URL or university staff directory link"
+                        className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Email Field (for signin/signup only, request handles it above) */}
+                {mode !== "request" && (
                   <div className="space-y-1">
-                    <Label htmlFor="institutionName" className="text-[11px] font-semibold sm:text-xs">
-                      Institution name
+                    <Label htmlFor="email" className="text-[11px] font-semibold sm:text-xs">
+                      Email address
                     </Label>
                     <Input
-                      id="institutionName"
-                      value={institution}
-                      onChange={(e) => setInstitution(e.target.value)}
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
-                      placeholder="University of Science"
+                      autoComplete="email"
+                      placeholder="name@university.edu"
                       className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
                     />
                   </div>
                 )}
-
-                {/* Email Field */}
-                <div className="space-y-1">
-                  <Label htmlFor="email" className="text-[11px] font-semibold sm:text-xs">
-                    {mode === "request" ? "Contact email" : "Email address"}
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                    placeholder="name@university.edu"
-                    className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
-                  />
-                </div>
 
                 {/* Password Field */}
                 <div className="space-y-1">

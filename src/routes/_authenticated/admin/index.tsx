@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Users, Building, ShieldCheck, Mail } from "lucide-react";
+import { Users, Building, ShieldCheck, Mail, Phone, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/docko/app-shell";
@@ -84,9 +84,11 @@ function SystemAdminPage() {
                 <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 border border-border/50">
                   <div>
                     <p className="font-bold">{req.institution_name}</p>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                      <Mail className="size-3" /> {req.email}
-                    </p>
+                    <div className="text-sm text-muted-foreground flex flex-col gap-1 mt-2">
+                      <p className="flex items-center gap-1.5"><Mail className="size-3" /> {req.email}</p>
+                      {req.phone_number && <p className="flex items-center gap-1.5"><Phone className="size-3" /> {req.phone_number}</p>}
+                      {req.proof_details && <p className="flex items-center gap-1.5"><Link2 className="size-3" /> {req.proof_details}</p>}
+                    </div>
                   </div>
                   {req.status === "pending" ? (
                     <Button 
