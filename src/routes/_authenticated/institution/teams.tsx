@@ -6,7 +6,7 @@ import { AppShell } from "@/components/docko/app-shell";
 import { BentoCard, EmptyState, SectionTitle } from "@/components/docko/bento";
 import { teamsQuery } from "@/lib/queries";
 
-export const Route = createFileRoute("/_authenticated/admin/teams")({
+export const Route = createFileRoute("/_authenticated/institution/teams")({
   head: () => ({
     meta: [
       { title: "All teams · Docko" },

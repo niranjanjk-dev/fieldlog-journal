@@ -44,10 +44,14 @@ const mentorNav: NavItem[] = [
   { to: "/mentor/profile", label: "Profile", icon: <Settings className="size-4" /> },
 ];
 
+const institutionNav: NavItem[] = [
+  { to: "/institution", label: "Overview", icon: <BadgeCheck className="size-4" /> },
+  { to: "/institution/people", label: "People", icon: <Users className="size-4" /> },
+  { to: "/institution/teams", label: "Teams", icon: <Settings className="size-4" /> },
+];
+
 const adminNav: NavItem[] = [
-  { to: "/admin", label: "Institution", icon: <BadgeCheck className="size-4" /> },
-  { to: "/admin/people", label: "People", icon: <Users className="size-4" /> },
-  { to: "/admin/teams", label: "Teams", icon: <Settings className="size-4" /> },
+  { to: "/admin", label: "System", icon: <BadgeCheck className="size-4" /> },
 ];
 
 export function DockoLogo({ className }: { className?: string | undefined }) {
@@ -146,9 +150,17 @@ export function AppShell({
 
   const roles = me?.roles ?? [];
   const devActive = isDevModeActive();
+
+  useEffect(() => {
+    if (roles.includes("pending") && pathname !== "/onboarding") {
+      navigate({ to: "/onboarding", replace: true });
+    }
+  }, [roles, pathname, navigate]);
+
   const sections = [
     { label: "Student", items: studentNav, show: devActive || roles.length === 0 || roles.includes("student") },
     { label: "Mentor", items: mentorNav, show: devActive || roles.includes("mentor") || roles.includes("admin") },
+    { label: "Institution", items: institutionNav, show: devActive || roles.includes("institution") || roles.includes("admin") },
     { label: "Admin", items: adminNav, show: devActive || roles.includes("admin") },
   ].filter((s) => s.show);
 

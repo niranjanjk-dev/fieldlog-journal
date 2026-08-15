@@ -14,15 +14,17 @@ import { Route as R404RouteImport } from './routes/404'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as PHandleRouteImport } from './routes/p.$handle'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
-import { Route as AuthenticatedAdminPeopleRouteImport } from './routes/_authenticated/admin/people'
-import { Route as AuthenticatedAdminTeamsRouteImport } from './routes/_authenticated/admin/teams'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
 import { Route as AuthenticatedAppLogRouteImport } from './routes/_authenticated/app/log'
 import { Route as AuthenticatedAppMapRouteImport } from './routes/_authenticated/app/map'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app/portfolio'
 import { Route as AuthenticatedAppTimelineRouteImport } from './routes/_authenticated/app/timeline'
+import { Route as AuthenticatedInstitutionIndexRouteImport } from './routes/_authenticated/institution/index'
+import { Route as AuthenticatedInstitutionPeopleRouteImport } from './routes/_authenticated/institution/people'
+import { Route as AuthenticatedInstitutionTeamsRouteImport } from './routes/_authenticated/institution/teams'
 import { Route as AuthenticatedMentorIndexRouteImport } from './routes/_authenticated/mentor/index'
 import { Route as AuthenticatedMentorPairRouteImport } from './routes/_authenticated/mentor/pair'
 import { Route as AuthenticatedMentorProfileRouteImport } from './routes/_authenticated/mentor/profile'
@@ -54,6 +56,11 @@ const MaintenanceRoute = MaintenanceRouteImport.update({
   path: '/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const PHandleRoute = PHandleRouteImport.update({
   id: '/p/$handle',
   path: '/p/$handle',
@@ -62,17 +69,6 @@ const PHandleRoute = PHandleRouteImport.update({
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminPeopleRoute =
-  AuthenticatedAdminPeopleRouteImport.update({
-    id: '/admin/people',
-    path: '/admin/people',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminTeamsRoute = AuthenticatedAdminTeamsRouteImport.update({
-  id: '/admin/teams',
-  path: '/admin/teams',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
@@ -100,6 +96,24 @@ const AuthenticatedAppTimelineRoute =
   AuthenticatedAppTimelineRouteImport.update({
     id: '/app/timeline',
     path: '/app/timeline',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInstitutionIndexRoute =
+  AuthenticatedInstitutionIndexRouteImport.update({
+    id: '/institution/',
+    path: '/institution/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInstitutionPeopleRoute =
+  AuthenticatedInstitutionPeopleRouteImport.update({
+    id: '/institution/people',
+    path: '/institution/people',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInstitutionTeamsRoute =
+  AuthenticatedInstitutionTeamsRouteImport.update({
+    id: '/institution/teams',
+    path: '/institution/teams',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedMentorIndexRoute =
@@ -142,13 +156,14 @@ export interface FileRoutesByFullPath {
   '/404': typeof R404Route
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/p/$handle': typeof PHandleRoute
-  '/admin/people': typeof AuthenticatedAdminPeopleRoute
-  '/admin/teams': typeof AuthenticatedAdminTeamsRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/institution/people': typeof AuthenticatedInstitutionPeopleRoute
+  '/institution/teams': typeof AuthenticatedInstitutionTeamsRoute
   '/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
@@ -156,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/teams/join': typeof AuthenticatedTeamsJoinRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/institution/': typeof AuthenticatedInstitutionIndexRoute
   '/mentor/': typeof AuthenticatedMentorIndexRoute
 }
 export interface FileRoutesByTo {
@@ -163,13 +179,14 @@ export interface FileRoutesByTo {
   '/404': typeof R404Route
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/p/$handle': typeof PHandleRoute
-  '/admin/people': typeof AuthenticatedAdminPeopleRoute
-  '/admin/teams': typeof AuthenticatedAdminTeamsRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/institution/people': typeof AuthenticatedInstitutionPeopleRoute
+  '/institution/teams': typeof AuthenticatedInstitutionTeamsRoute
   '/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
@@ -177,6 +194,7 @@ export interface FileRoutesByTo {
   '/teams/join': typeof AuthenticatedTeamsJoinRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/institution': typeof AuthenticatedInstitutionIndexRoute
   '/mentor': typeof AuthenticatedMentorIndexRoute
 }
 export interface FileRoutesById {
@@ -186,13 +204,14 @@ export interface FileRoutesById {
   '/404': typeof R404Route
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/p/$handle': typeof PHandleRoute
-  '/_authenticated/admin/people': typeof AuthenticatedAdminPeopleRoute
-  '/_authenticated/admin/teams': typeof AuthenticatedAdminTeamsRoute
   '/_authenticated/app/log': typeof AuthenticatedAppLogRoute
   '/_authenticated/app/map': typeof AuthenticatedAppMapRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/timeline': typeof AuthenticatedAppTimelineRoute
+  '/_authenticated/institution/people': typeof AuthenticatedInstitutionPeopleRoute
+  '/_authenticated/institution/teams': typeof AuthenticatedInstitutionTeamsRoute
   '/_authenticated/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/_authenticated/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/_authenticated/mentor/teams': typeof AuthenticatedMentorTeamsRoute
@@ -200,6 +219,7 @@ export interface FileRoutesById {
   '/_authenticated/teams/join': typeof AuthenticatedTeamsJoinRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/institution/': typeof AuthenticatedInstitutionIndexRoute
   '/_authenticated/mentor/': typeof AuthenticatedMentorIndexRoute
 }
 export interface FileRouteTypes {
@@ -209,13 +229,14 @@ export interface FileRouteTypes {
     | '/404'
     | '/auth'
     | '/maintenance'
+    | '/onboarding'
     | '/p/$handle'
-    | '/admin/people'
-    | '/admin/teams'
     | '/app/log'
     | '/app/map'
     | '/app/portfolio'
     | '/app/timeline'
+    | '/institution/people'
+    | '/institution/teams'
     | '/mentor/pair'
     | '/mentor/profile'
     | '/mentor/teams'
@@ -223,6 +244,7 @@ export interface FileRouteTypes {
     | '/teams/join'
     | '/admin/'
     | '/app/'
+    | '/institution/'
     | '/mentor/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -230,13 +252,14 @@ export interface FileRouteTypes {
     | '/404'
     | '/auth'
     | '/maintenance'
+    | '/onboarding'
     | '/p/$handle'
-    | '/admin/people'
-    | '/admin/teams'
     | '/app/log'
     | '/app/map'
     | '/app/portfolio'
     | '/app/timeline'
+    | '/institution/people'
+    | '/institution/teams'
     | '/mentor/pair'
     | '/mentor/profile'
     | '/mentor/teams'
@@ -244,6 +267,7 @@ export interface FileRouteTypes {
     | '/teams/join'
     | '/admin'
     | '/app'
+    | '/institution'
     | '/mentor'
   id:
     | '__root__'
@@ -252,13 +276,14 @@ export interface FileRouteTypes {
     | '/404'
     | '/auth'
     | '/maintenance'
+    | '/_authenticated/onboarding'
     | '/p/$handle'
-    | '/_authenticated/admin/people'
-    | '/_authenticated/admin/teams'
     | '/_authenticated/app/log'
     | '/_authenticated/app/map'
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/timeline'
+    | '/_authenticated/institution/people'
+    | '/_authenticated/institution/teams'
     | '/_authenticated/mentor/pair'
     | '/_authenticated/mentor/profile'
     | '/_authenticated/mentor/teams'
@@ -266,6 +291,7 @@ export interface FileRouteTypes {
     | '/_authenticated/teams/join'
     | '/_authenticated/admin/'
     | '/_authenticated/app/'
+    | '/_authenticated/institution/'
     | '/_authenticated/mentor/'
   fileRoutesById: FileRoutesById
 }
@@ -315,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/p/$handle': {
       id: '/p/$handle'
       path: '/p/$handle'
@@ -327,20 +360,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/people': {
-      id: '/_authenticated/admin/people'
-      path: '/admin/people'
-      fullPath: '/admin/people'
-      preLoaderRoute: typeof AuthenticatedAdminPeopleRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/teams': {
-      id: '/_authenticated/admin/teams'
-      path: '/admin/teams'
-      fullPath: '/admin/teams'
-      preLoaderRoute: typeof AuthenticatedAdminTeamsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/app/': {
@@ -376,6 +395,27 @@ declare module '@tanstack/react-router' {
       path: '/app/timeline'
       fullPath: '/app/timeline'
       preLoaderRoute: typeof AuthenticatedAppTimelineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/institution/': {
+      id: '/_authenticated/institution/'
+      path: '/institution'
+      fullPath: '/institution/'
+      preLoaderRoute: typeof AuthenticatedInstitutionIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/institution/people': {
+      id: '/_authenticated/institution/people'
+      path: '/institution/people'
+      fullPath: '/institution/people'
+      preLoaderRoute: typeof AuthenticatedInstitutionPeopleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/institution/teams': {
+      id: '/_authenticated/institution/teams'
+      path: '/institution/teams'
+      fullPath: '/institution/teams'
+      preLoaderRoute: typeof AuthenticatedInstitutionTeamsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/mentor/': {
@@ -424,12 +464,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminPeopleRoute: typeof AuthenticatedAdminPeopleRoute
-  AuthenticatedAdminTeamsRoute: typeof AuthenticatedAdminTeamsRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedAppLogRoute: typeof AuthenticatedAppLogRoute
   AuthenticatedAppMapRoute: typeof AuthenticatedAppMapRoute
   AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
   AuthenticatedAppTimelineRoute: typeof AuthenticatedAppTimelineRoute
+  AuthenticatedInstitutionPeopleRoute: typeof AuthenticatedInstitutionPeopleRoute
+  AuthenticatedInstitutionTeamsRoute: typeof AuthenticatedInstitutionTeamsRoute
   AuthenticatedMentorPairRoute: typeof AuthenticatedMentorPairRoute
   AuthenticatedMentorProfileRoute: typeof AuthenticatedMentorProfileRoute
   AuthenticatedMentorTeamsRoute: typeof AuthenticatedMentorTeamsRoute
@@ -437,16 +478,18 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTeamsJoinRoute: typeof AuthenticatedTeamsJoinRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedInstitutionIndexRoute: typeof AuthenticatedInstitutionIndexRoute
   AuthenticatedMentorIndexRoute: typeof AuthenticatedMentorIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminPeopleRoute: AuthenticatedAdminPeopleRoute,
-  AuthenticatedAdminTeamsRoute: AuthenticatedAdminTeamsRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedAppLogRoute: AuthenticatedAppLogRoute,
   AuthenticatedAppMapRoute: AuthenticatedAppMapRoute,
   AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,
   AuthenticatedAppTimelineRoute: AuthenticatedAppTimelineRoute,
+  AuthenticatedInstitutionPeopleRoute: AuthenticatedInstitutionPeopleRoute,
+  AuthenticatedInstitutionTeamsRoute: AuthenticatedInstitutionTeamsRoute,
   AuthenticatedMentorPairRoute: AuthenticatedMentorPairRoute,
   AuthenticatedMentorProfileRoute: AuthenticatedMentorProfileRoute,
   AuthenticatedMentorTeamsRoute: AuthenticatedMentorTeamsRoute,
@@ -454,6 +497,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTeamsJoinRoute: AuthenticatedTeamsJoinRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedInstitutionIndexRoute: AuthenticatedInstitutionIndexRoute,
   AuthenticatedMentorIndexRoute: AuthenticatedMentorIndexRoute,
 }
 

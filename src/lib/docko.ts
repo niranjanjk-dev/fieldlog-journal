@@ -1,7 +1,7 @@
 /** Shared Docko domain helpers — browser-safe, no side effects. */
 
 export type EntryStatus = "pending" | "verified" | "rejected";
-export type AppRole = "student" | "mentor" | "admin";
+export type AppRole = "student" | "mentor" | "admin" | "institution" | "pending";
 
 export type Entry = {
   id: string;

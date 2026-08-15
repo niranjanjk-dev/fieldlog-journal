@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { initials } from "@/lib/docko";
 import { peopleQuery } from "@/lib/queries";
 
-export const Route = createFileRoute("/_authenticated/admin/people")({
+export const Route = createFileRoute("/_authenticated/institution/people")({
   head: () => ({
     meta: [
       { title: "People · Docko" },
