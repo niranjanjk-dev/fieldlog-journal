@@ -84,7 +84,7 @@ function TeamsPage() {
           <Input
             value={name}
             onChange={(event) => setName(event.target.value)}
-            placeholder="e.g. Monsoon field survey 2026"
+            placeholder="e.g. Fall 2026 Mechatronics Cohort"
             className="rounded-2xl"
           />
           <Button type="submit" disabled={createTeam.isPending} className="press rounded-2xl">

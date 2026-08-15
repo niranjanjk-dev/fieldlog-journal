@@ -363,7 +363,7 @@ function NewLogPage() {
                 id="title"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
-                placeholder="e.g. Site inspection — block A"
+                placeholder="e.g. Firmware update on drone"
                 className="rounded-2xl"
                 required
               />

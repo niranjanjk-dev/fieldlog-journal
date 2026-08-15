@@ -346,7 +346,7 @@ function AuthPage() {
                           id="institution"
                           value={institution}
                           onChange={(e) => setInstitution(e.target.value)}
-                          placeholder="University / Lab"
+                          placeholder="e.g. Mechatronics Lab"
                           className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
                         />
                       </div>
