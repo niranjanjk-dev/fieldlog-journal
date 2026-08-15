@@ -57,6 +57,16 @@ function MentorOverview() {
         description="Scan a student's pairing QR code to become their mentor."
         mockData={all[0]?.student_id ?? "00000000-0000-0000-0000-000000000000"}
         onScan={(data) => {
+          try {
+            const url = new URL(data);
+            const extractedId = url.searchParams.get("studentId");
+            if (extractedId) {
+              navigate({ to: "/mentor/pair", search: { studentId: extractedId } });
+              return;
+            }
+          } catch {
+            // Not a valid URL, assume it's a raw ID
+          }
           navigate({ to: "/mentor/pair", search: { studentId: data } });
         }}
       />

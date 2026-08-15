@@ -217,6 +217,17 @@ function TeamsPage() {
         mockData={students[0]?.id ?? "00000000-0000-0000-0000-000000000000"}
         onScan={(data) => {
           if (scanningTeamId) {
+            try {
+              // Try to parse as URL to extract studentId param
+              const url = new URL(data);
+              const extractedId = url.searchParams.get("studentId");
+              if (extractedId) {
+                addMember.mutate({ teamId: scanningTeamId, studentId: extractedId });
+                return;
+              }
+            } catch {
+              // Not a valid URL, assume it's a raw ID
+            }
             addMember.mutate({ teamId: scanningTeamId, studentId: data });
           }
         }}
@@ -229,6 +240,17 @@ function TeamsPage() {
         description="Scan a student's pairing QR code to become their mentor."
         mockData={students[0]?.id ?? "00000000-0000-0000-0000-000000000000"}
         onScan={(data) => {
+          try {
+            // Try to parse as URL to extract studentId param
+            const url = new URL(data);
+            const extractedId = url.searchParams.get("studentId");
+            if (extractedId) {
+              navigate({ to: "/mentor/pair", search: { studentId: extractedId } });
+              return;
+            }
+          } catch {
+            // Not a valid URL, assume it's a raw ID
+          }
           navigate({ to: "/mentor/pair", search: { studentId: data } });
         }}
       />

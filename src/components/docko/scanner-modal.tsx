@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Loader2, QrCode, ScanLine } from "lucide-react";
+import { Loader2, QrCode, ScanLine, CameraOff } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 
 export function ScannerModal({
   open,
@@ -19,23 +20,54 @@ export function ScannerModal({
 }) {
   const [scanning, setScanning] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
+    let codeReader: BrowserMultiFormatReader | null = null;
+    
     if (open) {
       setScanning(true);
       setSuccess(false);
-      // Simulate scanning process
-      const timer = setTimeout(() => {
+      setErrorMsg(null);
+      
+      codeReader = new BrowserMultiFormatReader();
+      
+      codeReader.decodeFromVideoDevice(null, 'video-preview', (result, err) => {
+        if (result) {
+          // Success!
+          setScanning(false);
+          setSuccess(true);
+          
+          if (codeReader) {
+            codeReader.reset();
+          }
+          
+          setTimeout(() => {
+            onScan(result.getText());
+            onOpenChange(false);
+          }, 800);
+        }
+        
+        if (err && !(err instanceof NotFoundException)) {
+          console.error(err);
+          // Only show error if it's not a generic "not found" frame error
+          if (err.name !== 'NotFoundException') {
+            setErrorMsg("Camera error: " + err.message);
+          }
+        }
+      }).catch((e) => {
+        console.error("Camera startup error", e);
+        setErrorMsg("Failed to start camera. Please check permissions.");
         setScanning(false);
-        setSuccess(true);
-        setTimeout(() => {
-          onScan(mockData);
-          onOpenChange(false);
-        }, 500);
-      }, 1500);
-      return () => clearTimeout(timer);
+      });
     }
-  }, [open, onScan, mockData, onOpenChange]);
+
+    return () => {
+      if (codeReader) {
+        codeReader.reset();
+      }
+    };
+  }, [open, onScan, onOpenChange]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,20 +78,31 @@ export function ScannerModal({
         </DialogHeader>
 
         <div className="relative aspect-square w-full max-w-[280px] mx-auto my-4 bg-muted/20 rounded-3xl border-2 border-dashed border-border flex flex-col items-center justify-center overflow-hidden">
-          {scanning && (
+          
+          {/* Live Video Feed */}
+          <video 
+            id="video-preview" 
+            className={`absolute inset-0 w-full h-full object-cover ${success ? 'opacity-0' : 'opacity-100'}`}
+          />
+
+          {scanning && !errorMsg && (
             <>
-              {/* Animated scan line */}
+              {/* Animated scan line overlay */}
               <div className="absolute top-0 left-0 w-full h-1 bg-primary/80 shadow-[0_0_15px_rgba(var(--primary),0.8)] animate-pulse" style={{ animation: "scan 2s linear infinite" }} />
-              <div className="absolute inset-0 bg-primary/5" />
-              <ScanLine className="size-16 text-muted-foreground/30" />
-              <p className="mt-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest animate-pulse">
-                Detecting Code...
-              </p>
+              <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
+              <div className="absolute inset-0 border-[40px] border-background/60 pointer-events-none" />
             </>
           )}
 
+          {errorMsg && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/90 p-4 text-center">
+              <CameraOff className="size-10 text-red-500 mb-3" />
+              <p className="text-sm font-bold text-red-500">{errorMsg}</p>
+            </div>
+          )}
+
           {success && (
-            <div className="flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 animate-in fade-in zoom-in duration-300">
               <div className="size-16 rounded-full bg-emerald-500/15 flex items-center justify-center text-emerald-600">
                 <QrCode className="size-8" />
               </div>

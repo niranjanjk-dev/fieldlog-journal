@@ -106,8 +106,8 @@ function AuthPage() {
         if (error) throw error;
         navigate({ to: "/app" });
       }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Something went wrong");
+    } catch (error: any) {
+      toast.error(error?.message || "Something went wrong");
     } finally {
       setBusy(false);
     }

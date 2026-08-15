@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -44,6 +45,11 @@ const R404Route = R404RouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -154,6 +160,7 @@ const AuthenticatedTeamsJoinRoute = AuthenticatedTeamsJoinRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/404': typeof R404Route
+  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/404': typeof R404Route
+  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/404': typeof R404Route
+  '/admin-login': typeof AdminLoginRoute
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/404'
+    | '/admin-login'
     | '/auth'
     | '/maintenance'
     | '/onboarding'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/404'
+    | '/admin-login'
     | '/auth'
     | '/maintenance'
     | '/onboarding'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/404'
+    | '/admin-login'
     | '/auth'
     | '/maintenance'
     | '/_authenticated/onboarding'
@@ -299,6 +311,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   R404Route: typeof R404Route
+  AdminLoginRoute: typeof AdminLoginRoute
   AuthRoute: typeof AuthRoute
   MaintenanceRoute: typeof MaintenanceRoute
   PHandleRoute: typeof PHandleRoute
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -508,6 +528,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   R404Route: R404Route,
+  AdminLoginRoute: AdminLoginRoute,
   AuthRoute: AuthRoute,
   MaintenanceRoute: MaintenanceRoute,
   PHandleRoute: PHandleRoute,
