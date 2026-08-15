@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <rect width="100" height="100" rx="20" fill="#18181b"/>
-  <text x="50" y="65" font-family="'Outfit', sans-serif" font-size="60" font-weight="800" text-anchor="middle" fill="#fafafa">d.</text>
+  <text x="46" y="68" font-family="'Outfit', system-ui, sans-serif" font-size="64" font-weight="900" text-anchor="middle">
+    <tspan fill="#fafafa">d</tspan><tspan fill="#6038ff">.</tspan>
+  </text>
 </svg>
