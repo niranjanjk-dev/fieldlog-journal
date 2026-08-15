@@ -1,6 +1,7 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  AlertCircle,
   BadgeCheck,
   CheckCircle2,
   Copy,
@@ -12,6 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 import { AppShell } from "@/components/docko/app-shell";
 import {
@@ -24,6 +26,8 @@ import {
 } from "@/components/docko/bento";
 import { QrCodeCard } from "@/components/docko/qr-code-card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { formatDay, formatTime, sumHours } from "@/lib/docko";
 import { meQuery, myEntriesQuery, myTeamsQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,6 +76,33 @@ export default function PortfolioPage() {
   const { data: me } = useQuery(meQuery);
   const { data: entries } = useQuery(myEntriesQuery);
   const { data: teams } = useQuery(myTeamsQuery);
+
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    if (me?.fullName) {
+      setName(me.fullName);
+    }
+  }, [me?.fullName]);
+
+  const updateName = useMutation({
+    mutationFn: async () => {
+      if (!me) throw new Error("Not loaded");
+      if (me.hasChangedName) throw new Error("Name already changed once.");
+      
+      const { error } = await supabase
+        .from("profiles")
+        .update({ full_name: name.trim(), has_changed_name: true })
+        .eq("id", me.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+      toast.success("Name updated successfully!");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   const mine = (entries ?? []).filter((entry) => entry.student_id === me?.id);
   const verified = mine.filter((entry) => entry.status === "verified");
@@ -183,6 +214,45 @@ export default function PortfolioPage() {
         </div>
       }
     >
+      {/* 0. Personal Information */}
+      <div className="mb-6">
+        <SectionTitle title="Personal Details" hint="Manage your account profile." />
+        <BentoCard className="p-6">
+          <div className="space-y-3">
+            <Label>Full name</Label>
+            <div className="flex gap-2">
+              <Input 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                disabled={me?.hasChangedName || updateName.isPending}
+                className="rounded-2xl flex-1 max-w-sm"
+                placeholder="Enter your full name"
+              />
+              {!me?.hasChangedName && (
+                <Button 
+                  onClick={() => name.trim() !== me?.fullName && updateName.mutate()}
+                  disabled={name.trim() === me?.fullName || !name.trim() || updateName.isPending}
+                  className="press rounded-2xl"
+                >
+                  Save
+                </Button>
+              )}
+            </div>
+            {me?.hasChangedName ? (
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
+                <AlertCircle className="size-3.5 text-warning" />
+                You have already changed your name once. Please contact your Institution's support to change it again.
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
+                <CheckCircle2 className="size-3.5 text-success" />
+                You may update your name exactly once.
+              </p>
+            )}
+          </div>
+        </BentoCard>
+      </div>
+
       {/* 1. Header Metrics Grid */}
       <BentoGrid>
         <StatTile

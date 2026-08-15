@@ -35,7 +35,6 @@ const studentNav: NavItem[] = [
   { to: "/app/timeline", label: "Timeline", icon: <CalendarClock className="size-4" /> },
   { to: "/app/map", label: "Map", icon: <MapPin className="size-4" /> },
   { to: "/app/portfolio", label: "Portfolio", icon: <FolderOpen className="size-4" /> },
-  { to: "/app/profile", label: "Profile", icon: <Settings className="size-4" /> },
 ];
 
 const mentorNav: NavItem[] = [
