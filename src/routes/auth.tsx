@@ -79,11 +79,26 @@ function AuthPage() {
         }
         navigate({ to: "/app" });
       } else if (mode === "request") {
-        const { error } = await supabase.from("institution_requests").insert({
-          institution_name: institution,
-          email
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: institution, institution: institution, role: "pending" },
+          },
         });
         if (error) throw error;
+        
+        if (data.user) {
+          const { error: reqError } = await supabase.from("institution_requests").insert({
+            user_id: data.user.id,
+            institution_name: institution,
+            email
+          });
+          if (reqError) throw reqError;
+        }
+
+        // Sign out immediately so they see the success screen instead of being redirected
+        await supabase.auth.signOut();
         setSentTo("request");
         return;
       } else {
@@ -432,24 +447,22 @@ function AuthPage() {
                 </div>
 
                 {/* Password Field */}
-                {mode !== "request" && (
-                  <div className="space-y-1">
-                    <Label htmlFor="password" className="text-[11px] font-semibold sm:text-xs">
-                      Password
-                    </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      minLength={8}
-                      autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                      placeholder="••••••••"
-                      className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
-                    />
-                  </div>
-                )}
+                <div className="space-y-1">
+                  <Label htmlFor="password" className="text-[11px] font-semibold sm:text-xs">
+                    Password
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={8}
+                    autoComplete={mode === "signup" || mode === "request" ? "new-password" : "current-password"}
+                    placeholder="••••••••"
+                    className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
+                  />
+                </div>
 
                 {/* Submit Action */}
                 <Button
