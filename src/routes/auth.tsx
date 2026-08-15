@@ -212,7 +212,7 @@ function AuthPage() {
         {/* Form Container */}
         <div className="flex flex-1 items-center justify-center p-3 sm:p-6 md:p-8">
           <div className="w-full max-w-sm sm:max-w-md">
-            {sentTo ? (
+            {sentTo && sentTo !== "request" ? (
             <BentoCard className="p-5 sm:p-6 text-center">
               <div className="mx-auto mb-3 grid size-11 place-items-center rounded-2xl bg-primary-soft text-primary">
                 <CheckCircle2 className="size-6" />
