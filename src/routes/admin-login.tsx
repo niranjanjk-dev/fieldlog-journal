@@ -76,9 +76,9 @@ function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-sm">
-        <div className="mb-8 flex justify-center text-foreground">
+        <div className="mb-8 flex items-center justify-center text-foreground">
           <DockoLogo className="text-3xl text-foreground" />
-          <span className="ml-3 mt-1.5 rounded bg-red-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-500">
+          <span className="ml-3 rounded bg-red-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-500">
             System Admin
           </span>
         </div>
