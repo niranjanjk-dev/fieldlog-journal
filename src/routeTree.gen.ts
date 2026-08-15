@@ -16,6 +16,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as PHandleRouteImport } from './routes/p.$handle'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
@@ -65,6 +66,11 @@ const MaintenanceRoute = MaintenanceRouteImport.update({
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const PHandleRoute = PHandleRouteImport.update({
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/support': typeof AuthenticatedSupportRoute
   '/p/$handle': typeof PHandleRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/support': typeof AuthenticatedSupportRoute
   '/p/$handle': typeof PHandleRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/maintenance': typeof MaintenanceRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/p/$handle': typeof PHandleRoute
   '/_authenticated/app/log': typeof AuthenticatedAppLogRoute
   '/_authenticated/app/map': typeof AuthenticatedAppMapRoute
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/maintenance'
     | '/onboarding'
+    | '/support'
     | '/p/$handle'
     | '/app/log'
     | '/app/map'
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/maintenance'
     | '/onboarding'
+    | '/support'
     | '/p/$handle'
     | '/app/log'
     | '/app/map'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/maintenance'
     | '/_authenticated/onboarding'
+    | '/_authenticated/support'
     | '/p/$handle'
     | '/_authenticated/app/log'
     | '/_authenticated/app/map'
@@ -366,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/support': {
+      id: '/_authenticated/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AuthenticatedSupportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/p/$handle': {
@@ -485,6 +504,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
   AuthenticatedAppLogRoute: typeof AuthenticatedAppLogRoute
   AuthenticatedAppMapRoute: typeof AuthenticatedAppMapRoute
   AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
@@ -504,6 +524,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedSupportRoute: AuthenticatedSupportRoute,
   AuthenticatedAppLogRoute: AuthenticatedAppLogRoute,
   AuthenticatedAppMapRoute: AuthenticatedAppMapRoute,
   AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,

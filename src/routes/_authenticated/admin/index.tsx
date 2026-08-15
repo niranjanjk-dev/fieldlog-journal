@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Users, Building, ShieldCheck, Mail, Phone, Link2 } from "lucide-react";
+import { Users, Building, ShieldCheck, Mail, Phone, Link2, LifeBuoy, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/docko/app-shell";
@@ -42,6 +42,18 @@ function SystemAdminPage() {
     }
   });
 
+  const { data: tickets } = useQuery({
+    queryKey: ["admin", "tickets"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("support_tickets")
+        .select(`*, profiles(full_name, email:auth.users(email))`)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const approveRequest = useMutation({
     mutationFn: async (req: any) => {
       // Create institution
@@ -63,6 +75,21 @@ function SystemAdminPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin"] });
       toast.success("Institution approved and access granted");
+    },
+    onError: (err: any) => toast.error(err.message)
+  });
+
+  const resolveTicket = useMutation({
+    mutationFn: async (ticketId: string) => {
+      const { error } = await supabase
+        .from("support_tickets")
+        .update({ status: "resolved", resolved_at: new Date().toISOString() })
+        .eq("id", ticketId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "tickets"] });
+      toast.success("Ticket resolved");
     },
     onError: (err: any) => toast.error(err.message)
   });
@@ -102,6 +129,49 @@ function SystemAdminPage() {
                     </Button>
                   ) : (
                     <span className="text-xs font-semibold text-primary px-3 py-1 bg-primary/10 rounded-full">Approved</span>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </BentoCard>
+
+        <BentoCard className="lg:col-span-6">
+          <SectionTitle title="Support Tickets" hint="Manage user requests and issues" />
+          
+          <div className="space-y-4">
+            {(!tickets || tickets.length === 0) ? (
+              <p className="text-sm text-muted-foreground py-4">No active support tickets.</p>
+            ) : (
+              tickets.map((ticket: any) => (
+                <div key={ticket.id} className="flex items-start justify-between p-4 rounded-2xl bg-muted/30 border border-border/50">
+                  <div className="flex gap-4">
+                    <div className={`mt-1 flex size-10 shrink-0 items-center justify-center rounded-full ${ticket.status === 'resolved' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'}`}>
+                      {ticket.status === 'resolved' ? <CheckCircle2 className="size-5" /> : <LifeBuoy className="size-5" />}
+                    </div>
+                    <div>
+                      <p className="font-bold flex items-center gap-2">
+                        {ticket.subject}
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                          {ticket.type.replace('_', ' ')}
+                        </span>
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">{ticket.description}</p>
+                      <p className="text-xs text-muted-foreground/70 mt-2 flex items-center gap-1">
+                        By {ticket.profiles?.full_name} • {new Date(ticket.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  {ticket.status !== "resolved" && (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="press rounded-xl shrink-0"
+                      disabled={resolveTicket.isPending}
+                      onClick={() => resolveTicket.mutate(ticket.id)}
+                    >
+                      Resolve
+                    </Button>
                   )}
                 </div>
               ))
