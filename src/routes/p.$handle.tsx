@@ -22,7 +22,7 @@ import { DockoLogo } from "@/components/docko/app-shell";
 import { SectionTitle } from "@/components/docko/bento";
 import { Button } from "@/components/ui/button";
 import { formatDay, formatTime, sumHours } from "@/lib/docko";
-import { myEntriesQuery } from "@/lib/queries";
+import { publicProfileQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/p/$handle")({
   head: ({ params }) => ({
@@ -43,18 +43,22 @@ export const Route = createFileRoute("/p/$handle")({
 
 function PublicPortfolioPage() {
   const { handle } = Route.useParams();
-  const { data: entries } = useQuery(myEntriesQuery);
-
   const cleanHandle = handle.replace(/^@/, "");
-  const formattedName = cleanHandle
+  
+  const { data } = useQuery(publicProfileQuery(cleanHandle));
+  
+  const profile = data?.profile;
+  const verified = data?.entries ?? [];
+
+  const formattedName = profile?.full_name ?? (cleanHandle
     ? cleanHandle
         .replace(/[-_]/g, " ")
         .replace(/\b\w/g, (c) => c.toUpperCase())
-    : "Fieldwork Researcher";
+    : "Fieldwork Researcher");
+    
+  const institution = profile?.institution ?? "Metropolitan Engineering Institute";
 
-  const verified = (entries ?? []).filter((e) => e.status === "verified");
-  const totalVerifiedHours = Number(sumHours(verified)) || 78.5;
-  const verifiedCount = verified.length || 18;
+  const totalVerifiedHours = Number(sumHours(verified)) || 0;
 
 
 
@@ -92,7 +96,7 @@ function PublicPortfolioPage() {
                 </span>
               </div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-0.5">
-                Metropolitan Engineering Institute · Civil & Environmental Fieldwork
+                {institution}
               </p>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">

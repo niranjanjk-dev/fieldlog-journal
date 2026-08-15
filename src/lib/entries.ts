@@ -6,8 +6,6 @@ export type NewEntryInput = {
   note: string;
   hours: number;
   teamId: string | null;
-  assignedMentorIds?: string[] | null;
-  assignedMentors?: string[] | null;
   latitude: number | null;
   longitude: number | null;
   address: string | null;
@@ -66,8 +64,6 @@ export async function createEntry(userId: string, input: NewEntryInput) {
     id: entryId,
     student_id: userId,
     team_id: input.teamId,
-    assigned_mentor_ids: input.assignedMentorIds || null,
-    assigned_mentors: input.assignedMentors || null,
     title: input.title,
     note: input.note || null,
     hours: input.hours,

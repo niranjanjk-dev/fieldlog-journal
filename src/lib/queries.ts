@@ -235,3 +235,45 @@ export function photoUrlsQuery(paths: string[]) {
     },
   });
 }
+
+export const myTeamsQuery = queryOptions({
+  queryKey: ["teams", "mine"],
+  queryFn: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    
+    // Fetch team_members for this user, expanding the team and mentor profile
+    const { data, error } = await supabase
+      .from("team_members")
+      .select("id, team:teams!inner(*, mentor:profiles!teams_mentor_profile_fkey(full_name, avatar_url))")
+      .eq("student_id", user.id);
+      
+    if (error) throw error;
+    // Extract just the teams
+    return (data ?? []).map((m: any) => m.team).filter(Boolean);
+  },
+});
+
+export function publicProfileQuery(handle: string) {
+  return queryOptions({
+    queryKey: ["public_profile", handle],
+    queryFn: async () => {
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("username", handle)
+        .maybeSingle();
+
+      if (error || !profile) return { profile: null, entries: [] };
+
+      const { data: entries } = await supabase
+        .from("entries")
+        .select("*")
+        .eq("student_id", profile.id)
+        .eq("status", "verified")
+        .order("captured_at", { ascending: false });
+
+      return { profile, entries: entries ?? [] };
+    },
+  });
+}

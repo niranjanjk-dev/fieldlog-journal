@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -25,7 +25,8 @@ import {
 import { QrCodeCard } from "@/components/docko/qr-code-card";
 import { Button } from "@/components/ui/button";
 import { formatDay, formatTime, sumHours } from "@/lib/docko";
-import { meQuery, myEntriesQuery } from "@/lib/queries";
+import { meQuery, myEntriesQuery, myTeamsQuery } from "@/lib/queries";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/app/portfolio")({
   head: () => ({
@@ -67,15 +68,17 @@ interface TeamAffiliation {
 }
 
 export default function PortfolioPage() {
+  const queryClient = useQueryClient();
   const { data: me } = useQuery(meQuery);
   const { data: entries } = useQuery(myEntriesQuery);
+  const { data: teams } = useQuery(myTeamsQuery);
 
   const mine = (entries ?? []).filter((entry) => entry.student_id === me?.id);
   const verified = mine.filter((entry) => entry.status === "verified");
   const pending = mine.filter((entry) => entry.status === "pending");
 
   const studentId = me?.id || "student-preview-id";
-  const studentName = me?.full_name || "Fieldwork Student";
+  const studentName = me?.fullName || "Fieldwork Student";
   const studentInstitution = me?.institution || "Metropolitan Engineering Institute";
 
 
@@ -219,6 +222,63 @@ export default function PortfolioPage() {
 
 
 
+
+      {/* 5. My Teams & Mentors */}
+      <div className="mt-8">
+        <SectionTitle
+          title="My Teams & Mentors"
+          hint="Teams you are currently enrolled in and the mentors leading them."
+        />
+        {(!teams || teams.length === 0) ? (
+          <EmptyState
+            icon={<ShieldCheck className="size-5" />}
+            title="No active teams"
+            body="You are not part of any field teams yet."
+          />
+        ) : (
+          <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
+            <ul className="divide-y divide-border">
+              {teams.map((team: any) => (
+                <li key={team.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary font-bold shrink-0 uppercase">
+                      {team.name.charAt(0)}
+                    </span>
+                    <div className="min-w-0">
+                      <h4 className="text-sm font-bold text-foreground truncate">{team.name}</h4>
+                      <p className="text-xs text-muted-foreground truncate flex items-center gap-1 mt-0.5">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground/70">Mentor:</span>
+                        {team.mentor?.full_name ?? "Unknown"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center shrink-0 self-end sm:self-center">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="press rounded-2xl text-xs h-8 px-3 font-semibold text-destructive hover:bg-destructive/10"
+                      onClick={async () => {
+                        const loadingToast = toast.loading("Leaving team...");
+                        try {
+                          const { error } = await supabase.rpc('leave_team', { _team_id: team.id });
+                          if (error) throw error;
+                          toast.success("Successfully left team", { id: loadingToast });
+                          queryClient.invalidateQueries({ queryKey: ["teams", "mine"] });
+                        } catch (err: any) {
+                          toast.error(err.message || "Failed to leave team", { id: loadingToast });
+                        }
+                      }}
+                    >
+                      Leave Team
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
       {/* 6. Public Verifiable Portfolio & Privacy Controls */}
       <div className="mt-8">

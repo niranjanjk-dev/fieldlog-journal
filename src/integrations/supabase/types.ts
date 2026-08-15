@@ -218,6 +218,7 @@ export type Database = {
           id: string
           institution: string | null
           updated_at: string
+          username: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -230,6 +231,7 @@ export type Database = {
           id: string
           institution?: string | null
           updated_at?: string
+          username?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -242,6 +244,7 @@ export type Database = {
           id?: string
           institution?: string | null
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -363,6 +366,10 @@ export type Database = {
       is_mentor_of: {
         Args: { _mentor: string; _student: string }
         Returns: boolean
+      }
+      leave_team: {
+        Args: { _team_id: string }
+        Returns: void
       }
     }
     Enums: {

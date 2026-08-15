@@ -26,7 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createEntry, getPosition } from "@/lib/entries";
 import { reverseGeocode } from "@/lib/geocode.functions";
-import { meQuery, myEntriesQuery, teamsQuery } from "@/lib/queries";
+import { meQuery, myEntriesQuery, myTeamsQuery } from "@/lib/queries";
 import {
   findNearestWorkspace,
   getSavedWorkspaces,
@@ -54,58 +54,12 @@ export const Route = createFileRoute("/_authenticated/app/log")({
 const quickHours = [0.5, 1, 1.5, 2, 2.5, 3];
 const MAX_LOG_HOURS = 3;
 
-export interface FieldMentor {
-  id: string;
-  name: string;
-  role: string;
-  department: string;
-  avatarLetter: string;
-  email: string;
-}
-
-export const AVAILABLE_MENTORS: FieldMentor[] = [
-  {
-    id: "dev-mentor-elena",
-    name: "Dr. Elena Vance",
-    role: "Primary Faculty Lead",
-    department: "Biomechanics & Autonomous Systems",
-    avatarLetter: "E",
-    email: "dr.vance@stanford.edu",
-  },
-  {
-    id: "dev-mentor-marcus",
-    name: "Marcus Sterling",
-    role: "On-Site Field Supervisor",
-    department: "Field Safety & Site Operations",
-    avatarLetter: "M",
-    email: "marcus.sterling@contractors.org",
-  },
-  {
-    id: "dev-mentor-williams",
-    name: "Prof. H. Williams",
-    role: "Geotechnical & Survey Lead",
-    department: "Civil & Environmental Engineering",
-    avatarLetter: "W",
-    email: "h.williams@metropolitan.edu",
-  },
-  {
-    id: "dev-admin-marcus",
-    name: "Dean Marcus Holloway",
-    role: "Academic Accreditation Dean",
-    department: "Office of Academic Affairs",
-    avatarLetter: "D",
-    email: "dean.holloway@stanford.edu",
-  },
-];
-
 type OfflineDraft = {
   id: string;
   title: string;
   note: string;
   hours: number;
   teamId: string | null;
-  assignedMentorIds?: string[] | null;
-  assignedMentors?: string[] | null;
   latitude: number | null;
   longitude: number | null;
   address: string | null;
@@ -147,7 +101,7 @@ function NewLogPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: me } = useQuery(meQuery);
-  const { data: teams } = useQuery(teamsQuery);
+  const { data: teams } = useQuery(myTeamsQuery);
   const { data: entries } = useQuery(myEntriesQuery);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -162,39 +116,12 @@ function NewLogPage() {
   const [locating, setLocating] = useState(false);
   const [matchedWorkspace, setMatchedWorkspace] = useState<WorkspaceLocation | null>(null);
   const [offlineDrafts, setOfflineDrafts] = useState<OfflineDraft[]>([]);
-  const [selectedMentorIds, setSelectedMentorIds] = useState<string[]>([
-    "dev-mentor-elena",
-    "dev-mentor-marcus",
-  ]);
 
   useEffect(() => {
     setOfflineDrafts(getLocalDrafts());
   }, []);
 
-  function toggleMentor(id: string) {
-    setSelectedMentorIds((prev) =>
-      prev.includes(id) ? (prev.length > 1 ? prev.filter((m) => m !== id) : prev) : [...prev, id],
-    );
-  }
-
-  function selectAllMentors() {
-    setSelectedMentorIds(AVAILABLE_MENTORS.map((m) => m.id));
-  }
-
-  function selectSingleMentor(id: string) {
-    setSelectedMentorIds([id]);
-  }
-
-  const selectedMentorsList = AVAILABLE_MENTORS.filter((m) =>
-    selectedMentorIds.includes(m.id),
-  );
-  const selectedMentorNames = selectedMentorsList.map((m) => m.name);
-
-  const myTeams = (teams ?? []).filter((team) =>
-    (team.team_members as { student_id: string }[] | null)?.some(
-      (member) => member.student_id === me?.id,
-    ),
-  );
+  const myTeams = teams ?? [];
 
   // Compile approved workspaces from verified logs and saved workspaces
   const allKnownWorkspaces: WorkspaceLocation[] = [
@@ -306,8 +233,6 @@ function NewLogPage() {
           note: note.trim(),
           hours,
           teamId,
-          assignedMentorIds: selectedMentorIds,
-          assignedMentors: selectedMentorNames,
           latitude: coords?.lat ?? null,
           longitude: coords?.lng ?? null,
           address: entryAddress,
@@ -323,8 +248,6 @@ function NewLogPage() {
         note: note.trim(),
         hours,
         teamId,
-        assignedMentorIds: selectedMentorIds,
-        assignedMentors: selectedMentorNames,
         latitude: coords?.lat ?? null,
         longitude: coords?.lng ?? null,
         address: entryAddress,
@@ -337,8 +260,8 @@ function NewLogPage() {
         toast.success("No connection: Log saved to offline drafts on your device.");
       } else {
         queryClient.invalidateQueries({ queryKey: ["entries"] });
-        const mentorList = selectedMentorNames.length > 0 ? selectedMentorNames.join(", ") : "your mentors";
-        toast.success(`Log saved — routed to ${mentorList} for sign-off.`);
+        const mentorList = teamId && myTeams ? myTeams.find(t => t.id === teamId)?.mentor?.full_name : "your mentors";
+        toast.success(`Log saved — routed to ${mentorList || "your mentors"} for sign-off.`);
         navigate({ to: "/app/timeline" });
       }
     },
@@ -350,8 +273,6 @@ function NewLogPage() {
         note: note.trim(),
         hours,
         teamId,
-        assignedMentorIds: selectedMentorIds,
-        assignedMentors: selectedMentorNames,
         latitude: coords?.lat ?? null,
         longitude: coords?.lng ?? null,
         address,
@@ -371,8 +292,6 @@ function NewLogPage() {
         note: draft.note,
         hours: draft.hours,
         teamId: draft.teamId,
-        assignedMentorIds: draft.assignedMentorIds || selectedMentorIds,
-        assignedMentors: draft.assignedMentors || selectedMentorNames,
         latitude: draft.latitude,
         longitude: draft.longitude,
         address: draft.address,
@@ -470,27 +389,6 @@ function NewLogPage() {
                     {value} h
                   </button>
                 ))}
-                <div className="flex items-center gap-1.5 pl-1">
-                  <Input
-                    type="number"
-                    min={0.5}
-                    max={MAX_LOG_HOURS}
-                    step={0.5}
-                    value={hours}
-                    onChange={(event) => {
-                      const val = Number(event.target.value);
-                      if (val > MAX_LOG_HOURS) {
-                        setHours(MAX_LOG_HOURS);
-                        toast.info("Maximum limit is 3 hours per log.");
-                      } else {
-                        setHours(Math.max(0.5, val || 0.5));
-                      }
-                    }}
-                    className="w-20 rounded-2xl text-xs sm:text-sm"
-                    aria-label="Custom hours"
-                  />
-                  <span className="text-xs text-muted-foreground">hrs</span>
-                </div>
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 For safety reasons, kindly send multiple logs throughout your session every 2–3 hours.
@@ -520,110 +418,27 @@ function NewLogPage() {
               </div>
             ) : null}
 
-            {/* Approving Mentors Selector (Single or Multiple) */}
+            {/* Approving Mentors Notice */}
             <div className="space-y-3 pt-3 border-t border-border/60">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Label className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-1.5">
-                      <UserCheck className="size-4 text-primary" />
-                      <span>Select Approving Mentors</span>
-                    </Label>
-                    <span className="text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full">
-                      {selectedMentorIds.length === AVAILABLE_MENTORS.length
-                        ? "All Mentors (Broadcast)"
-                        : `${selectedMentorIds.length} Selected`}
+              {teamId ? (
+                <div className="rounded-xl bg-primary/10 border border-primary/20 p-3 flex items-center gap-3 text-[11px] text-primary">
+                  <ShieldCheck className="size-4 shrink-0" />
+                  <div>
+                    <span className="font-bold block text-xs">Routing to Mentor</span>
+                    <span>
+                      This log will be sent to <strong>{myTeams.find((t: any) => t.id === teamId)?.mentor?.full_name || "the mentor"}</strong> for sign-off.
                     </span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    Select single or multiple supervisors to receive this log for sign-off.
-                  </p>
                 </div>
-
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={selectAllMentors}
-                    className="text-[11px] h-7 px-2.5 rounded-xl font-semibold text-primary hover:bg-primary/10"
-                  >
-                    Select All
-                  </Button>
+              ) : (
+                <div className="rounded-xl bg-muted/40 border border-border/70 p-3 flex items-center gap-3 text-[11px] text-muted-foreground">
+                  <UserCheck className="size-4 shrink-0" />
+                  <div>
+                    <span className="font-bold block text-xs">No Team Selected</span>
+                    <span>Select a team above to route this log to a mentor for verification.</span>
+                  </div>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {AVAILABLE_MENTORS.map((mentor) => {
-                  const isSelected = selectedMentorIds.includes(mentor.id);
-                  return (
-                    <div
-                      key={mentor.id}
-                      onClick={() => toggleMentor(mentor.id)}
-                      className={cn(
-                        "press cursor-pointer p-3 rounded-2xl border transition-all flex items-start justify-between gap-3 text-left select-none",
-                        isSelected
-                          ? "border-primary bg-primary/5 shadow-xs"
-                          : "border-border/80 hover:border-border bg-card hover:bg-muted/30 opacity-75",
-                      )}
-                    >
-                      <div className="flex items-start gap-2.5 min-w-0">
-                        <span
-                          className={cn(
-                            "size-8 rounded-xl font-bold text-xs grid place-items-center shrink-0 mt-0.5 transition-colors",
-                            isSelected
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          {mentor.avatarLetter}
-                        </span>
-                        <div className="min-w-0">
-                          <h4 className="text-xs font-bold text-foreground truncate">{mentor.name}</h4>
-                          <p className="text-[11px] font-medium text-primary truncate mt-0.5">
-                            {mentor.role}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground truncate">
-                            {mentor.department}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col items-end gap-1.5 shrink-0">
-                        <div
-                          className={cn(
-                            "size-5 rounded-lg border grid place-items-center transition-all",
-                            isSelected
-                              ? "bg-primary border-primary text-primary-foreground"
-                              : "border-border bg-background",
-                          )}
-                        >
-                          {isSelected ? <Check className="size-3.5 stroke-[3]" /> : null}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            selectSingleMentor(mentor.id);
-                          }}
-                          className="text-[10px] text-muted-foreground hover:text-primary font-medium underline underline-offset-2"
-                        >
-                          Only
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="rounded-xl bg-muted/40 border border-border/70 p-2.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>
-                  {selectedMentorNames.length > 0
-                    ? `Routing sign-off queue directly to: ${selectedMentorNames.join(", ")}.`
-                    : "Please select at least one mentor to route this submission."}
-                </span>
-              </div>
+              )}
             </div>
           </div>
         </BentoCard>
