@@ -41,6 +41,9 @@ export const DEV_STUDENT: Me = {
   institution: "Stanford University",
   course: "BIO-402 Advanced Biomechanics",
   department: "Bioengineering Department",
+  phone: null,
+  position: null,
+  hasChangedName: false,
   roles: ["student"],
 };
 
@@ -51,9 +54,12 @@ export const DEV_MENTOR: Me = {
   avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
   headline: "Associate Professor & Lab Director",
   institution: "Stanford University",
-  course: "Autonomous Prosthetics Lab",
-  department: "Department of Bioengineering",
-  roles: ["mentor", "student"],
+  course: null,
+  department: "Robotics Laboratory",
+  phone: "+1 555-123-4567",
+  position: "Senior Research Scientist",
+  hasChangedName: false,
+  roles: ["mentor"],
 };
 
 export const DEV_ADMIN: Me = {
@@ -63,9 +69,12 @@ export const DEV_ADMIN: Me = {
   avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
   headline: "Dean of Academic Affairs & Accreditation",
   institution: "Stanford University",
-  course: "Engineering & Applied Sciences",
-  department: "Office of the Dean",
-  roles: ["admin", "mentor", "student"],
+  course: null,
+  department: "Administration",
+  phone: null,
+  position: "Program Director",
+  hasChangedName: false,
+  roles: ["admin"],
 };
 
 export function getDevMe(role = getDevRole()): Me {

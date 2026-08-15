@@ -18,6 +18,9 @@ export type Me = {
   institution: string | null;
   course: string | null;
   department: string | null;
+  phone: string | null;
+  position: string | null;
+  hasChangedName: boolean;
   roles: AppRole[];
 };
 
@@ -43,6 +46,9 @@ export const meQuery = queryOptions({
           institution: profile?.institution ?? null,
           course: profile?.course ?? null,
           department: profile?.department ?? null,
+          phone: profile?.phone ?? null,
+          position: profile?.position ?? null,
+          hasChangedName: profile?.has_changed_name ?? false,
           roles: ((roles ?? []).map((r) => r.role) as AppRole[]) ?? [],
         };
       }

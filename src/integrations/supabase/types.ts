@@ -222,6 +222,9 @@ export type Database = {
           institution: string | null
           updated_at: string
           username: string | null
+          has_changed_name: boolean
+          phone: string | null
+          position: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -235,6 +238,9 @@ export type Database = {
           institution?: string | null
           updated_at?: string
           username?: string | null
+          has_changed_name?: boolean
+          phone?: string | null
+          position?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -248,6 +254,9 @@ export type Database = {
           institution?: string | null
           updated_at?: string
           username?: string | null
+          has_changed_name?: boolean
+          phone?: string | null
+          position?: string | null
         }
         Relationships: []
       }

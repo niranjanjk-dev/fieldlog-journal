@@ -22,6 +22,7 @@ import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppLogRouteImport } from './routes/_authenticated/app/log'
 import { Route as AuthenticatedAppMapRouteImport } from './routes/_authenticated/app/map'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app/portfolio'
+import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app/profile'
 import { Route as AuthenticatedAppTimelineRouteImport } from './routes/_authenticated/app/timeline'
 import { Route as AuthenticatedMentorIndexRouteImport } from './routes/_authenticated/mentor/index'
 import { Route as AuthenticatedMentorPairRouteImport } from './routes/_authenticated/mentor/pair'
@@ -96,6 +97,11 @@ const AuthenticatedAppPortfolioRoute =
     path: '/app/portfolio',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppProfileRoute = AuthenticatedAppProfileRouteImport.update({
+  id: '/app/profile',
+  path: '/app/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAppTimelineRoute =
   AuthenticatedAppTimelineRouteImport.update({
     id: '/app/timeline',
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/app/profile': typeof AuthenticatedAppProfileRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/mentor/profile': typeof AuthenticatedMentorProfileRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/app/profile': typeof AuthenticatedAppProfileRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/mentor/profile': typeof AuthenticatedMentorProfileRoute
@@ -192,6 +200,7 @@ export interface FileRoutesById {
   '/_authenticated/app/log': typeof AuthenticatedAppLogRoute
   '/_authenticated/app/map': typeof AuthenticatedAppMapRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
   '/_authenticated/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/_authenticated/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/_authenticated/mentor/profile': typeof AuthenticatedMentorProfileRoute
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/app/log'
     | '/app/map'
     | '/app/portfolio'
+    | '/app/profile'
     | '/app/timeline'
     | '/mentor/pair'
     | '/mentor/profile'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/app/log'
     | '/app/map'
     | '/app/portfolio'
+    | '/app/profile'
     | '/app/timeline'
     | '/mentor/pair'
     | '/mentor/profile'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/log'
     | '/_authenticated/app/map'
     | '/_authenticated/app/portfolio'
+    | '/_authenticated/app/profile'
     | '/_authenticated/app/timeline'
     | '/_authenticated/mentor/pair'
     | '/_authenticated/mentor/profile'
@@ -371,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppPortfolioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/profile': {
+      id: '/_authenticated/app/profile'
+      path: '/app/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AuthenticatedAppProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/timeline': {
       id: '/_authenticated/app/timeline'
       path: '/app/timeline'
@@ -429,6 +448,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppLogRoute: typeof AuthenticatedAppLogRoute
   AuthenticatedAppMapRoute: typeof AuthenticatedAppMapRoute
   AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
+  AuthenticatedAppProfileRoute: typeof AuthenticatedAppProfileRoute
   AuthenticatedAppTimelineRoute: typeof AuthenticatedAppTimelineRoute
   AuthenticatedMentorPairRoute: typeof AuthenticatedMentorPairRoute
   AuthenticatedMentorProfileRoute: typeof AuthenticatedMentorProfileRoute
@@ -446,6 +466,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppLogRoute: AuthenticatedAppLogRoute,
   AuthenticatedAppMapRoute: AuthenticatedAppMapRoute,
   AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,
+  AuthenticatedAppProfileRoute: AuthenticatedAppProfileRoute,
   AuthenticatedAppTimelineRoute: AuthenticatedAppTimelineRoute,
   AuthenticatedMentorPairRoute: AuthenticatedMentorPairRoute,
   AuthenticatedMentorProfileRoute: AuthenticatedMentorProfileRoute,
