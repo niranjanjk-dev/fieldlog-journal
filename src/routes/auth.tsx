@@ -333,7 +333,7 @@ function AuthPage() {
               )}
 
               {mode !== "request" && (
-                <div className="relative mt-5">
+                <div className="relative my-5">
                   <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="w-full border-t border-border" />
                   </div>
