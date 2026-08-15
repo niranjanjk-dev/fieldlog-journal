@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { Plus, QrCode, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -35,6 +35,8 @@ function TeamsPage() {
   const { data: people } = useQuery(peopleQuery);
   const [name, setName] = useState("");
   const [scanningTeamId, setScanningTeamId] = useState<string | null>(null);
+  const [isScanningGlobal, setIsScanningGlobal] = useState(false);
+  const navigate = useNavigate({ from: "/_authenticated/mentor/teams" });
 
   const students = (people ?? []).filter((person) => person.roles.includes("student"));
 
@@ -73,7 +75,18 @@ function TeamsPage() {
   );
 
   return (
-    <AppShell title="Mentees & Teams" subtitle="Students and placement groups you look after">
+    <AppShell 
+      title="Mentees & Teams" 
+      subtitle="Students and placement groups you look after"
+      actions={
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="press rounded-2xl" onClick={() => setIsScanningGlobal(true)}>
+            <QrCode className="size-4 mr-2" />
+            Scan Student
+          </Button>
+        </div>
+      }
+    >
       
       {/* ALL MENTEES LIST */}
       <BentoCard className="mb-6">
@@ -206,6 +219,17 @@ function TeamsPage() {
           if (scanningTeamId) {
             addMember.mutate({ teamId: scanningTeamId, studentId: data });
           }
+        }}
+      />
+
+      <ScannerModal
+        open={isScanningGlobal}
+        onOpenChange={setIsScanningGlobal}
+        title="Scan Student Code"
+        description="Scan a student's pairing QR code to become their mentor."
+        mockData={students[0]?.id ?? "00000000-0000-0000-0000-000000000000"}
+        onScan={(data) => {
+          navigate({ to: "/mentor/pair", search: { studentId: data } });
         }}
       />
     </AppShell>
