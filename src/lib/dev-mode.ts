@@ -33,7 +33,7 @@ export function setDevRole(role: DevRole): void {
 }
 
 export const DEV_STUDENT: Me = {
-  id: "dev-student-alex",
+  id: "a8003d09-d867-4311-948f-d9f1095c0674",
   email: "alex.rivera@stanford.edu",
   fullName: "Alex Rivera",
   avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
@@ -48,7 +48,7 @@ export const DEV_STUDENT: Me = {
 };
 
 export const DEV_MENTOR: Me = {
-  id: "dev-mentor-elena",
+  id: "685a2b32-c0b4-4aea-a296-ecde68de8d34",
   email: "dr.vance@stanford.edu",
   fullName: "Dr. Elena Vance",
   avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
@@ -63,7 +63,7 @@ export const DEV_MENTOR: Me = {
 };
 
 export const DEV_ADMIN: Me = {
-  id: "dev-admin-marcus",
+  id: "e50bdb5e-9823-4d8b-bd3c-0feb2b2483ef",
   email: "dean.holloway@stanford.edu",
   fullName: "Dean Marcus Holloway",
   avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
@@ -85,10 +85,10 @@ export function getDevMe(role = getDevRole()): Me {
 
 export const DEV_STUDENT_ENTRIES: Entry[] = [
   {
-    id: "entry-1",
-    student_id: "dev-student-alex",
-    team_id: "team-biomech",
-    assigned_mentor_ids: ["dev-mentor-elena", "dev-mentor-marcus"],
+    id: "4d508a64-a590-499d-aca5-63db724637a6",
+    student_id: "a8003d09-d867-4311-948f-d9f1095c0674",
+    team_id: "05960b1f-baf5-43e5-bc2f-854c518b42a4",
+    assigned_mentor_ids: ["685a2b32-c0b4-4aea-a296-ecde68de8d34", "dev-mentor-marcus"],
     assigned_mentors: ["Dr. Elena Vance", "Marcus Sterling"],
     title: "Micro-actuator calibration for prosthetic joint torque",
     category: "Hardware Testing",
@@ -104,10 +104,10 @@ export const DEV_STUDENT_ENTRIES: Entry[] = [
     reviewed_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
   },
   {
-    id: "entry-2",
-    student_id: "dev-student-alex",
-    team_id: "team-biomech",
-    assigned_mentor_ids: ["dev-mentor-elena"],
+    id: "124e2583-a186-4e94-a87a-10e82c5a0b8b",
+    student_id: "a8003d09-d867-4311-948f-d9f1095c0674",
+    team_id: "05960b1f-baf5-43e5-bc2f-854c518b42a4",
+    assigned_mentor_ids: ["685a2b32-c0b4-4aea-a296-ecde68de8d34"],
     assigned_mentors: ["Dr. Elena Vance"],
     title: "EMG sensor signal filtering and noise gate tuning",
     category: "Software Development",
@@ -123,10 +123,10 @@ export const DEV_STUDENT_ENTRIES: Entry[] = [
     reviewed_at: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: "entry-3",
-    student_id: "dev-student-alex",
-    team_id: "team-biomech",
-    assigned_mentor_ids: ["dev-mentor-elena", "dev-mentor-marcus"],
+    id: "7a05bf17-5ea0-46c7-8489-48aaa660fc77",
+    student_id: "a8003d09-d867-4311-948f-d9f1095c0674",
+    team_id: "05960b1f-baf5-43e5-bc2f-854c518b42a4",
+    assigned_mentor_ids: ["685a2b32-c0b4-4aea-a296-ecde68de8d34", "dev-mentor-marcus"],
     assigned_mentors: ["Dr. Elena Vance", "Marcus Sterling"],
     title: "3D Print socket mount iteration 3 in carbon nylon",
     category: "Fabrication",
@@ -145,10 +145,10 @@ export const DEV_STUDENT_ENTRIES: Entry[] = [
 
 export const DEV_QUEUE_ENTRIES: QueueEntry[] = [
   {
-    id: "queue-1",
-    student_id: "dev-student-alex",
-    team_id: "team-biomech",
-    assigned_mentor_ids: ["dev-mentor-elena", "dev-mentor-marcus"],
+    id: "8cc3e613-4f4d-4961-a990-f1643ae72d4c",
+    student_id: "a8003d09-d867-4311-948f-d9f1095c0674",
+    team_id: "05960b1f-baf5-43e5-bc2f-854c518b42a4",
+    assigned_mentor_ids: ["685a2b32-c0b4-4aea-a296-ecde68de8d34", "dev-mentor-marcus"],
     assigned_mentors: ["Dr. Elena Vance", "Marcus Sterling"],
     title: "3D Print socket mount iteration 3 in carbon nylon",
     note: "Print completed in 6.2 hours. Testing mechanical rigidity under compressive axial force.",
@@ -168,10 +168,10 @@ export const DEV_QUEUE_ENTRIES: QueueEntry[] = [
     },
   },
   {
-    id: "queue-2",
-    student_id: "dev-student-maya",
-    team_id: "team-robotics",
-    assigned_mentor_ids: ["dev-mentor-elena"],
+    id: "a675a2c3-542c-4185-8270-b6400271cebd",
+    student_id: "6cb79b43-98ec-44ae-a2de-245a10e413ea",
+    team_id: "f8eba1c1-9b76-45a6-81a1-9d3d27d35638",
+    assigned_mentor_ids: ["685a2b32-c0b4-4aea-a296-ecde68de8d34"],
     assigned_mentors: ["Dr. Elena Vance"],
     title: "Autonomous path planner integration on quadcopter drone",
     note: "Conducted 12 obstacle avoidance flight drills with ROS2 navigation stack. Zero collisions recorded.",
@@ -191,10 +191,10 @@ export const DEV_QUEUE_ENTRIES: QueueEntry[] = [
     },
   },
   {
-    id: "queue-3",
-    student_id: "dev-student-jordan",
-    team_id: "team-materials",
-    assigned_mentor_ids: ["dev-mentor-elena"],
+    id: "a7834051-9e0a-419d-9db4-d95a0b7e4936",
+    student_id: "a35a0fd7-a7fb-4da6-9e85-967dd49e740f",
+    team_id: "75889d1a-f151-4dfd-8810-e367d9109f24",
+    assigned_mentor_ids: ["685a2b32-c0b4-4aea-a296-ecde68de8d34"],
     assigned_mentors: ["Dr. Elena Vance"],
     title: "Tensile testing on heat-treated aluminum alloy 7075-T6",
     note: "Measured stress-strain curve up to yield point (510 MPa). Recorded elongation at break.",

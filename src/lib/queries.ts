@@ -81,7 +81,7 @@ export const myEntriesQuery = queryOptions({
         .from("entries")
         .select("*")
         .order("captured_at", { ascending: false });
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         // Merge Supabase entries with local custom entries, avoiding duplicates
         const ids = new Set(data.map((d) => d.id));
         const extra = localCustom.filter((e) => !ids.has(e.id));
@@ -113,7 +113,7 @@ export const reviewQueueQuery = queryOptions({
         .select("*, student:profiles!entries_student_profile_fkey (full_name, avatar_url, course)")
         .order("captured_at", { ascending: false })
         .limit(200);
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
         return data as unknown as QueueEntry[];
       }
     } catch {
@@ -121,7 +121,7 @@ export const reviewQueueQuery = queryOptions({
     }
 
     if (isDevModeActive()) {
-      return DEV_QUEUE_ENTRIES;
+      // return DEV_QUEUE_ENTRIES;
     }
     return [];
   },
@@ -282,4 +282,4 @@ export function publicProfileQuery(handle: string) {
       return { profile, entries: entries ?? [] };
     },
   });
-}
+}
