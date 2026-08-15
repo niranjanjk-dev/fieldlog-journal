@@ -152,15 +152,16 @@ export function AppShell({
   const devActive = isDevModeActive();
 
   useEffect(() => {
-    if (roles.includes("pending") && pathname !== "/onboarding") {
+    const isAdmin = roles.includes("admin");
+    if (roles.includes("pending") && !isAdmin && pathname !== "/onboarding") {
       navigate({ to: "/onboarding", replace: true });
     }
   }, [roles, pathname, navigate]);
 
   const sections = [
     { label: "Student", items: studentNav, show: devActive || roles.length === 0 || roles.includes("student") },
-    { label: "Mentor", items: mentorNav, show: devActive || roles.includes("mentor") || roles.includes("admin") },
-    { label: "Institution", items: institutionNav, show: devActive || roles.includes("institution") || roles.includes("admin") },
+    { label: "Mentor", items: mentorNav, show: devActive || roles.includes("mentor") },
+    { label: "Institution", items: institutionNav, show: devActive || roles.includes("institution") },
     { label: "Admin", items: adminNav, show: devActive || roles.includes("admin") },
   ].filter((s) => s.show);
 
