@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 import { DockoLogo } from "@/components/docko/app-shell";
-import { BentoCard, BentoGrid, SectionTitle, StatTile } from "@/components/docko/bento";
+import { SectionTitle } from "@/components/docko/bento";
 import { Button } from "@/components/ui/button";
 import { formatDay, formatTime, sumHours } from "@/lib/docko";
 import { myEntriesQuery } from "@/lib/queries";
@@ -56,12 +56,7 @@ function PublicPortfolioPage() {
   const totalVerifiedHours = Number(sumHours(verified)) || 78.5;
   const verifiedCount = verified.length || 18;
 
-  const skillBreakdown = [
-    { name: "Geotechnical Surveying", hours: 28.5, color: "bg-emerald-500" },
-    { name: "Environmental Soil Sampling", hours: 22.0, color: "bg-blue-500" },
-    { name: "Site Safety & Hazard Auditing", hours: 16.0, color: "bg-amber-500" },
-    { name: "GPS Coordinate Mapping", hours: 12.0, color: "bg-purple-500" },
-  ];
+
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between">
@@ -116,54 +111,6 @@ function PublicPortfolioPage() {
           </div>
         </div>
 
-        {/* Verification Seals & Metrics */}
-        <BentoGrid>
-          <StatTile
-            className="lg:col-span-2"
-            label="Verified fieldwork hours"
-            value={totalVerifiedHours}
-            unit="h"
-            hint="Mentor-signed on-site credit"
-            icon={<Clock className="size-4.5" />}
-          />
-          <StatTile
-            className="lg:col-span-2"
-            label="Verified field submissions"
-            value={verifiedCount}
-            hint="GPS geofence authenticated"
-            icon={<CheckCircle2 className="size-4.5" />}
-          />
-          <StatTile
-            className="lg:col-span-2"
-            label="Assigned mentors"
-            value="2"
-            hint="Faculty & site engineering leads"
-            icon={<UserCheck className="size-4.5" />}
-          />
-        </BentoGrid>
-
-        {/* Skills Breakdown */}
-        <div>
-          <SectionTitle
-            title="Verified Competencies & Skills"
-            hint="Breakdown of practical fieldwork hours recorded across approved task categories."
-          />
-          <div className="bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {skillBreakdown.map((s) => (
-                <div key={s.name} className="p-3.5 rounded-2xl bg-muted/40 border border-border/80 space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold">
-                    <span>{s.name}</span>
-                    <span className="tabular-nums">{s.hours.toFixed(1)}h</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full ${s.color}`} style={{ width: `${(s.hours / 35) * 100}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
         {/* Verified Record Items */}
         <div>
