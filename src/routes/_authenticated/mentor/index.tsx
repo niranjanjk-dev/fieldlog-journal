@@ -55,7 +55,7 @@ function MentorOverview() {
         onOpenChange={setIsScanning}
         title="Scan Student Code"
         description="Scan a student's pairing QR code to become their mentor."
-        mockData="mock-student-id-123"
+        mockData={all[0]?.student_id ?? "00000000-0000-0000-0000-000000000000"}
         onScan={(data) => {
           navigate({ to: "/mentor/pair", search: { studentId: data } });
         }}

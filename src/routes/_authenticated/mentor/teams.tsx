@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/mentor/teams")({
     meta: [
       { title: "Teams · docko." },
       { name: "description", content: "Team rosters, student progress, and verification metrics." },
-      { property: "og:title", content: "Teams · docko." },
+      { property: "og:title", content: "Mentees & Teams · docko." },
       { property: "og:description", content: "Group students into placement teams." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -73,7 +73,36 @@ function TeamsPage() {
   );
 
   return (
-    <AppShell title="Teams" subtitle="Placement groups you look after">
+    <AppShell title="Mentees & Teams" subtitle="Students and placement groups you look after">
+      
+      {/* ALL MENTEES LIST */}
+      <BentoCard className="mb-6">
+        <SectionTitle title="Your Mentees" hint={`Total of ${students.length} active students`} />
+        {students.length === 0 ? (
+          <EmptyState
+            icon={<Users className="size-5" />}
+            title="No students yet"
+            body="Scan a student's QR code to become their mentor."
+          />
+        ) : (
+          <ul className="space-y-3 pt-2">
+            {students.map((student) => (
+              <li key={student.id} className="flex items-center gap-3 p-2 hover:bg-muted/30 rounded-xl">
+                <Avatar className="size-10">
+                  <AvatarFallback className="bg-muted text-xs">
+                    {initials(student.full_name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-bold">{student.full_name}</p>
+                  <p className="text-xs text-muted-foreground">{student.institution || "Student"}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </BentoCard>
+
       <BentoCard className="mb-6">
         <SectionTitle title="New team" hint="Name it after the placement, site, or project group." />
         <form
@@ -172,7 +201,7 @@ function TeamsPage() {
         onOpenChange={(open) => !open && setScanningTeamId(null)}
         title="Scan Student Code"
         description="Scan a student's ID badge to add them to this team."
-        mockData="dev-student-alex"
+        mockData={students[0]?.id ?? "00000000-0000-0000-0000-000000000000"}
         onScan={(data) => {
           if (scanningTeamId) {
             addMember.mutate({ teamId: scanningTeamId, studentId: data });

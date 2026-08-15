@@ -25,6 +25,7 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppTimelineRouteImport } from './routes/_authenticated/app/timeline'
 import { Route as AuthenticatedMentorIndexRouteImport } from './routes/_authenticated/mentor/index'
 import { Route as AuthenticatedMentorPairRouteImport } from './routes/_authenticated/mentor/pair'
+import { Route as AuthenticatedMentorProfileRouteImport } from './routes/_authenticated/mentor/profile'
 import { Route as AuthenticatedMentorTeamsRouteImport } from './routes/_authenticated/mentor/teams'
 import { Route as AuthenticatedMentorVerifyRouteImport } from './routes/_authenticated/mentor/verify'
 import { Route as AuthenticatedTeamsJoinRouteImport } from './routes/_authenticated/teams/join'
@@ -112,6 +113,12 @@ const AuthenticatedMentorPairRoute = AuthenticatedMentorPairRouteImport.update({
   path: '/mentor/pair',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMentorProfileRoute =
+  AuthenticatedMentorProfileRouteImport.update({
+    id: '/mentor/profile',
+    path: '/mentor/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMentorTeamsRoute =
   AuthenticatedMentorTeamsRouteImport.update({
     id: '/mentor/teams',
@@ -143,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/mentor/pair': typeof AuthenticatedMentorPairRoute
+  '/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
   '/mentor/verify': typeof AuthenticatedMentorVerifyRoute
   '/teams/join': typeof AuthenticatedTeamsJoinRoute
@@ -163,6 +171,7 @@ export interface FileRoutesByTo {
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/mentor/pair': typeof AuthenticatedMentorPairRoute
+  '/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
   '/mentor/verify': typeof AuthenticatedMentorVerifyRoute
   '/teams/join': typeof AuthenticatedTeamsJoinRoute
@@ -185,6 +194,7 @@ export interface FileRoutesById {
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/_authenticated/mentor/pair': typeof AuthenticatedMentorPairRoute
+  '/_authenticated/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/_authenticated/mentor/teams': typeof AuthenticatedMentorTeamsRoute
   '/_authenticated/mentor/verify': typeof AuthenticatedMentorVerifyRoute
   '/_authenticated/teams/join': typeof AuthenticatedTeamsJoinRoute
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/app/portfolio'
     | '/app/timeline'
     | '/mentor/pair'
+    | '/mentor/profile'
     | '/mentor/teams'
     | '/mentor/verify'
     | '/teams/join'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/app/portfolio'
     | '/app/timeline'
     | '/mentor/pair'
+    | '/mentor/profile'
     | '/mentor/teams'
     | '/mentor/verify'
     | '/teams/join'
@@ -248,6 +260,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/timeline'
     | '/_authenticated/mentor/pair'
+    | '/_authenticated/mentor/profile'
     | '/_authenticated/mentor/teams'
     | '/_authenticated/mentor/verify'
     | '/_authenticated/teams/join'
@@ -379,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMentorPairRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mentor/profile': {
+      id: '/_authenticated/mentor/profile'
+      path: '/mentor/profile'
+      fullPath: '/mentor/profile'
+      preLoaderRoute: typeof AuthenticatedMentorProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/mentor/teams': {
       id: '/_authenticated/mentor/teams'
       path: '/mentor/teams'
@@ -411,6 +431,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
   AuthenticatedAppTimelineRoute: typeof AuthenticatedAppTimelineRoute
   AuthenticatedMentorPairRoute: typeof AuthenticatedMentorPairRoute
+  AuthenticatedMentorProfileRoute: typeof AuthenticatedMentorProfileRoute
   AuthenticatedMentorTeamsRoute: typeof AuthenticatedMentorTeamsRoute
   AuthenticatedMentorVerifyRoute: typeof AuthenticatedMentorVerifyRoute
   AuthenticatedTeamsJoinRoute: typeof AuthenticatedTeamsJoinRoute
@@ -427,6 +448,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,
   AuthenticatedAppTimelineRoute: AuthenticatedAppTimelineRoute,
   AuthenticatedMentorPairRoute: AuthenticatedMentorPairRoute,
+  AuthenticatedMentorProfileRoute: AuthenticatedMentorProfileRoute,
   AuthenticatedMentorTeamsRoute: AuthenticatedMentorTeamsRoute,
   AuthenticatedMentorVerifyRoute: AuthenticatedMentorVerifyRoute,
   AuthenticatedTeamsJoinRoute: AuthenticatedTeamsJoinRoute,
