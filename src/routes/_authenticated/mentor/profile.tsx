@@ -104,10 +104,17 @@ function MentorProfilePage() {
 
   function simulateInstitutionApproval() {
     setIsSimulating(true);
-    setTimeout(() => {
-      setStatus("verified");
-      setIsSimulating(false);
-      toast.success("Institution has verified your mentor status!");
+    setTimeout(async () => {
+      try {
+        await supabase.rpc('become_mentor');
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+        setStatus("verified");
+        toast.success("Institution has verified your mentor status!");
+      } catch (err: any) {
+        toast.error("Failed to verify status: " + err.message);
+      } finally {
+        setIsSimulating(false);
+      }
     }, 1000);
   }
 
