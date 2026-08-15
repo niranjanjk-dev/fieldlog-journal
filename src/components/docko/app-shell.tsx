@@ -41,6 +41,7 @@ const mentorNav: NavItem[] = [
   { to: "/mentor", label: "Overview", icon: <Gauge className="size-4" /> },
   { to: "/mentor/verify", label: "Verify", icon: <CheckCircle2 className="size-4" /> },
   { to: "/mentor/teams", label: "Teams", icon: <Users className="size-4" /> },
+  { to: "/mentor/profile", label: "Profile", icon: <Settings className="size-4" /> },
 ];
 
 const adminNav: NavItem[] = [

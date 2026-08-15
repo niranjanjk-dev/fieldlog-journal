@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Clock, Users } from "lucide-react";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { CheckCircle2, Clock, QrCode, Users } from "lucide-react";
+import { useState } from "react";
 
 import { AppShell } from "@/components/docko/app-shell";
 import { BentoCard, BentoGrid, MiniBars, SectionTitle, StatTile } from "@/components/docko/bento";
+import { ScannerModal } from "@/components/docko/scanner-modal";
 import { Button } from "@/components/ui/button";
 import { sumHours, weeklyActivity } from "@/lib/docko";
 import { reviewQueueQuery, teamsQuery } from "@/lib/queries";
@@ -23,6 +25,8 @@ export const Route = createFileRoute("/_authenticated/mentor/")({
 });
 
 function MentorOverview() {
+  const navigate = useNavigate({ from: "/_authenticated/mentor/" });
+  const [isScanning, setIsScanning] = useState(false);
   const { data: queue } = useQuery(reviewQueueQuery);
   const { data: teams } = useQuery(teamsQuery);
 
@@ -35,11 +39,27 @@ function MentorOverview() {
       title="Mentor overview"
       subtitle="Where your students are, at a glance"
       actions={
-        <Button asChild className="press rounded-2xl">
-          <Link to="/mentor/verify">Review queue</Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="press rounded-2xl" onClick={() => setIsScanning(true)}>
+            <QrCode className="size-4 mr-2" />
+            Scan Student
+          </Button>
+          <Button asChild className="press rounded-2xl hidden sm:flex">
+            <Link to="/mentor/verify">Review queue</Link>
+          </Button>
+        </div>
       }
     >
+      <ScannerModal
+        open={isScanning}
+        onOpenChange={setIsScanning}
+        title="Scan Student Code"
+        description="Scan a student's pairing QR code to become their mentor."
+        mockData="mock-student-id-123"
+        onScan={(data) => {
+          navigate({ to: "/mentor/pair", search: { studentId: data } });
+        }}
+      />
       {/* ── Mobile Stats Layout (phone only) ───────────────────────── */}
       <div className="sm:hidden space-y-3">
         {/* Horizontal stat strip */}

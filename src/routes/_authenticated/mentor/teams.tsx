@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus, UserPlus, Users } from "lucide-react";
+import { Plus, QrCode, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/docko/app-shell";
 import { BentoCard, EmptyState, SectionTitle } from "@/components/docko/bento";
+import { ScannerModal } from "@/components/docko/scanner-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +34,7 @@ function TeamsPage() {
   const { data: teams } = useQuery(teamsQuery);
   const { data: people } = useQuery(peopleQuery);
   const [name, setName] = useState("");
+  const [scanningTeamId, setScanningTeamId] = useState<string | null>(null);
 
   const students = (people ?? []).filter((person) => person.roles.includes("student"));
 
@@ -127,8 +129,17 @@ function TeamsPage() {
                 </ul>
 
                 <div className="mt-4 border-t border-border pt-3">
-                  <p className="mb-2 text-xs tracking-widest text-muted-foreground uppercase">
-                    Add student
+                  <p className="mb-2 text-xs tracking-widest text-muted-foreground uppercase flex items-center justify-between">
+                    <span>Add student</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2 text-[10px] press rounded-md text-primary"
+                      onClick={() => setScanningTeamId(team.id)}
+                    >
+                      <QrCode className="size-3 mr-1" />
+                      Scan QR
+                    </Button>
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {students
@@ -155,6 +166,19 @@ function TeamsPage() {
           })}
         </div>
       )}
+
+      <ScannerModal
+        open={!!scanningTeamId}
+        onOpenChange={(open) => !open && setScanningTeamId(null)}
+        title="Scan Student Code"
+        description="Scan a student's ID badge to add them to this team."
+        mockData="dev-student-alex"
+        onScan={(data) => {
+          if (scanningTeamId) {
+            addMember.mutate({ teamId: scanningTeamId, studentId: data });
+          }
+        }}
+      />
     </AppShell>
   );
 }
