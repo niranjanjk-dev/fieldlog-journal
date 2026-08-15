@@ -48,6 +48,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [otp, setOtp] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -88,18 +89,20 @@ function AuthPage() {
         });
         if (error) throw error;
         
-        if (data.user) {
-          const { error: reqError } = await supabase.from("institution_requests").insert({
-            user_id: data.user.id,
-            institution_name: institution,
-            email,
-            phone_number: phoneNumber,
-            proof_details: proofDetails
-          });
-          if (reqError) throw reqError;
+        if (!data.session) {
+          setSentTo(email);
+          return;
         }
 
-        // Sign out immediately so they see the success screen instead of being redirected
+        const { error: reqError } = await supabase.from("institution_requests").insert({
+          user_id: data.user.id,
+          institution_name: institution,
+          email,
+          phone_number: phoneNumber,
+          proof_details: proofDetails
+        });
+        if (reqError) throw reqError;
+
         await supabase.auth.signOut();
         setSentTo("request");
         return;
@@ -110,6 +113,41 @@ function AuthPage() {
       }
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function verifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    if (!sentTo) return;
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: sentTo,
+        token: otp,
+        type: "signup",
+      });
+      if (error) throw error;
+
+      if (mode === "request" && data.user) {
+        // Complete the institution request now that they are verified
+        const { error: reqError } = await supabase.from("institution_requests").insert({
+          user_id: data.user.id,
+          institution_name: institution,
+          email: sentTo,
+          phone_number: phoneNumber,
+          proof_details: proofDetails
+        });
+        if (reqError) throw reqError;
+        
+        await supabase.auth.signOut();
+        setSentTo("request");
+      } else {
+        navigate({ to: "/app" });
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Invalid or expired code");
     } finally {
       setBusy(false);
     }
@@ -218,21 +256,48 @@ function AuthPage() {
                 <CheckCircle2 className="size-6" />
               </div>
               <h1 className="font-display text-xl font-bold tracking-tight">
-                Check your inbox
+                Verify your email
               </h1>
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                We sent a confirmation link to <span className="font-semibold text-foreground">{sentTo}</span>. Open it
-                to activate your docko. account, then sign in.
+                We sent a 6-digit code to <span className="font-semibold text-foreground">{sentTo}</span>. Enter it below to activate your docko. account.
               </p>
+              
+              <form onSubmit={verifyOtp} className="mt-6 space-y-4">
+                <div className="space-y-1 text-left">
+                  <Label htmlFor="otp" className="text-xs font-semibold">
+                    Verification Code
+                  </Label>
+                  <Input
+                    id="otp"
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    required
+                    placeholder="123456"
+                    className="h-10 rounded-xl text-center text-lg font-bold tracking-widest sm:h-12 sm:text-xl"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={busy || otp.length !== 6}
+                  className="press h-10 w-full rounded-xl text-xs font-bold shadow-[var(--shadow-lift)] sm:h-12 sm:text-sm"
+                >
+                  {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : "Verify Code"}
+                </Button>
+              </form>
+
               <Button
-                variant="outline"
-                className="press mt-5 h-10 w-full rounded-xl text-xs font-semibold sm:text-sm"
+                variant="ghost"
+                className="press mt-4 w-full rounded-xl text-xs font-semibold sm:text-sm"
                 onClick={() => {
                   setSentTo(null);
                   setMode("signin");
+                  setOtp("");
                 }}
               >
-                Back to sign in
+                Cancel
               </Button>
             </BentoCard>
           ) : sentTo === "request" ? (
