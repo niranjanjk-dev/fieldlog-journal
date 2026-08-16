@@ -86,7 +86,7 @@ export function InboxView({ role }: { role: "student" | "mentor" }) {
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
               {loadingContacts ? (
-                <div className="p-4 text-center text-sm text-muted-foreground flex justify-center"><Loader2 className="animate-spin size-4" /></div>
+                <div className="h-full flex items-center justify-center text-muted-foreground"><Loader2 className="animate-spin size-5" /></div>
               ) : !contacts || contacts.length === 0 ? (
                 <div className="p-8 text-center text-sm text-muted-foreground">
                   <UserIcon className="mx-auto size-8 text-muted-foreground/30 mb-2" />
