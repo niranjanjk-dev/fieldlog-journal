@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Users, Building, ShieldCheck, Mail, Phone, Link2, LifeBuoy, CheckCircle2, ArrowLeft, MessageSquare, Send, XCircle, MessageCircle, Clock } from "lucide-react";
+import { Users, Building, ShieldCheck, Mail, Phone, Link2, LifeBuoy, CheckCircle2, ArrowLeft, MessageSquare, Send, XCircle, MessageCircle, Clock, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
 import { AppShell } from "@/components/docko/app-shell";
 import { BentoGrid, StatTile, BentoCard, SectionTitle } from "@/components/docko/bento";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,8 @@ function SystemAdminPage() {
   const queryClient = useQueryClient();
   const [activeTicket, setActiveTicket] = useState<any>(null);
   const [message, setMessage] = useState("");
+  const [institutionToDelete, setInstitutionToDelete] = useState<any>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   const { data: stats } = useQuery({
     queryKey: ["admin", "stats"],
@@ -170,6 +173,20 @@ function SystemAdminPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin"] });
       toast.success("Institution approved and access granted");
+    },
+    onError: (err: any) => toast.error(err.message)
+  });
+
+  const deleteInstitution = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("institutions").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "approved_institutions"] });
+      toast.success("Institution deleted permanently");
+      setInstitutionToDelete(null);
+      setDeleteConfirmText("");
     },
     onError: (err: any) => toast.error(err.message)
   });
@@ -404,18 +421,31 @@ function SystemAdminPage() {
                       </p>
                     </div>
                   </div>
-                  <Button 
-                    size="sm" 
-                    variant="secondary"
-                    className="press rounded-xl"
-                    disabled={createTicket.isPending}
-                    onClick={() => createTicket.mutate(inst)}
-                  >
-                    <MessageCircle className="size-4 mr-2" />
-                    Message
-                  </Button>
-                </div>
-              ))
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="secondary"
+                        className="press rounded-xl"
+                        disabled={createTicket.isPending}
+                        onClick={() => createTicket.mutate(inst)}
+                      >
+                        <MessageCircle className="size-4 mr-2" />
+                        Message
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="press rounded-xl text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={() => {
+                          setInstitutionToDelete(inst);
+                          setDeleteConfirmText("");
+                        }}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
             )}
           </div>
         </BentoCard>
@@ -459,6 +489,39 @@ function SystemAdminPage() {
           </div>
         </BentoCard>
       </BentoGrid>
+
+      <Dialog open={!!institutionToDelete} onOpenChange={(open) => !open && setInstitutionToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Delete Institution</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the institution
+              <strong> {institutionToDelete?.name} </strong> and all associated data,
+              including student and mentor assignments.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm font-medium">
+              Please type <span className="font-mono bg-muted px-1 py-0.5 rounded text-foreground">{institutionToDelete?.name}</span> to confirm.
+            </p>
+            <Input
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="Type institution name..."
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInstitutionToDelete(null)}>Cancel</Button>
+            <Button
+              variant="destructive"
+              disabled={deleteConfirmText !== institutionToDelete?.name || deleteInstitution.isPending}
+              onClick={() => deleteInstitution.mutate(institutionToDelete.id)}
+            >
+              {deleteInstitution.isPending ? "Deleting..." : "Delete Permanently"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
