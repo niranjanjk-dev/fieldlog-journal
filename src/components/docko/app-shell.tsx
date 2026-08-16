@@ -154,10 +154,22 @@ export function AppShell({
 
   useEffect(() => {
     const isAdmin = roles.includes("admin");
-    if (roles.includes("pending") && !isAdmin && pathname !== "/onboarding") {
+    const isInstitution = roles.includes("institution");
+    const isPending = roles.includes("pending") && !isAdmin && !isInstitution;
+    // Institution pending = pending role AND has an institutionId set on their profile
+    const isPendingInstitution = isPending && !!me?.institutionId;
+    // Standard pending = pending role WITHOUT an institution
+    const isPendingStandard = isPending && !me?.institutionId;
+
+    if (isPendingInstitution && pathname !== "/waiting") {
+      navigate({ to: "/waiting", replace: true });
+    } else if (isPendingStandard && pathname !== "/onboarding") {
       navigate({ to: "/onboarding", replace: true });
+    } else if (isInstitution && !isAdmin && !roles.includes("student") && pathname === "/app") {
+      navigate({ to: "/institution", replace: true });
     }
-  }, [roles, pathname, navigate]);
+  }, [roles, pathname, navigate, me]);
+
 
   const sections = [
     { label: "Student", items: studentNav, show: devActive || roles.length === 0 || roles.includes("student") },

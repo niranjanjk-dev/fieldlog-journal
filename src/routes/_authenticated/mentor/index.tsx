@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/mentor/")({
 });
 
 function MentorOverview() {
-  const navigate = useNavigate({ from: "/_authenticated/mentor/" });
+  const navigate = useNavigate();
   const [isScanning, setIsScanning] = useState(false);
   const { data: queue } = useQuery(reviewQueueQuery);
   const { data: teams } = useQuery(teamsQuery);

@@ -124,7 +124,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           </div>
 
           {/* Collapsible details for dev debugging */}
-          {error?.message ? (
+          {import.meta.env.DEV && error?.message ? (
             <details className="text-left text-[11px] text-muted-foreground bg-muted/30 p-2.5 rounded-xl">
               <summary className="cursor-pointer font-semibold text-muted-foreground hover:text-foreground">
                 Technical Details
@@ -204,6 +204,14 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const location = router.state.location;
+
+  useEffect(() => {
+    // Safety cleanup: If a Radix dialog crashes during Vite HMR, it leaves the body locked.
+    // This forcibly clears the lock on any navigation or HMR reload.
+    document.body.style.pointerEvents = "";
+    document.body.removeAttribute("data-scroll-locked");
+  }, [location.pathname]);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {

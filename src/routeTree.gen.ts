@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
+import { Route as AuthenticatedWaitingRouteImport } from './routes/_authenticated/waiting'
 import { Route as PHandleRouteImport } from './routes/p.$handle'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
@@ -71,6 +72,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
 const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWaitingRoute = AuthenticatedWaitingRouteImport.update({
+  id: '/waiting',
+  path: '/waiting',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const PHandleRoute = PHandleRouteImport.update({
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/maintenance': typeof MaintenanceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/waiting': typeof AuthenticatedWaitingRoute
   '/p/$handle': typeof PHandleRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/maintenance': typeof MaintenanceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/waiting': typeof AuthenticatedWaitingRoute
   '/p/$handle': typeof PHandleRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   '/maintenance': typeof MaintenanceRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/_authenticated/waiting': typeof AuthenticatedWaitingRoute
   '/p/$handle': typeof PHandleRoute
   '/_authenticated/app/log': typeof AuthenticatedAppLogRoute
   '/_authenticated/app/map': typeof AuthenticatedAppMapRoute
@@ -250,6 +259,7 @@ export interface FileRouteTypes {
     | '/maintenance'
     | '/onboarding'
     | '/support'
+    | '/waiting'
     | '/p/$handle'
     | '/app/log'
     | '/app/map'
@@ -275,6 +285,7 @@ export interface FileRouteTypes {
     | '/maintenance'
     | '/onboarding'
     | '/support'
+    | '/waiting'
     | '/p/$handle'
     | '/app/log'
     | '/app/map'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '/maintenance'
     | '/_authenticated/onboarding'
     | '/_authenticated/support'
+    | '/_authenticated/waiting'
     | '/p/$handle'
     | '/_authenticated/app/log'
     | '/_authenticated/app/map'
@@ -385,6 +397,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof AuthenticatedSupportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/waiting': {
+      id: '/_authenticated/waiting'
+      path: '/waiting'
+      fullPath: '/waiting'
+      preLoaderRoute: typeof AuthenticatedWaitingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/p/$handle': {
@@ -505,6 +524,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
+  AuthenticatedWaitingRoute: typeof AuthenticatedWaitingRoute
   AuthenticatedAppLogRoute: typeof AuthenticatedAppLogRoute
   AuthenticatedAppMapRoute: typeof AuthenticatedAppMapRoute
   AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
@@ -525,6 +545,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
+  AuthenticatedWaitingRoute: AuthenticatedWaitingRoute,
   AuthenticatedAppLogRoute: AuthenticatedAppLogRoute,
   AuthenticatedAppMapRoute: AuthenticatedAppMapRoute,
   AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,

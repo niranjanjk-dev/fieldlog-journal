@@ -16,6 +16,8 @@ export type Me = {
   avatarUrl: string | null;
   headline: string | null;
   institution: string | null;
+  institutionId: string | null;
+  institutionVerified: boolean;
   course: string | null;
   department: string | null;
   phone: string | null;
@@ -44,6 +46,8 @@ export const meQuery = queryOptions({
           avatarUrl: profile?.avatar_url ?? null,
           headline: profile?.headline ?? null,
           institution: profile?.institution ?? null,
+          institutionId: profile?.institution_id ?? null,
+          institutionVerified: profile?.institution_verified ?? false,
           course: profile?.course ?? null,
           department: profile?.department ?? null,
           phone: profile?.phone ?? null,
@@ -136,6 +140,20 @@ export const teamsQuery = queryOptions({
       .order("created_at", { ascending: true });
     if (error) throw error;
     return data ?? [];
+  },
+});
+
+export const systemSettingsQuery = queryOptions({
+  queryKey: ["system_settings"],
+  staleTime: 60_000,
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("system_settings")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
+    if (error) throw error;
+    return data ?? { show_admin_email_on_waiting: true, admin_contact_email: "support@docko.edu" };
   },
 });
 
@@ -280,6 +298,76 @@ export function publicProfileQuery(handle: string) {
         .order("captured_at", { ascending: false });
 
       return { profile, entries: entries ?? [] };
+    },
+  });
+}
+
+/** Fetch all approved institutions for dropdowns */
+export const institutionsQuery = queryOptions({
+  queryKey: ["institutions"],
+  staleTime: 5 * 60_000,
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("institutions")
+      .select("id, name, domain")
+      .eq("status", "approved")
+      .order("name");
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+
+/** Entries visible to this institution (entries by institution-verified members) */
+export function institutionEntriesQuery(institutionId: string | null) {
+  return queryOptions({
+    queryKey: ["institution", "entries", institutionId],
+    enabled: !!institutionId,
+    queryFn: async () => {
+      if (!institutionId) return [];
+      // Get all verified members of this institution
+      const { data: members, error: mErr } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("institution_id", institutionId)
+        .eq("institution_verified", true);
+      if (mErr) throw mErr;
+      if (!members || members.length === 0) return [];
+      const memberIds = members.map((m) => m.id);
+      const { data, error } = await supabase
+        .from("entries")
+        .select("*, student:profiles!entries_student_profile_fkey(full_name, avatar_url, course)")
+        .in("student_id", memberIds)
+        .order("captured_at", { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+/** Teams where the mentor is a verified member of this institution */
+export function institutionTeamsQuery(institutionId: string | null) {
+  return queryOptions({
+    queryKey: ["institution", "teams", institutionId],
+    enabled: !!institutionId,
+    queryFn: async () => {
+      if (!institutionId) return [];
+      // Get all verified mentors of this institution
+      const { data: mentors, error: mErr } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("institution_id", institutionId)
+        .eq("institution_verified", true);
+      if (mErr) throw mErr;
+      if (!mentors || mentors.length === 0) return [];
+      const mentorIds = mentors.map((m) => m.id);
+      const { data, error } = await supabase
+        .from("teams")
+        .select("*, team_members(id, student_id, profile:profiles!team_members_student_profile_fkey(full_name, avatar_url))")
+        .in("mentor_id", mentorIds)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
     },
   });
 }

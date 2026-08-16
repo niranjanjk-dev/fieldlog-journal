@@ -72,7 +72,7 @@ interface TeamAffiliation {
   workspaceName: string;
 }
 
-export default function PortfolioPage() {
+function PortfolioPage() {
   const queryClient = useQueryClient();
   const { data: me } = useQuery(meQuery);
   const { data: entries } = useQuery(myEntriesQuery);

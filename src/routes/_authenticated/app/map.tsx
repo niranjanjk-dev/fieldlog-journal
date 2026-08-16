@@ -48,7 +48,7 @@ function MapPage() {
             peerEntries={queue ?? []}
             workspaces={workspaces}
             photoUrls={photoUrls ?? {}}
-            currentUserId={me?.id}
+            currentUserId={me?.id ?? ""}
           />
         </ClientOnly>
       </BentoCard>

@@ -57,7 +57,7 @@ const MAX_LOG_HOURS = 3;
 type OfflineDraft = {
   id: string;
   title: string;
-  category: string | null;
+  category?: string | null;
   note: string;
   hours: number;
   teamId: string | null;
@@ -281,6 +281,7 @@ function NewLogPage() {
       const draft: OfflineDraft = {
         id: crypto.randomUUID(),
         title: title.trim(),
+        category: category.trim() || null,
         note: note.trim(),
         hours,
         teamId,
@@ -300,7 +301,7 @@ function NewLogPage() {
     try {
       await createEntry(me.id, {
         title: draft.title,
-        category: draft.category,
+        category: draft.category ?? null,
         note: draft.note,
         hours: draft.hours,
         teamId: draft.teamId,

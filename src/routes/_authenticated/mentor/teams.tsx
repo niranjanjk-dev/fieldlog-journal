@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { initials } from "@/lib/docko";
-import { meQuery, peopleQuery, teamsQuery } from "@/lib/queries";
+import { meQuery, teamsQuery } from "@/lib/queries";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export const Route = createFileRoute("/_authenticated/mentor/teams")({
@@ -32,13 +32,50 @@ function TeamsPage() {
   const queryClient = useQueryClient();
   const { data: me } = useQuery(meQuery);
   const { data: teams } = useQuery(teamsQuery);
-  const { data: people } = useQuery(peopleQuery);
   const [name, setName] = useState("");
   const [scanningTeamId, setScanningTeamId] = useState<string | null>(null);
   const [isScanningGlobal, setIsScanningGlobal] = useState(false);
-  const navigate = useNavigate({ from: "/_authenticated/mentor/teams" });
+  const navigate = useNavigate();
 
-  const students = (people ?? []).filter((person) => person.roles.includes("student"));
+  // Only show students who are already in this mentor's teams
+  const myTeams = (teams ?? []).filter(
+    (team) => team.mentor_id === me?.id || me?.roles.includes("admin"),
+  );
+
+  // Build the set of student IDs already in any of this mentor's teams
+  const myStudentIds = new Set(
+    myTeams.flatMap((team) =>
+      ((team.team_members as { id: string; student_id: string; profile: any }[] | null) ?? []).map((m) => m.student_id)
+    )
+  );
+
+  // Fetch all students platform-wide only when adding to a team — scoped to non-members
+  const { data: allStudents } = useQuery({
+    queryKey: ["students_for_teams", me?.id],
+    enabled: !!me?.id,
+    queryFn: async () => {
+      // Get student role user IDs
+      const { data: roles, error: rErr } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "student");
+      if (rErr) throw rErr;
+      const studentIds = (roles ?? []).map((r) => r.user_id);
+      if (studentIds.length === 0) return [];
+      const { data: profiles, error: pErr } = await supabase
+        .from("profiles")
+        .select("id, full_name, institution, course")
+        .in("id", studentIds)
+        .order("full_name");
+      if (pErr) throw pErr;
+      return profiles ?? [];
+    },
+  });
+
+  // "Your Mentees" = students actually in the mentor's teams
+  const myStudents = (allStudents ?? []).filter((s) => myStudentIds.has(s.id));
+  // Available to add = students not yet in any of this mentor's teams
+  const availableStudents = (allStudents ?? []).filter((s) => !myStudentIds.has(s.id));
 
   const createTeam = useMutation({
     mutationFn: async () => {
@@ -70,9 +107,7 @@ function TeamsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const myTeams = (teams ?? []).filter(
-    (team) => team.mentor_id === me?.id || me?.roles.includes("admin"),
-  );
+  const myTeamsFinal = myTeams;
 
   return (
     <AppShell 
@@ -90,16 +125,16 @@ function TeamsPage() {
       
       {/* ALL MENTEES LIST */}
       <BentoCard className="mb-6">
-        <SectionTitle title="Your Mentees" hint={`Total of ${students.length} active students`} />
-        {students.length === 0 ? (
+        <SectionTitle title="Your Mentees" hint={`${myStudents.length} student${myStudents.length === 1 ? "" : "s"} across your teams`} />
+        {myStudents.length === 0 ? (
           <EmptyState
             icon={<Users className="size-5" />}
             title="No students yet"
-            body="Scan a student's QR code to become their mentor."
+            body="Scan a student's QR code or add them to a team below."
           />
         ) : (
           <ul className="space-y-3 pt-2">
-            {students.map((student) => (
+            {myStudents.map((student) => (
               <li key={student.id} className="flex items-center gap-3 p-2 hover:bg-muted/30 rounded-xl">
                 <Avatar className="size-10">
                   <AvatarFallback className="bg-muted text-xs">
@@ -138,7 +173,7 @@ function TeamsPage() {
         </form>
       </BentoCard>
 
-      {myTeams.length === 0 ? (
+      {myTeamsFinal.length === 0 ? (
         <EmptyState
           icon={<Users className="size-5" />}
           title="No teams yet"
@@ -146,7 +181,7 @@ function TeamsPage() {
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
-          {myTeams.map((team) => {
+          {myTeamsFinal.map((team) => {
             const members =
               (team.team_members as
                 | { id: string; student_id: string; profile: { full_name: string } | null }[]
@@ -162,10 +197,10 @@ function TeamsPage() {
                     <li key={member.id} className="flex items-center gap-2.5">
                       <Avatar className="size-7">
                         <AvatarFallback className="bg-muted text-[11px]">
-                          {initials(member.profile?.full_name)}
+                          {initials((member.profile as any)?.full_name)}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm">{member.profile?.full_name ?? "Student"}</span>
+                      <span className="text-sm">{(member.profile as any)?.full_name ?? "Student"}</span>
                     </li>
                   ))}
                 </ul>
@@ -184,7 +219,7 @@ function TeamsPage() {
                     </Button>
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {students
+                    {availableStudents
                       .filter((student) => !members.some((m) => m.student_id === student.id))
                       .slice(0, 8)
                       .map((student) => (
@@ -201,6 +236,9 @@ function TeamsPage() {
                           {student.full_name}
                         </Button>
                       ))}
+                    {availableStudents.filter((s) => !members.some((m) => m.student_id === s.id)).length === 0 && (
+                      <p className="text-xs text-muted-foreground">All students are already in this team.</p>
+                    )}
                   </div>
                 </div>
               </BentoCard>

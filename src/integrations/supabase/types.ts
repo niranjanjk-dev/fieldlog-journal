@@ -220,6 +220,8 @@ export type Database = {
           headline: string | null
           id: string
           institution: string | null
+          institution_id: string | null
+          institution_verified: boolean
           updated_at: string
           username: string | null
           has_changed_name: boolean
@@ -236,6 +238,8 @@ export type Database = {
           headline?: string | null
           id: string
           institution?: string | null
+          institution_id?: string | null
+          institution_verified?: boolean
           updated_at?: string
           username?: string | null
           has_changed_name?: boolean
@@ -252,11 +256,170 @@ export type Database = {
           headline?: string | null
           id?: string
           institution?: string | null
+          institution_id?: string | null
+          institution_verified?: boolean
           updated_at?: string
           username?: string | null
           has_changed_name?: boolean
           phone?: string | null
           position?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      institution_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          institution_name: string
+          status: string
+          user_id: string
+          phone_number: string | null
+          proof_details: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          institution_name: string
+          status?: string
+          user_id: string
+          phone_number?: string | null
+          proof_details?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          institution_name?: string
+          status?: string
+          user_id?: string
+          phone_number?: string | null
+          proof_details?: string | null
+        }
+        Relationships: []
+      }
+      institutions: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          domain: string | null
+          id: string
+          name: string
+          status: string
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          domain?: string | null
+          id?: string
+          name: string
+          status?: string
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          domain?: string | null
+          id?: string
+          name?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          description: string
+          id: string
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          type: Database["public"]["Enums"]["ticket_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          type?: Database["public"]["Enums"]["ticket_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject?: string
+          type?: Database["public"]["Enums"]["ticket_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ticket_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          ticket_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          ticket_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          ticket_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      system_settings: {
+        Row: {
+          admin_contact_email: string | null
+          id: number
+          show_admin_email_on_waiting: boolean
+        }
+        Insert: {
+          admin_contact_email?: string | null
+          id: number
+          show_admin_email_on_waiting?: boolean
+        }
+        Update: {
+          admin_contact_email?: string | null
+          id?: number
+          show_admin_email_on_waiting?: boolean
         }
         Relationships: []
       }
@@ -360,6 +523,40 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_institution_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          contact_email: string | null
+          student_count: number
+          total_hours: number
+        }[]
+      }
+      approve_institution_request: {
+        Args: { req_id: string }
+        Returns: void
+      }
+      verify_institution_member: {
+        Args: { _target_user_id: string }
+        Returns: void
+      }
+      unverify_institution_member: {
+        Args: { _target_user_id: string }
+        Returns: void
+      }
+      complete_onboarding: {
+        Args: { _role: Database["public"]["Enums"]["app_role"], _institution_id: string, _full_name: string }
+        Returns: void
+      }
+      become_mentor: {
+        Args: Record<PropertyKey, never>
+        Returns: void
+      }
+      get_institution_admin_id: {
+        Args: { _institution_id: string }
+        Returns: string | null
+      }
       can_view_entry: {
         Args: { _entry: string; _user: string }
         Returns: boolean
@@ -385,8 +582,11 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "student" | "mentor" | "admin"
+      app_role: "student" | "mentor" | "admin" | "institution" | "pending"
       entry_status: "pending" | "verified" | "rejected"
+      ticket_status: "open" | "in_progress" | "resolved" | "closed"
+      ticket_type: "name_change" | "bug_report" | "feature_request" | "other"
+
     }
     CompositeTypes: {
       [_ in never]: never
@@ -514,8 +714,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["student", "mentor", "admin"],
+      app_role: ["student", "mentor", "admin", "institution", "pending"],
       entry_status: ["pending", "verified", "rejected"],
+      ticket_status: ["open", "in_progress", "resolved", "closed"],
+      ticket_type: ["name_change", "bug_report", "feature_request", "other"],
+
     },
   },
 } as const

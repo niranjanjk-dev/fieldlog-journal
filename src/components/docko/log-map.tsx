@@ -143,8 +143,8 @@ export default function LogMap({
     const maxProximityMeters = 10000; // 10km radius max for nearby
 
     // Base reference coordinate (user's live location or first located entry)
-    const baseLat = userLocation?.lat ?? (located[0] ? Number(located[0].latitude) : 20.5937);
-    const baseLng = userLocation?.lng ?? (located[0] ? Number(located[0].longitude) : 78.9629);
+    const baseLat = userLocation?.lat ?? (located[0] ? Number(located[0]?.latitude ?? 0) : 20.5937);
+    const baseLng = userLocation?.lng ?? (located[0] ? Number(located[0]?.longitude ?? 0) : 78.9629);
 
     // Candidates from real peer entries
     const activePeers = peerEntries
@@ -183,7 +183,7 @@ export default function LogMap({
         if (!mapInstanceRef.current) {
           const defaultCenter: [number, number] =
             located.length > 0
-              ? [Number(located[0].latitude), Number(located[0].longitude)]
+              ? [Number(located[0]?.latitude ?? 0), Number(located[0]?.longitude ?? 0)]
               : [20.5937, 78.9629];
 
           const map = L.map(containerRef.current, {
@@ -561,7 +561,7 @@ export default function LogMap({
         const fallback = located[0];
         setLocateMessage("GPS access restricted: Centered on your latest field log.");
         if (mapInstanceRef.current) {
-          mapInstanceRef.current.setView([Number(fallback.latitude), Number(fallback.longitude)], 15, {
+          mapInstanceRef.current.setView([Number(fallback?.latitude ?? 0), Number(fallback?.longitude ?? 0)], 15, {
             animate: true,
           });
         }

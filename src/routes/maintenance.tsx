@@ -23,9 +23,11 @@ type MaintenanceSearch = {
 };
 
 export const Route = createFileRoute("/maintenance")({
-  validateSearch: (search: Record<string, unknown>): MaintenanceSearch => ({
-    from: typeof search.from === "string" ? search.from : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): MaintenanceSearch => {
+    const params: MaintenanceSearch = {};
+    if (typeof search["from"] === "string") params.from = search["from"];
+    return params;
+  },
   head: () => ({
     meta: [
       { title: "System Maintenance · Docko" },

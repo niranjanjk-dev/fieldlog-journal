@@ -4,32 +4,33 @@ import { Users } from "lucide-react";
 
 import { AppShell } from "@/components/docko/app-shell";
 import { BentoCard, EmptyState, SectionTitle } from "@/components/docko/bento";
-import { teamsQuery } from "@/lib/queries";
+import { meQuery, institutionTeamsQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/institution/teams")({
   head: () => ({
     meta: [
-      { title: "All teams · Docko" },
+      { title: "Teams · Institution · Docko" },
       { name: "description", content: "Every placement team across your institution and its members." },
-      { property: "og:title", content: "All teams · Docko" },
+      { property: "og:title", content: "Teams · Institution · Docko" },
       { property: "og:description", content: "Every placement team across your institution." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: AdminTeamsPage,
+  component: InstitutionTeamsPage,
 });
 
-function AdminTeamsPage() {
-  const { data: teams } = useQuery(teamsQuery);
+function InstitutionTeamsPage() {
+  const { data: me } = useQuery(meQuery);
+  const { data: teams } = useQuery(institutionTeamsQuery(me?.institutionId ?? null));
 
   return (
-    <AppShell title="All teams" subtitle={`${teams?.length ?? 0} placement teams`}>
+    <AppShell title="Teams" subtitle={`${teams?.length ?? 0} teams at your institution`}>
       {!teams || teams.length === 0 ? (
         <EmptyState
           icon={<Users className="size-5" />}
           title="No teams yet"
-          body="Mentors create teams and add the students on each placement."
+          body="Verified mentors from your institution create teams and add their students."
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">

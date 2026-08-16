@@ -3,6 +3,7 @@ import type { EntryStatus } from "./docko";
 
 export type NewEntryInput = {
   title: string;
+  category?: string | null;
   note: string;
   hours: number;
   teamId: string | null;
@@ -65,6 +66,7 @@ export async function createEntry(userId: string, input: NewEntryInput) {
     student_id: userId,
     team_id: input.teamId,
     title: input.title,
+    category: input.category ?? null,
     note: input.note || null,
     hours: input.hours,
     latitude: input.latitude,
@@ -72,7 +74,7 @@ export async function createEntry(userId: string, input: NewEntryInput) {
     address: input.address,
     captured_at: input.capturedAt,
     photo_path: photoPath,
-    status: "submitted" as const,
+    status: "pending" as const,
     review_note: null,
     reviewed_at: null,
     reviewed_by: null,
@@ -96,6 +98,7 @@ export async function createEntry(userId: string, input: NewEntryInput) {
         student_id: userId,
         team_id: input.teamId,
         title: input.title,
+        category: input.category ?? null,
         note: input.note || null,
         hours: input.hours,
         latitude: input.latitude,
@@ -121,7 +124,7 @@ export async function reviewEntry(
   reviewNote: string | null,
 ) {
   const { data: auth } = await supabase.auth.getUser();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("entries")
     .update({
       status,
@@ -129,8 +132,11 @@ export async function reviewEntry(
       reviewed_at: new Date().toISOString(),
       reviewed_by: auth.user?.id ?? null,
     })
-    .eq("id", entryId);
+    .eq("id", entryId)
+    .select("id");
+    
   if (error) throw error;
+  if (!data || data.length === 0) throw new Error("Not authorized to review this entry, or it doesn't exist.");
 }
 
 export async function addComment(entryId: string, body: string) {

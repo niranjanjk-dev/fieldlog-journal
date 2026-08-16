@@ -19,4 +19,15 @@ export default defineConfig({
     host: "::",
     port: 8080,
   },
+  optimizeDeps: {
+    include: [
+      "lucide-react",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-switch",
+      "@radix-ui/react-avatar",
+      "@radix-ui/react-dropdown-menu",
+      "@tanstack/react-query",
+      "@tanstack/react-router"
+    ],
+  },
 });

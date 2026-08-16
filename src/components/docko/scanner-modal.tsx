@@ -39,7 +39,7 @@ export function ScannerModal({
           setSuccess(true);
           
           if (codeReader) {
-            codeReader.reset();
+            (codeReader as any).reset();
           }
           
           setTimeout(() => {
@@ -64,7 +64,7 @@ export function ScannerModal({
 
     return () => {
       if (codeReader) {
-        codeReader.reset();
+        (codeReader as any).reset();
       }
     };
   }, [open, onScan, onOpenChange]);

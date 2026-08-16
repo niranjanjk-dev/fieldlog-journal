@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { BellRing, CheckCircle2, Inbox, MapPin, XCircle } from "lucide-react";
+import { BellRing, CheckCircle2, Inbox, MapPin, XCircle, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -75,8 +75,20 @@ function VerifyPage() {
       }
       return reviewEntry(input.id, input.status, input.note);
     },
+    onMutate: async (input) => {
+      await queryClient.cancelQueries({ queryKey: ["entries", "queue"] });
+      const previousQueue = queryClient.getQueryData(["entries", "queue"]);
+      
+      queryClient.setQueryData(["entries", "queue"], (old: any) => {
+        if (!old) return old;
+        return old.map((entry: any) => 
+          entry.id === input.id ? { ...entry, status: input.status } : entry
+        );
+      });
+      
+      return { previousQueue };
+    },
     onSuccess: (_data, input) => {
-      queryClient.invalidateQueries({ queryKey: ["entries"] });
       toast.success(
         input.status === "verified"
           ? input.asWorkspace
@@ -85,7 +97,15 @@ function VerifyPage() {
           : "Changes requested",
       );
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error, _input, context: any) => {
+      if (context?.previousQueue) {
+        queryClient.setQueryData(["entries", "queue"], context.previousQueue);
+      }
+      toast.error(error.message);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+    },
   });
 
   const nudge = useMutation({
@@ -150,6 +170,12 @@ function VerifyPage() {
           <SkeletonTile className="h-64" />
           <SkeletonTile className="h-64" />
         </div>
+      ) : me && !me.institutionVerified && !me.roles.includes("admin") ? (
+        <EmptyState
+          icon={<ShieldCheck className="size-5 text-destructive" />}
+          title="Account not verified"
+          body="Your mentor account must be verified by your institution before you can review student logs."
+        />
       ) : visible.length === 0 ? (
         <EmptyState
           icon={<Inbox className="size-5" />}

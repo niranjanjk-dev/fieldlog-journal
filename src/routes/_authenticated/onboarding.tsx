@@ -38,8 +38,9 @@ function OnboardingPage() {
     if (me && !fullName) {
       setFullName(me.fullName || "");
     }
-    // If not pending, don't stay here
-    if (me && !me.roles.includes("pending") && me.roles.length > 0) {
+    // If they have an active role (not just pending), don't stay here
+    const hasActiveRole = me && me.roles.some((r: string) => r !== "pending");
+    if (me && hasActiveRole) {
       navigate({ to: "/app" });
     }
   }, [me, fullName, navigate]);
@@ -65,7 +66,7 @@ function OnboardingPage() {
     onError: (err: any) => toast.error(err.message),
   });
 
-  if (isLoading || (me && !me.roles.includes("pending"))) {
+  if (isLoading || (me && me.roles.some((r: string) => r !== "pending"))) {
     return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin size-6 text-muted-foreground" /></div>;
   }
 

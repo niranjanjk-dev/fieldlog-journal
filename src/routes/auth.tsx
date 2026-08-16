@@ -46,6 +46,7 @@ function AuthPage() {
   const [proofDetails, setProofDetails] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [otp, setOtp] = useState("");
@@ -62,6 +63,12 @@ function AuthPage() {
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    
+    if ((mode === "signup" || mode === "request") && password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -78,7 +85,7 @@ function AuthPage() {
           setSentTo(email);
           return;
         }
-        navigate({ to: "/app" });
+        navigate({ to: "/onboarding" });
       } else if (mode === "request") {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -88,14 +95,16 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        
+
         if (!data.session) {
+          // Email confirmation required — store details for after OTP verification
           setSentTo(email);
           return;
         }
 
+        // Session available immediately (no email confirmation required)
         const { error: reqError } = await supabase.from("institution_requests").insert({
-          user_id: data.user.id,
+          user_id: data.user?.id as string,
           institution_name: institution,
           email,
           phone_number: phoneNumber,
@@ -133,7 +142,7 @@ function AuthPage() {
       if (mode === "request" && data.user) {
         // Complete the institution request now that they are verified
         const { error: reqError } = await supabase.from("institution_requests").insert({
-          user_id: data.user.id,
+          user_id: data.user?.id as string,
           institution_name: institution,
           email: sentTo,
           phone_number: phoneNumber,
@@ -144,7 +153,7 @@ function AuthPage() {
         await supabase.auth.signOut();
         setSentTo("request");
       } else {
-        navigate({ to: "/app" });
+        navigate({ to: "/onboarding" });
       }
     } catch (error: any) {
       toast.error(error?.message || "Invalid or expired code");
@@ -516,6 +525,26 @@ function AuthPage() {
                     className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
                   />
                 </div>
+
+                {/* Confirm Password Field */}
+                {(mode === "signup" || mode === "request") && (
+                  <div className="space-y-1">
+                    <Label htmlFor="confirmPassword" className="text-[11px] font-semibold sm:text-xs">
+                      Confirm password
+                    </Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={8}
+                      autoComplete="new-password"
+                      placeholder="••••••••"
+                      className="h-9 rounded-xl px-3 text-xs sm:h-9.5 sm:text-sm"
+                    />
+                  </div>
+                )}
 
                 {/* Submit Action */}
                 <Button
