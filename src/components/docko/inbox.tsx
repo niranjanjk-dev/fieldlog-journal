@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Send, User as UserIcon, Loader2, MessageSquare } from "lucide-react";
 
 import { AppShell } from "@/components/docko/app-shell";
-import { BentoCard, BentoGrid, SectionTitle } from "@/components/docko/bento";
+import { BentoCard, BentoGrid } from "@/components/docko/bento";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -82,7 +82,7 @@ export function InboxView({ role }: { role: "student" | "mentor" }) {
           {/* Contacts List */}
           <BentoCard className="lg:col-span-2 p-0 flex flex-col h-full overflow-hidden">
             <div className="p-4 border-b border-border/50">
-              <SectionTitle title="Contacts" />
+              <h2 className="text-base font-semibold tracking-tight">Contacts</h2>
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
               {loadingContacts ? (
