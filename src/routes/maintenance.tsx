@@ -45,26 +45,7 @@ function MaintenancePage() {
   const { from } = Route.useSearch();
   const [checking, setChecking] = useState(false);
 
-  const navLinks = [
-    { to: "/app", label: "Today" },
-    { to: "/app/log", label: "New log" },
-    { to: "/app/timeline", label: "Timeline" },
-    { to: "/app/map", label: "Map" },
-    { to: "/app/portfolio", label: "Portfolio" },
-  ].filter((item) => {
-    if (from && (item.to === from || item.to === from.replace(/\/$/, ""))) return false;
-    if (typeof window !== "undefined" && document.referrer) {
-      try {
-        const refUrl = new URL(document.referrer);
-        if (refUrl.pathname === item.to || refUrl.pathname === item.to + "/") return false;
-      } catch {
-        // ignore
-      }
-    }
-    return true;
-  });
-
-  const returnTarget = from && from !== "/app" ? "/app" : (navLinks[0]?.to ?? "/");
+  const returnTarget = from && from !== "/app" ? "/app" : "/";
 
   function handleCheckStatus() {
     setChecking(true);
@@ -198,12 +179,6 @@ function MaintenancePage() {
           <p className="text-xs text-muted-foreground">Need urgent assistance?</p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-xs font-semibold text-primary">
             <Link to="/" className="hover:underline">Home</Link>
-            {navLinks.map((item) => (
-              <span key={item.to} className="flex items-center gap-4">
-                <span>·</span>
-                <Link to={item.to} className="hover:underline">{item.label}</Link>
-              </span>
-            ))}
             <span>·</span>
             <a href="mailto:support@docko.app" className="hover:underline">Contact Support</a>
           </div>

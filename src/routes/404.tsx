@@ -1,19 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  CalendarClock,
-  Compass,
-  FolderOpen,
-  HelpCircle,
-  Home,
-  LayoutDashboard,
-  MapPin,
-  PenLine,
-  Search,
-  ShieldAlert,
-  Wrench,
-} from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Compass } from "lucide-react";
 
 import { DockoLogo } from "@/components/docko/app-shell";
 import { BentoCard } from "@/components/docko/bento";
@@ -34,48 +20,7 @@ export const Route = createFileRoute("/404")({
   component: NotFoundPage,
 });
 
-function NotFoundPage() {
-  const [filter, setFilter] = useState("");
-
-  const quickLinks = [
-    {
-      to: "/app",
-      title: "Today",
-      desc: "View your active streak, total hours, and review status.",
-      icon: <LayoutDashboard className="size-4" />,
-    },
-    {
-      to: "/app/log",
-      title: "New log",
-      desc: "Capture a field entry with GPS coordinates and photo evidence.",
-      icon: <PenLine className="size-4" />,
-    },
-    {
-      to: "/app/timeline",
-      title: "Timeline",
-      desc: "Browse past journal logs, weekly activity, and filter by date.",
-      icon: <CalendarClock className="size-4" />,
-    },
-    {
-      to: "/app/map",
-      title: "Map",
-      desc: "See all your logs pinned on the interactive map.",
-      icon: <MapPin className="size-4" />,
-    },
-    {
-      to: "/app/portfolio",
-      title: "Portfolio",
-      desc: "View audit-ready verified records and download official CSV logs.",
-      icon: <FolderOpen className="size-4" />,
-    },
-  ];
-
-  const filteredLinks = quickLinks.filter(
-    (link) =>
-      link.title.toLowerCase().includes(filter.toLowerCase()) ||
-      link.desc.toLowerCase().includes(filter.toLowerCase()),
-  );
-
+export function NotFoundPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between">
       {/* Header spanning full width corners */}
@@ -114,44 +59,8 @@ function NotFoundPage() {
               Off the Beaten Path
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We couldn't find the page or log you were looking for. Use the directory below to jump straight to any part of your journal.
+              We couldn't find the page or log you were looking for.
             </p>
-          </div>
-
-          {/* Quick Search */}
-          <div className="max-w-md mx-auto relative">
-            <Search className="size-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <Input
-              type="text"
-              placeholder="Search destination pages..."
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="pl-9 pr-4 py-2 rounded-2xl bg-muted/30 text-sm focus-visible:ring-primary"
-            />
-          </div>
-
-          {/* Quick Destinations Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-2">
-            {filteredLinks.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="group flex items-start gap-3.5 p-3.5 rounded-2xl raised hover:bg-accent/40 transition-all border border-border/50 hover:border-primary/40"
-              >
-                <div className="size-10 rounded-xl grid place-items-center bg-muted/60 shrink-0 group-hover:scale-105 transition-transform">
-                  {item.icon}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors flex items-center justify-between">
-                    <span>{item.title}</span>
-                    <span className="text-muted-foreground text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                      &rarr;
-                    </span>
-                  </h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{item.desc}</p>
-                </div>
-              </Link>
-            ))}
           </div>
 
           {/* Action Row */}
