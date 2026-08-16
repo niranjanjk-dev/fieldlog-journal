@@ -33,18 +33,18 @@ type NavItem = { to: string; label: string; icon: ReactNode };
 
 const studentNav: NavItem[] = [
   { to: "/app", label: "Today", icon: <LayoutDashboard className="size-4" /> },
-  { to: "/app/inbox", label: "Inbox", icon: <MessageSquare className="size-4" /> },
   { to: "/app/log", label: "New log", icon: <PenLine className="size-4" /> },
   { to: "/app/timeline", label: "Timeline", icon: <CalendarClock className="size-4" /> },
+  { to: "/app/inbox", label: "Inbox", icon: <MessageSquare className="size-4" /> },
   { to: "/app/map", label: "Map", icon: <MapPin className="size-4" /> },
   { to: "/app/portfolio", label: "Portfolio", icon: <FolderOpen className="size-4" /> },
 ];
 
 const mentorNav: NavItem[] = [
   { to: "/mentor", label: "Overview", icon: <Gauge className="size-4" /> },
-  { to: "/mentor/inbox", label: "Inbox", icon: <MessageSquare className="size-4" /> },
   { to: "/mentor/verify", label: "Verify", icon: <CheckCircle2 className="size-4" /> },
   { to: "/mentor/teams", label: "Teams", icon: <Users className="size-4" /> },
+  { to: "/mentor/inbox", label: "Inbox", icon: <MessageSquare className="size-4" /> },
   { to: "/mentor/profile", label: "Profile", icon: <Settings className="size-4" /> },
 ];
 
