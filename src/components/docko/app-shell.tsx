@@ -118,7 +118,7 @@ function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => v
           key={item.to}
           to={item.to}
           onClick={onNavigate}
-          activeOptions={{ exact: item.to === "/app" || item.to === "/mentor" || item.to === "/admin" }}
+          activeOptions={{ exact: item.to === "/app" || item.to === "/mentor" || item.to === "/admin" || item.to === "/institution" }}
           className="press flex items-center gap-2.5 rounded-2xl px-3 py-2 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground data-[status=active]:shadow-[var(--inset-top)]"
         >
           {item.icon}
