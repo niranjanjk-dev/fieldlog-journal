@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Hero, Nav } from "@/components/landing/Hero";
 import {
   Features,
@@ -40,6 +42,14 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate({ to: "/app" });
+    });
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-foreground">
       <Nav />

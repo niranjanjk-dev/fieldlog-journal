@@ -221,7 +221,7 @@ export function AppShell({
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{me?.fullName ?? "Loading…"}</p>
           <p className="truncate text-xs text-muted-foreground">
-            {roles[0] ? roles[0][0]?.toUpperCase() + roles[0].slice(1) : "Student"}
+            {roles.includes("admin") ? "System Admin" : roles.includes("institution") ? "Institution" : roles.includes("mentor") ? "Mentor" : roles.includes("student") ? "Student" : roles[0] ? roles[0][0]?.toUpperCase() + roles[0].slice(1) : "Student"}
           </p>
         </div>
         <Button
