@@ -11,6 +11,7 @@ import {
   LifeBuoy,
   MapPin,
   Menu,
+  MessageSquare,
   Moon,
   PenLine,
   Settings,
