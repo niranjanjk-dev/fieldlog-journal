@@ -34,7 +34,7 @@ export const Route = createFileRoute("/404")({
   component: NotFoundPage,
 });
 
-export function NotFoundPage() {
+function NotFoundPage() {
   const [filter, setFilter] = useState("");
 
   const quickLinks = [
