@@ -5,7 +5,7 @@ import { LifeBuoy, Loader2, Send, MessageSquare, ArrowLeft } from "lucide-react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/docko/app-shell";
-import { BentoGrid, BentoCard, SectionTitle } from "@/components/docko/bento";
+import { BentoCard, SectionTitle } from "@/components/docko/bento";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -183,8 +183,8 @@ function SupportPage() {
 
   return (
     <AppShell title="Help & Support" subtitle="Get help or report issues">
-      <BentoGrid>
-        <BentoCard className="lg:col-span-4 p-6 self-start">
+      <div className="max-w-4xl mx-auto space-y-6 pt-4 pb-12 px-2">
+        <BentoCard className="p-6">
           <SectionTitle 
             title="Submit a Ticket" 
             hint="Have an idea? Tell us about a feature that would be nice to implement! Or report a bug." 
@@ -237,7 +237,7 @@ function SupportPage() {
           </form>
         </BentoCard>
 
-        <BentoCard className="lg:col-span-8 p-6 self-start">
+        <BentoCard className="p-6">
           <SectionTitle title="Your Active Tickets" hint="Chat with support about your requests" />
           
           <div className="mt-6 space-y-3">
@@ -273,7 +273,7 @@ function SupportPage() {
             )}
           </div>
         </BentoCard>
-      </BentoGrid>
+      </div>
     </AppShell>
   );
 }

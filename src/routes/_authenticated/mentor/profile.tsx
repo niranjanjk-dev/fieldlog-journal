@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/docko/app-shell";
-import { BentoCard, SectionTitle } from "@/components/docko/bento";
+import { BentoGrid, BentoCard, SectionTitle } from "@/components/docko/bento";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -98,11 +98,12 @@ function MentorProfilePage() {
       title="Mentor Profile"
       subtitle="Manage your credentials and affiliations"
     >
-      <div className="max-w-xl mx-auto pt-4 space-y-6">
-        
-        {/* PERSONAL INFORMATION */}
-        <SectionTitle title="Personal Information" hint="Basic account details." />
-        <BentoCard className="p-6 space-y-6">
+      <div className="max-w-5xl mx-auto pt-4">
+        <BentoGrid>
+          {/* PERSONAL INFORMATION */}
+          <div className="lg:col-span-6 space-y-4 self-start">
+            <SectionTitle title="Personal Information" hint="Basic account details." />
+            <BentoCard className="p-6 space-y-6">
           <div className="space-y-3">
             <Label>Email address</Label>
             <Input value={me.email ?? ""} disabled className="bg-muted/50 rounded-2xl" />
@@ -140,12 +141,13 @@ function MentorProfilePage() {
               </p>
             )}
           </div>
-        </BentoCard>
+            </BentoCard>
+          </div>
 
-        {/* INSTITUTIONAL AFFILIATION */}
-        <div>
-          <SectionTitle title="Institutional Affiliation" hint="Details required for mentor verification." />
-          <BentoCard className="p-6 space-y-6">
+          {/* INSTITUTIONAL AFFILIATION */}
+          <div className="lg:col-span-6 space-y-4 self-start">
+            <SectionTitle title="Institutional Affiliation" hint="Details required for mentor verification." />
+            <BentoCard className="p-6 space-y-6">
             
             <div className="space-y-4">
               <div className="space-y-3">
@@ -253,8 +255,9 @@ function MentorProfilePage() {
                 </div>
               )}
             </div>
-          </BentoCard>
-        </div>
+            </BentoCard>
+          </div>
+        </BentoGrid>
       </div>
     </AppShell>
   );
