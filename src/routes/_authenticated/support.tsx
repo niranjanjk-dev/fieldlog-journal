@@ -183,96 +183,98 @@ function SupportPage() {
 
   return (
     <AppShell title="Help & Support" subtitle="Get help or report issues">
-      <div className="max-w-4xl mx-auto space-y-6 pt-4 pb-12 px-2">
-        <BentoCard className="p-6">
-          <SectionTitle 
-            title="Submit a Ticket" 
-            hint="Have an idea? Tell us about a feature that would be nice to implement! Or report a bug." 
-          />
-          
-          <form onSubmit={submitTicket} className="mt-6 space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="type" className="text-xs font-semibold">What do you need help with?</Label>
-              <Select value={type} onValueChange={setType}>
-                <SelectTrigger id="type" className="h-10 rounded-xl">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  <SelectItem value="feature_request">💡 Feature Request</SelectItem>
-                  <SelectItem value="name_change">👤 Name Change Request</SelectItem>
-                  <SelectItem value="bug_report">🐛 Report a Bug</SelectItem>
-                  <SelectItem value="other">💬 Other / General Help</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="subject" className="text-xs font-semibold">Subject</Label>
-              <Input
-                id="subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Brief summary..."
-                required
-                className="h-10 rounded-xl"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="description" className="text-xs font-semibold">Details</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Please provide as much detail as possible..."
-                required
-                className="min-h-32 rounded-xl resize-y"
-              />
-            </div>
-
-            <Button type="submit" disabled={busy} className="press mt-2 h-10 w-full rounded-xl font-bold">
-              {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Send className="mr-2 size-4" />}
-              Submit Ticket
-            </Button>
-          </form>
-        </BentoCard>
-
-        <BentoCard className="p-6">
-          <SectionTitle title="Your Active Tickets" hint="Chat with support about your requests" />
-          
-          <div className="mt-6 space-y-3">
-            {isLoading ? (
-              <p className="text-sm text-muted-foreground">Loading...</p>
-            ) : (!tickets || tickets.length === 0) ? (
-              <div className="text-center py-12 px-4 rounded-2xl border border-dashed border-border/50">
-                <LifeBuoy className="mx-auto size-8 text-muted-foreground/30 mb-3" />
-                <p className="text-sm font-medium text-foreground">No active tickets</p>
-                <p className="text-xs text-muted-foreground mt-1">When you submit a ticket, you can track it here.</p>
+      <div className="max-w-6xl mx-auto pt-4 pb-12 px-4">
+        <BentoGrid>
+          <BentoCard className="lg:col-span-5 p-6 self-start">
+            <SectionTitle 
+              title="Submit a Ticket" 
+              hint="Have an idea? Tell us about a feature that would be nice to implement! Or report a bug." 
+            />
+            
+            <form onSubmit={submitTicket} className="mt-6 space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="type" className="text-xs font-semibold">What do you need help with?</Label>
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger id="type" className="h-10 rounded-xl">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="feature_request">💡 Feature Request</SelectItem>
+                    <SelectItem value="name_change">👤 Name Change Request</SelectItem>
+                    <SelectItem value="bug_report">🐛 Report a Bug</SelectItem>
+                    <SelectItem value="other">💬 Other / General Help</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            ) : (
-              tickets.map((ticket: any) => (
-                <button 
-                  key={ticket.id} 
-                  onClick={() => setActiveTicket(ticket)}
-                  className="w-full text-left flex flex-col gap-1.5 p-4 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors group cursor-pointer"
-                >
-                  <div className="flex justify-between items-start w-full">
-                    <p className="font-bold flex items-center gap-2">
-                      {ticket.subject}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="subject" className="text-xs font-semibold">Subject</Label>
+                <Input
+                  id="subject"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Brief summary..."
+                  required
+                  className="h-10 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="description" className="text-xs font-semibold">Details</Label>
+                <Textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Please provide as much detail as possible..."
+                  required
+                  className="min-h-32 rounded-xl resize-y"
+                />
+              </div>
+
+              <Button type="submit" disabled={busy} className="press mt-2 h-10 w-full rounded-xl font-bold">
+                {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Send className="mr-2 size-4" />}
+                Submit Ticket
+              </Button>
+            </form>
+          </BentoCard>
+
+          <BentoCard className="lg:col-span-7 p-6 self-start">
+            <SectionTitle title="Your Active Tickets" hint="Chat with support about your requests" />
+            
+            <div className="mt-6 space-y-3">
+              {isLoading ? (
+                <p className="text-sm text-muted-foreground">Loading...</p>
+              ) : (!tickets || tickets.length === 0) ? (
+                <div className="text-center py-12 px-4 rounded-2xl border border-dashed border-border/50">
+                  <LifeBuoy className="mx-auto size-8 text-muted-foreground/30 mb-3" />
+                  <p className="text-sm font-medium text-foreground">No active tickets</p>
+                  <p className="text-xs text-muted-foreground mt-1">When you submit a ticket, you can track it here.</p>
+                </div>
+              ) : (
+                tickets.map((ticket: any) => (
+                  <button 
+                    key={ticket.id} 
+                    onClick={() => setActiveTicket(ticket)}
+                    className="w-full text-left flex flex-col gap-1.5 p-4 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors group cursor-pointer"
+                  >
+                    <div className="flex justify-between items-start w-full">
+                      <p className="font-bold flex items-center gap-2">
+                        {ticket.subject}
+                      </p>
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${ticket.status === 'resolved' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'}`}>
+                        {ticket.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-1">{ticket.description}</p>
+                    <p className="text-xs text-primary font-semibold mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Click to view chat →
                     </p>
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${ticket.status === 'resolved' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'}`}>
-                      {ticket.status}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-1">{ticket.description}</p>
-                  <p className="text-xs text-primary font-semibold mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Click to view chat →
-                  </p>
-                </button>
-              ))
-            )}
-          </div>
-        </BentoCard>
+                  </button>
+                ))
+              )}
+            </div>
+          </BentoCard>
+        </BentoGrid>
       </div>
     </AppShell>
   );
