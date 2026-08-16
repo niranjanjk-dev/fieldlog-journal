@@ -202,7 +202,6 @@ function InstitutionPeoplePage() {
                     <ShieldX className="size-4 mr-1" />
                     Remove
                   </Button>
-                  </div>
                 </div>
               ))
             )}
