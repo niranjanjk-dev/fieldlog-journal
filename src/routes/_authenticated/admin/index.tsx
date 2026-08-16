@@ -136,7 +136,7 @@ function SystemAdminPage() {
       const { data: adminId, error: pError } = await supabase.rpc("get_institution_admin_id", { _institution_id: institution.id });
         
       if (pError) throw pError;
-      if (!adminId) throw new Error("No institution admin found");
+      if (!adminId) throw new Error("This institution has no registered admin account to message.");
       
       // Create a ticket directed to this user
       const { data, error } = await supabase
