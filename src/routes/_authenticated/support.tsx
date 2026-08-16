@@ -5,7 +5,7 @@ import { LifeBuoy, Loader2, Send, MessageSquare, ArrowLeft } from "lucide-react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/docko/app-shell";
-import { BentoCard, SectionTitle } from "@/components/docko/bento";
+import { BentoGrid, BentoCard, SectionTitle } from "@/components/docko/bento";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
