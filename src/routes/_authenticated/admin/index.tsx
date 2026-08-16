@@ -179,8 +179,9 @@ function SystemAdminPage() {
 
   const deleteInstitution = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("institutions").delete().eq("id", id);
+      const { data, error } = await supabase.from("institutions").delete().eq("id", id).select();
       if (error) throw error;
+      if (!data || data.length === 0) throw new Error("Could not delete. It may be restricted by database permissions.");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "approved_institutions"] });
