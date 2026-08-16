@@ -252,7 +252,7 @@ function TeamsPage() {
         onOpenChange={(open) => !open && setScanningTeamId(null)}
         title="Scan Student Code"
         description="Scan a student's ID badge to add them to this team."
-        mockData={students[0]?.id ?? "00000000-0000-0000-0000-000000000000"}
+        mockData={availableStudents[0]?.id ?? "00000000-0000-0000-0000-000000000000"}
         onScan={(data) => {
           if (scanningTeamId) {
             try {
@@ -276,7 +276,7 @@ function TeamsPage() {
         onOpenChange={setIsScanningGlobal}
         title="Scan Student Code"
         description="Scan a student's pairing QR code to become their mentor."
-        mockData={students[0]?.id ?? "00000000-0000-0000-0000-000000000000"}
+        mockData={availableStudents[0]?.id ?? "00000000-0000-0000-0000-000000000000"}
         onScan={(data) => {
           try {
             // Try to parse as URL to extract studentId param
