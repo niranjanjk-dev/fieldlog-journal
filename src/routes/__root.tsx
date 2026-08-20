@@ -10,13 +10,12 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { DevToolbar } from "@/components/docko/dev-toolbar";
 import { Toaster } from "@/components/ui/sonner";
 import { DockoLogo } from "@/components/docko/app-shell";
 import { BentoCard } from "@/components/docko/bento";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { NotFoundPage } from "./404";
+import { NotFoundPage } from "@/components/docko/not-found";
 import {
   AlertCircle,
   CalendarClock,
@@ -229,7 +228,6 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
-      <DevToolbar />
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
