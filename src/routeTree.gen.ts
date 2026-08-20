@@ -21,6 +21,7 @@ import { Route as AuthenticatedWaitingRouteImport } from './routes/_authenticate
 import { Route as PHandleRouteImport } from './routes/p.$handle'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
+import { Route as AuthenticatedAppInboxRouteImport } from './routes/_authenticated/app/inbox'
 import { Route as AuthenticatedAppLogRouteImport } from './routes/_authenticated/app/log'
 import { Route as AuthenticatedAppMapRouteImport } from './routes/_authenticated/app/map'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app/portfolio'
@@ -29,6 +30,7 @@ import { Route as AuthenticatedInstitutionIndexRouteImport } from './routes/_aut
 import { Route as AuthenticatedInstitutionPeopleRouteImport } from './routes/_authenticated/institution/people'
 import { Route as AuthenticatedInstitutionTeamsRouteImport } from './routes/_authenticated/institution/teams'
 import { Route as AuthenticatedMentorIndexRouteImport } from './routes/_authenticated/mentor/index'
+import { Route as AuthenticatedMentorInboxRouteImport } from './routes/_authenticated/mentor/inbox'
 import { Route as AuthenticatedMentorPairRouteImport } from './routes/_authenticated/mentor/pair'
 import { Route as AuthenticatedMentorProfileRouteImport } from './routes/_authenticated/mentor/profile'
 import { Route as AuthenticatedMentorTeamsRouteImport } from './routes/_authenticated/mentor/teams'
@@ -94,6 +96,11 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   path: '/app/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppInboxRoute = AuthenticatedAppInboxRouteImport.update({
+  id: '/app/inbox',
+  path: '/app/inbox',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAppLogRoute = AuthenticatedAppLogRouteImport.update({
   id: '/app/log',
   path: '/app/log',
@@ -140,6 +147,12 @@ const AuthenticatedMentorIndexRoute =
     path: '/mentor/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMentorInboxRoute =
+  AuthenticatedMentorInboxRouteImport.update({
+    id: '/mentor/inbox',
+    path: '/mentor/inbox',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMentorPairRoute = AuthenticatedMentorPairRouteImport.update({
   id: '/mentor/pair',
   path: '/mentor/pair',
@@ -179,12 +192,14 @@ export interface FileRoutesByFullPath {
   '/support': typeof AuthenticatedSupportRoute
   '/waiting': typeof AuthenticatedWaitingRoute
   '/p/$handle': typeof PHandleRoute
+  '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/institution/people': typeof AuthenticatedInstitutionPeopleRoute
   '/institution/teams': typeof AuthenticatedInstitutionTeamsRoute
+  '/mentor/inbox': typeof AuthenticatedMentorInboxRoute
   '/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
@@ -205,12 +220,14 @@ export interface FileRoutesByTo {
   '/support': typeof AuthenticatedSupportRoute
   '/waiting': typeof AuthenticatedWaitingRoute
   '/p/$handle': typeof PHandleRoute
+  '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/log': typeof AuthenticatedAppLogRoute
   '/app/map': typeof AuthenticatedAppMapRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/institution/people': typeof AuthenticatedInstitutionPeopleRoute
   '/institution/teams': typeof AuthenticatedInstitutionTeamsRoute
+  '/mentor/inbox': typeof AuthenticatedMentorInboxRoute
   '/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/mentor/teams': typeof AuthenticatedMentorTeamsRoute
@@ -233,12 +250,14 @@ export interface FileRoutesById {
   '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/_authenticated/waiting': typeof AuthenticatedWaitingRoute
   '/p/$handle': typeof PHandleRoute
+  '/_authenticated/app/inbox': typeof AuthenticatedAppInboxRoute
   '/_authenticated/app/log': typeof AuthenticatedAppLogRoute
   '/_authenticated/app/map': typeof AuthenticatedAppMapRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/timeline': typeof AuthenticatedAppTimelineRoute
   '/_authenticated/institution/people': typeof AuthenticatedInstitutionPeopleRoute
   '/_authenticated/institution/teams': typeof AuthenticatedInstitutionTeamsRoute
+  '/_authenticated/mentor/inbox': typeof AuthenticatedMentorInboxRoute
   '/_authenticated/mentor/pair': typeof AuthenticatedMentorPairRoute
   '/_authenticated/mentor/profile': typeof AuthenticatedMentorProfileRoute
   '/_authenticated/mentor/teams': typeof AuthenticatedMentorTeamsRoute
@@ -261,12 +280,14 @@ export interface FileRouteTypes {
     | '/support'
     | '/waiting'
     | '/p/$handle'
+    | '/app/inbox'
     | '/app/log'
     | '/app/map'
     | '/app/portfolio'
     | '/app/timeline'
     | '/institution/people'
     | '/institution/teams'
+    | '/mentor/inbox'
     | '/mentor/pair'
     | '/mentor/profile'
     | '/mentor/teams'
@@ -287,12 +308,14 @@ export interface FileRouteTypes {
     | '/support'
     | '/waiting'
     | '/p/$handle'
+    | '/app/inbox'
     | '/app/log'
     | '/app/map'
     | '/app/portfolio'
     | '/app/timeline'
     | '/institution/people'
     | '/institution/teams'
+    | '/mentor/inbox'
     | '/mentor/pair'
     | '/mentor/profile'
     | '/mentor/teams'
@@ -314,12 +337,14 @@ export interface FileRouteTypes {
     | '/_authenticated/support'
     | '/_authenticated/waiting'
     | '/p/$handle'
+    | '/_authenticated/app/inbox'
     | '/_authenticated/app/log'
     | '/_authenticated/app/map'
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/timeline'
     | '/_authenticated/institution/people'
     | '/_authenticated/institution/teams'
+    | '/_authenticated/mentor/inbox'
     | '/_authenticated/mentor/pair'
     | '/_authenticated/mentor/profile'
     | '/_authenticated/mentor/teams'
@@ -427,6 +452,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/inbox': {
+      id: '/_authenticated/app/inbox'
+      path: '/app/inbox'
+      fullPath: '/app/inbox'
+      preLoaderRoute: typeof AuthenticatedAppInboxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/log': {
       id: '/_authenticated/app/log'
       path: '/app/log'
@@ -483,6 +515,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMentorIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mentor/inbox': {
+      id: '/_authenticated/mentor/inbox'
+      path: '/mentor/inbox'
+      fullPath: '/mentor/inbox'
+      preLoaderRoute: typeof AuthenticatedMentorInboxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/mentor/pair': {
       id: '/_authenticated/mentor/pair'
       path: '/mentor/pair'
@@ -525,12 +564,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
   AuthenticatedWaitingRoute: typeof AuthenticatedWaitingRoute
+  AuthenticatedAppInboxRoute: typeof AuthenticatedAppInboxRoute
   AuthenticatedAppLogRoute: typeof AuthenticatedAppLogRoute
   AuthenticatedAppMapRoute: typeof AuthenticatedAppMapRoute
   AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
   AuthenticatedAppTimelineRoute: typeof AuthenticatedAppTimelineRoute
   AuthenticatedInstitutionPeopleRoute: typeof AuthenticatedInstitutionPeopleRoute
   AuthenticatedInstitutionTeamsRoute: typeof AuthenticatedInstitutionTeamsRoute
+  AuthenticatedMentorInboxRoute: typeof AuthenticatedMentorInboxRoute
   AuthenticatedMentorPairRoute: typeof AuthenticatedMentorPairRoute
   AuthenticatedMentorProfileRoute: typeof AuthenticatedMentorProfileRoute
   AuthenticatedMentorTeamsRoute: typeof AuthenticatedMentorTeamsRoute
@@ -546,12 +587,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
   AuthenticatedWaitingRoute: AuthenticatedWaitingRoute,
+  AuthenticatedAppInboxRoute: AuthenticatedAppInboxRoute,
   AuthenticatedAppLogRoute: AuthenticatedAppLogRoute,
   AuthenticatedAppMapRoute: AuthenticatedAppMapRoute,
   AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,
   AuthenticatedAppTimelineRoute: AuthenticatedAppTimelineRoute,
   AuthenticatedInstitutionPeopleRoute: AuthenticatedInstitutionPeopleRoute,
   AuthenticatedInstitutionTeamsRoute: AuthenticatedInstitutionTeamsRoute,
+  AuthenticatedMentorInboxRoute: AuthenticatedMentorInboxRoute,
   AuthenticatedMentorPairRoute: AuthenticatedMentorPairRoute,
   AuthenticatedMentorProfileRoute: AuthenticatedMentorProfileRoute,
   AuthenticatedMentorTeamsRoute: AuthenticatedMentorTeamsRoute,
