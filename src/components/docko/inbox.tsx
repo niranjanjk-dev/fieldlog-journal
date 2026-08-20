@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Send, User as UserIcon, Loader2, MessageSquare, ArrowLeft } from "lucide-react";
+import { Send, User as UserIcon, Loader2, MessageSquare } from "lucide-react";
 
 import { AppShell } from "@/components/docko/app-shell";
 import { BentoCard, BentoGrid } from "@/components/docko/bento";
@@ -80,7 +80,7 @@ export function InboxView({ role }: { role: "student" | "mentor" }) {
       <div className="max-w-6xl mx-auto pt-4 pb-12 px-4 h-[calc(100vh-120px)] min-h-[600px]">
         <BentoGrid className="h-full">
           {/* Contacts List */}
-          <BentoCard className={cn("lg:col-span-2 p-0 flex flex-col h-full overflow-hidden", activeContactId ? "hidden lg:flex" : "flex")}>
+          <BentoCard className="lg:col-span-2 p-0 flex flex-col h-full overflow-hidden">
             <div className="p-4 border-b border-border/50">
               <h2 className="text-base font-semibold tracking-tight">Contacts</h2>
             </div>
@@ -117,7 +117,7 @@ export function InboxView({ role }: { role: "student" | "mentor" }) {
           </BentoCard>
 
           {/* Chat Pane */}
-          <BentoCard className={cn("lg:col-span-4 p-0 flex flex-col h-full overflow-hidden", !activeContactId ? "hidden lg:flex" : "flex")}>
+          <BentoCard className="lg:col-span-4 p-0 flex flex-col h-full overflow-hidden">
             {!activeContactId ? (
               <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
                 <MessageSquare className="size-12 opacity-20 mb-4" />
@@ -128,9 +128,6 @@ export function InboxView({ role }: { role: "student" | "mentor" }) {
               <>
                 {/* Chat Header */}
                 <div className="p-4 border-b border-border/50 flex items-center gap-3 bg-muted/5">
-                  <Button variant="ghost" size="icon" className="lg:hidden shrink-0 -ml-2 press rounded-full" onClick={() => setActiveContactId(null)}>
-                    <ArrowLeft className="size-4" />
-                  </Button>
                   <Avatar className="size-10">
                     <AvatarImage src={activeContact?.avatar_url} />
                     <AvatarFallback>{initials(activeContact?.full_name)}</AvatarFallback>

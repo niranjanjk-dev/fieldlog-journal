@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2, ShieldAlert } from "lucide-react";
@@ -74,19 +74,16 @@ function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex items-center justify-start">
-        <Link to="/" className="flex items-center">
-          <DockoLogo className="text-xl sm:text-2xl text-foreground" />
-        </Link>
-        <span className="ml-3 rounded bg-red-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-500">
-          System Admin
-        </span>
-      </header>
+    <div className="flex min-h-screen items-center justify-center p-4 sm:p-8">
+      <div className="w-full max-w-sm">
+        <div className="mb-8 flex items-center justify-center text-foreground">
+          <DockoLogo className="text-3xl text-foreground" />
+          <span className="ml-3 rounded bg-red-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-500">
+            System Admin
+          </span>
+        </div>
 
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 -mt-12">
-        <div className="w-full max-w-sm">
-          <BentoCard className="p-6 sm:p-8 shadow-[var(--shadow-lift)]">
+        <BentoCard className="p-6 sm:p-8 shadow-[var(--shadow-lift)]">
           <div className="mb-6 flex flex-col items-center text-center">
             <div className="mb-4 grid size-12 place-items-center rounded-full bg-red-500/10 text-red-500">
               <ShieldAlert className="size-6" />
@@ -146,8 +143,7 @@ function AdminLoginPage() {
         <p className="mt-6 text-center text-xs text-muted-foreground">
           This portal is strictly for authorized personnel. <br/> Not an admin? <a href="/auth" className="text-primary hover:underline underline-offset-4">Go to the main app</a>.
         </p>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

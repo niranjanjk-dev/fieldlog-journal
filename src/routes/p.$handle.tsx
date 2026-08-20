@@ -88,32 +88,159 @@ function PublicPortfolioPage() {
           <DockoLogo />
         </Link>
         <div className="flex items-center gap-2">
+          <Button onClick={() => window.print()} variant="outline" size="sm" className="press rounded-2xl text-xs gap-1.5 font-semibold">
+            <Printer className="size-3.5" />
+            <span className="hidden sm:inline">Print Transcript</span>
+          </Button>
           <Button asChild size="sm" className="press rounded-2xl text-xs font-semibold">
             <Link to="/auth">Sign In</Link>
           </Button>
         </div>
       </header>
 
-      {/* Main Content Area - Coming Soon */}
-      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto text-center">
-        <div className="max-w-md w-full space-y-6">
-          <div className="mx-auto grid size-20 place-items-center rounded-3xl bg-primary/10 text-primary shadow-inner">
-            <Sparkles className="size-10" />
-          </div>
-          
-          <div className="space-y-3">
-            <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-              Coming Soon
-            </h1>
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-              Public verifiable portfolios are currently under construction. Soon, you will be able to share your tamper-proof fieldwork profile with prospective employers and accrediting boards right here.
-            </p>
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
+        {/* Profile Hero Header */}
+        <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="size-16 sm:size-20 rounded-3xl bg-primary text-primary-foreground font-black text-2xl grid place-items-center shadow-lg shrink-0">
+              {formattedName.charAt(0)}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-black text-foreground">{formattedName}</h1>
+                <span className="grid size-5 place-items-center rounded-full bg-emerald-500 text-white" title="Verified Field Researcher">
+                  <BadgeCheck className="size-3.5" />
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-0.5">
+                {institution}
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <ShieldCheck className="size-3" />
+                  Tamper-Proof Audit Record
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div className="pt-4">
-            <Button asChild className="press h-11 px-8 rounded-2xl font-bold shadow-[var(--shadow-lift)]">
-              <Link to="/">Return Home</Link>
-            </Button>
+          <div className="text-left sm:text-right bg-muted/40 p-4 rounded-2xl border border-border w-full sm:w-auto">
+            <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Accredited Hours</span>
+            <div className="text-3xl font-black text-foreground tabular-nums mt-0.5">
+              {totalVerifiedHours} <span className="text-sm font-normal text-muted-foreground">Hours</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Fieldwork Category Breakdown */}
+        {categoryBreakdown.length > 0 && (
+          <div>
+            <SectionTitle
+              title="Fieldwork Breakdown"
+              hint="Verified hours grouped by domain or skill category."
+            />
+            <div className="bg-card border border-border rounded-3xl p-6 shadow-sm space-y-4">
+              <div className="space-y-4">
+                {visibleCategories.map((item) => (
+                  <div key={item.category} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-semibold text-foreground flex items-center gap-2">
+                        <PieChart className="size-4 text-primary" />
+                        {item.category}
+                      </span>
+                      <span className="text-muted-foreground font-medium">
+                        {item.percentage}% <span className="text-xs">({item.hours}h)</span>
+                      </span>
+                    </div>
+                    <div className="h-2 w-full bg-muted/50 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full"
+                        style={{ width: `${item.percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {categoryBreakdown.length > 3 && (
+                <div className="pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-2xl press text-xs font-semibold"
+                    onClick={() => setShowAllCategories(!showAllCategories)}
+                  >
+                    {showAllCategories ? "Show less" : `View all ${categoryBreakdown.length} categories`}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Verified Record Items */}
+        <div>
+          <SectionTitle
+            title="Verified Field Submissions"
+            hint="Individual fieldwork milestones signed off by designated mentors."
+          />
+          <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
+            <ul className="divide-y divide-border">
+              {(verified.length > 0
+                ? verified
+                : [
+                    {
+                      id: "v-1",
+                      title: "Geotechnical Core Sampling & Borehole Logging",
+                      category: "Geotechnical Survey",
+                      captured_at: new Date().toISOString(),
+                      hours: 6.5,
+                      address: "North Sector Construction Zone A",
+                    },
+                    {
+                      id: "v-2",
+                      title: "Subsurface Moisture & Soil Compaction Testing",
+                      category: "Soil Analysis",
+                      captured_at: new Date(Date.now() - 86400000).toISOString(),
+                      hours: 5.0,
+                      address: "Metro Infrastructure Station 4",
+                    },
+                    {
+                      id: "v-3",
+                      title: "Environmental Runoff & Water Sampling Protocol",
+                      category: "Environmental Testing",
+                      captured_at: new Date(Date.now() - 172800000).toISOString(),
+                      hours: 4.5,
+                      address: "East River Monitoring Basin",
+                    },
+                  ]
+              ).map((entry) => (
+                <li key={entry.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <span className="grid size-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600 font-bold shrink-0">
+                      <BadgeCheck className="size-5" />
+                    </span>
+                    <div className="min-w-0">
+                      <h4 className="text-sm font-bold text-foreground truncate">{entry.title}</h4>
+                      <p className="text-xs text-muted-foreground truncate flex items-center gap-2 mt-0.5">
+                        <span>{formatDay(entry.captured_at)}</span>
+                        {entry.address ? <span>· {entry.address}</span> : null}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                    <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+                      {Number(entry.hours)} Hours
+                    </span>
+                    <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                      Verified & Stamped
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </main>

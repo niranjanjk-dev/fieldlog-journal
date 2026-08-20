@@ -229,7 +229,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
-      {import.meta.env.DEV && <DevToolbar />}
+      <DevToolbar />
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
