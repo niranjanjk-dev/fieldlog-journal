@@ -34,7 +34,7 @@ export function BentoCard({
 
 export function BentoGrid({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-6", className)}>
+    <div className={cn("grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-6", className)}>
       {children}
     </div>
   );
