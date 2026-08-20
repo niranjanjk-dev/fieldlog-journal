@@ -1,0 +1,1 @@
+import{r as e}from"./useRouter-B64lGpJS.js";import{t}from"./inbox-r0Tqg942.js";var n=e(),r=()=>(0,n.jsx)(t,{role:`student`});export{r as component};
