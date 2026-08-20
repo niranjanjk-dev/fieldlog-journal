@@ -354,8 +354,74 @@ function NewLogPage() {
           save.mutate();
         }}
       >
-        {/* Main Details Card (Left / Order 2 on mobile, matches height of right column in desktop mode) */}
-        <BentoCard className="order-2 lg:order-1 lg:col-span-2 min-w-0 w-full p-4 sm:p-6 flex flex-col justify-between h-auto lg:h-full space-y-4">
+        {/* Photo Box - Top on mobile, Top-Right on Desktop */}
+        <div className="order-1 lg:order-2 lg:col-start-3 lg:col-span-1 flex flex-col gap-5 min-w-0 w-full">
+          <BentoCard className="min-w-0 w-full p-4 sm:p-5 space-y-3">
+            <SectionTitle title="Photo" hint="Photo taken on site during the activity." />
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(event) => setPhoto(event.target.files?.[0] ?? null)}
+            />
+            {preview ? (
+              <div className="relative overflow-hidden rounded-2xl sunken bg-muted/20 mt-2">
+                <img
+                  src={preview}
+                  alt="Selected log photo preview"
+                  className="h-44 sm:h-48 w-full object-cover rounded-2xl"
+                  onError={() => setPreview(null)}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-auto">
+                  <span className="rounded-lg bg-black/60 backdrop-blur-md px-2.5 py-1 text-[11px] font-medium text-white shadow-xs">
+                    Photo attached
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      className="press rounded-xl text-xs h-7 px-2.5 bg-background/90 hover:bg-background text-foreground shadow-xs"
+                      onClick={() => fileRef.current?.click()}
+                    >
+                      Change
+                    </Button>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="press size-7 rounded-xl shadow-xs"
+                      onClick={() => {
+                        setPhoto(null);
+                        setPreview(null);
+                      }}
+                      aria-label="Remove photo"
+                    >
+                      <X className="size-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                className="sunken press grid h-36 sm:h-40 w-full place-items-center rounded-2xl border border-dashed border-border text-muted-foreground mt-2 hover:bg-muted/10 transition-colors"
+              >
+                <span className="flex flex-col items-center gap-2 text-sm">
+                  <Camera className="size-5 text-primary" />
+                  Take photo
+                </span>
+              </button>
+            )}
+          </BentoCard>
+        </div>
+
+        {/* Main Details Card (Left / Order 2 on mobile, spans 2 rows on desktop to match height of right column) */}
+        <BentoCard className="order-2 lg:order-1 lg:col-span-2 lg:row-span-2 min-w-0 w-full p-4 sm:p-6 flex flex-col justify-between h-auto lg:h-full space-y-4">
           <div className="space-y-4 pt-1 flex-1">
             <SectionTitle title="What did you do?" hint="A short title and notes about the task." />
             <div className="space-y-1.5">
@@ -472,71 +538,8 @@ function NewLogPage() {
           </div>
         </BentoCard>
 
-        {/* Side Column: Photo, Location & Submit (Clean separated gap) */}
-        <div className="order-1 lg:order-2 flex flex-col gap-5 min-w-0 w-full h-auto lg:h-full">
-          {/* Photo Box */}
-          <BentoCard className="min-w-0 w-full p-4 sm:p-5 space-y-3">
-            <SectionTitle title="Photo" hint="Photo taken on site during the activity." />
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={(event) => setPhoto(event.target.files?.[0] ?? null)}
-            />
-            {preview ? (
-              <div className="relative overflow-hidden rounded-2xl sunken bg-muted/20 mt-2">
-                <img
-                  src={preview}
-                  alt="Selected log photo preview"
-                  className="h-44 sm:h-48 w-full object-cover rounded-2xl"
-                  onError={() => setPreview(null)}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-auto">
-                  <span className="rounded-lg bg-black/60 backdrop-blur-md px-2.5 py-1 text-[11px] font-medium text-white shadow-xs">
-                    Photo attached
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="secondary"
-                      className="press rounded-xl text-xs h-7 px-2.5 bg-background/90 hover:bg-background text-foreground shadow-xs"
-                      onClick={() => fileRef.current?.click()}
-                    >
-                      Change
-                    </Button>
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="destructive"
-                      className="press size-7 rounded-xl shadow-xs"
-                      onClick={() => {
-                        setPhoto(null);
-                        setPreview(null);
-                      }}
-                      aria-label="Remove photo"
-                    >
-                      <X className="size-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                className="sunken press grid h-36 sm:h-40 w-full place-items-center rounded-2xl border border-dashed border-border text-muted-foreground mt-2 hover:bg-muted/10 transition-colors"
-              >
-                <span className="flex flex-col items-center gap-2 text-sm">
-                  <Camera className="size-5 text-primary" />
-                  Take photo
-                </span>
-              </button>
-            )}
-          </BentoCard>
+        {/* Location & Submit - Bottom on mobile, Bottom-Right on Desktop */}
+        <div className="order-3 lg:order-3 lg:col-start-3 lg:col-span-1 flex flex-col gap-5 min-w-0 w-full h-auto lg:h-full">
 
           {/* Location Box */}
           <BentoCard className="min-w-0 w-full p-4 sm:p-5 space-y-3">

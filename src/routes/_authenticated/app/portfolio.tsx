@@ -194,26 +194,35 @@ function PortfolioPage() {
 
   const publicUrl = `https://docko.app/p/@${studentName.toLowerCase().replace(/\s+/g, "")}`;
 
+  const exportActions = (
+    <>
+      <Button variant="outline" onClick={exportCsv} className="press rounded-2xl h-9 px-3 text-xs font-semibold w-full sm:w-auto">
+        <FileSpreadsheet className="size-4" />
+        <span className="sm:hidden">CSV Export</span>
+        <span className="hidden sm:inline">CSV Export</span>
+      </Button>
+
+      <Button variant="outline" onClick={exportGeoJson} className="press rounded-2xl h-9 px-3 text-xs font-semibold w-full sm:w-auto">
+        <FileCode2 className="size-4" />
+        <span className="sm:hidden">GeoJSON</span>
+        <span className="hidden sm:inline">GeoJSON</span>
+      </Button>
+
+      <Button onClick={() => window.print()} className="press rounded-2xl h-9 px-3.5 text-xs font-semibold w-full sm:w-auto">
+        <Printer className="size-4" />
+        <span className="sm:hidden">Audit PDF</span>
+        <span className="hidden sm:inline">Audit PDF</span>
+      </Button>
+    </>
+  );
+
   return (
     <AppShell
       title="Portfolio & Credential Hub"
       subtitle={studentInstitution}
       actions={
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={exportCsv} className="press rounded-2xl h-9 px-3 text-xs font-semibold">
-            <FileSpreadsheet className="size-4" />
-            <span className="hidden sm:inline">CSV Export</span>
-          </Button>
-
-          <Button variant="outline" onClick={exportGeoJson} className="press rounded-2xl h-9 px-3 text-xs font-semibold">
-            <FileCode2 className="size-4" />
-            <span className="hidden sm:inline">GeoJSON</span>
-          </Button>
-
-          <Button onClick={() => window.print()} className="press rounded-2xl h-9 px-3.5 text-xs font-semibold">
-            <Printer className="size-4" />
-            <span className="hidden sm:inline">Audit PDF</span>
-          </Button>
+        <div className="hidden sm:flex items-center gap-2">
+          {exportActions}
         </div>
       }
     >
@@ -299,6 +308,11 @@ function PortfolioPage() {
             sublabel="verified"
           />
         </BentoCard>
+
+        {/* Action Buttons: Rendered in the empty grid space on mobile view */}
+        <div className="flex sm:hidden flex-col gap-2 justify-center">
+          {exportActions}
+        </div>
       </BentoGrid>
 
       {/* 2. Dynamic Student ID & Scannable QR Hub */}
