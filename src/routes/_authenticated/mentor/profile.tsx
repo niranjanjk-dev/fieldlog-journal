@@ -101,7 +101,7 @@ function MentorProfilePage() {
       <div className="max-w-5xl mx-auto pt-4">
         <BentoGrid>
           {/* PERSONAL INFORMATION */}
-          <div className="lg:col-span-6 space-y-4 self-start">
+          <div className="col-span-2 md:col-span-3 lg:col-span-6 space-y-4 self-start">
             <SectionTitle title="Personal Information" hint="Basic account details." />
             <BentoCard className="p-6 space-y-6">
           <div className="space-y-3">
@@ -145,7 +145,7 @@ function MentorProfilePage() {
           </div>
 
           {/* INSTITUTIONAL AFFILIATION */}
-          <div className="lg:col-span-6 space-y-4 self-start">
+          <div className="col-span-2 md:col-span-3 lg:col-span-6 space-y-4 self-start">
             <SectionTitle title="Institutional Affiliation" hint="Details required for mentor verification." />
             <BentoCard className="p-6 space-y-6">
             

@@ -185,7 +185,7 @@ function SupportPage() {
     <AppShell title="Help & Support" subtitle="Get help or report issues">
       <div className="max-w-6xl mx-auto pt-4 pb-12 px-4">
         <BentoGrid>
-          <BentoCard className="lg:col-span-3 p-6 self-start">
+          <BentoCard className="col-span-2 md:col-span-3 lg:col-span-3 p-6 self-start">
             <SectionTitle 
               title="Submit a Ticket" 
               hint="Have an idea? Tell us about a feature that would be nice to implement! Or report a bug." 
@@ -238,7 +238,7 @@ function SupportPage() {
             </form>
           </BentoCard>
 
-          <BentoCard className="lg:col-span-3 p-6 self-start">
+          <BentoCard className="col-span-2 md:col-span-3 lg:col-span-3 p-6 self-start">
             <SectionTitle title="Your Active Tickets" hint="Chat with support about your requests" />
             
             <div className="mt-6 space-y-3">
