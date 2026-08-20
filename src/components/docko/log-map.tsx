@@ -722,7 +722,7 @@ export default function LogMap({
       </div>
 
       {/* Main Map Canvas */}
-      <div className="relative w-full h-[580px] bg-muted/20">
+      <div className="relative w-full h-[400px] sm:h-[580px] bg-muted/20">
         <div ref={containerRef} className="size-full z-0" />
 
         {/* Hovered Tooltip Balloon (Appears only on button hover) */}
