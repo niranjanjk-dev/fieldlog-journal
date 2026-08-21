@@ -18,7 +18,12 @@ BEGIN
   -- Auto-create default team for new mentors
   IF _role = 'mentor' THEN
     INSERT INTO public.teams (name, description, mentor_id, accent)
-    VALUES ('My Mentees', 'Default team for all your individual mentees.', auth.uid(), 'blue')
+    VALUES (
+      _full_name || '''s Mentees', 
+      'Default team for all your individual mentees.', 
+      auth.uid(), 
+      'blue'
+    )
     ON CONFLICT DO NOTHING;
   END IF;
 END;

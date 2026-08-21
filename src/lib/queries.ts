@@ -363,7 +363,7 @@ export function institutionTeamsQuery(institutionId: string | null) {
       const mentorIds = mentors.map((m) => m.id);
       const { data, error } = await supabase
         .from("teams")
-        .select("*, team_members(id, student_id, profile:profiles!team_members_student_profile_fkey(full_name, avatar_url))")
+        .select("*, mentor:profiles!teams_mentor_profile_fkey(full_name, avatar_url), team_members(id, student_id, profile:profiles!team_members_student_profile_fkey(full_name, avatar_url))")
         .in("mentor_id", mentorIds)
         .order("created_at", { ascending: true });
       if (error) throw error;
