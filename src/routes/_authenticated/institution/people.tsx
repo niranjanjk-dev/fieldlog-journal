@@ -47,10 +47,13 @@ function InstitutionPeoplePage() {
         .select("user_id, role")
         .in("user_id", (profiles ?? []).map((p: any) => p.id));
 
-      return (profiles ?? []).map((p: any) => ({
+      const peopleWithRoles = (profiles ?? []).map((p: any) => ({
         ...p,
         roles: (roles ?? []).filter((r: any) => r.user_id === p.id).map((r: any) => r.role),
       }));
+
+      // Filter out institution admins (they shouldn't need to approve themselves)
+      return peopleWithRoles.filter((p: any) => !p.roles.includes("institution"));
     }
   });
 
