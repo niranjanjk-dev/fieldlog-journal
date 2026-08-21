@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/docko/app-shell";
 import { BentoCard, EmptyState, SkeletonTile, StatusChip } from "@/components/docko/bento";
 import { EntryCard } from "@/components/docko/entry-card";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { currentStreak, dayKey, formatDay, sumHours, type EntryStatus } from "@/lib/docko";
 import { meQuery, myEntriesQuery, photoUrlsQuery } from "@/lib/queries";

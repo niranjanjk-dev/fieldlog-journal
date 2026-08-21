@@ -24,7 +24,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { isDevModeActive } from "@/lib/dev-mode";
+import { isDevModeActive, setDevModeActive } from "@/lib/dev-mode";
 import { initials } from "@/lib/docko";
 import { meQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
@@ -162,7 +162,13 @@ export function AppShell({
   }, [pathname]);
 
   const roles = me?.roles ?? [];
-  const devActive = isDevModeActive();
+  const [devActive, setDevActive] = useState(isDevModeActive());
+
+  useEffect(() => {
+    const handler = (e: any) => setDevActive(e.detail.active);
+    window.addEventListener("docko:dev-mode-change", handler);
+    return () => window.removeEventListener("docko:dev-mode-change", handler);
+  }, []);
 
   useEffect(() => {
     const isAdmin = roles.includes("admin");
@@ -240,7 +246,7 @@ export function AppShell({
       </div>
 
       {!pathname.startsWith("/admin") && (
-        <div className="mt-auto px-2 pb-2">
+        <div className="mt-auto px-2 pb-2 flex flex-col gap-1">
           <Link
             to="/support"
             onClick={() => setOpen(false)}
@@ -250,6 +256,13 @@ export function AppShell({
             <LifeBuoy className="size-4" />
             Help & Support
           </Link>
+          <button
+            onClick={() => { setDevModeActive(!devActive); window.location.reload(); }}
+            className="press flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
+            <Settings className="size-4" />
+            {devActive ? "Disable Dev Mode" : "Enable Dev Mode"}
+          </button>
         </div>
       )}
       <div className="raised flex items-center gap-3 rounded-2xl p-3">
