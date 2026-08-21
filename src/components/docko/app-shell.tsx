@@ -159,10 +159,10 @@ export function AppShell({
     const isAdmin = roles.includes("admin");
     const isInstitution = roles.includes("institution");
     const isPending = roles.includes("pending") && !isAdmin && !isInstitution;
-    // Institution pending = pending role AND has an institutionId set on their profile
-    const isPendingInstitution = isPending && !!me?.institutionId;
+    // Institution pending = pending role AND has an institutionId OR institution string set
+    const isPendingInstitution = isPending && (!!me?.institutionId || !!me?.institution);
     // Standard pending = pending role WITHOUT an institution
-    const isPendingStandard = isPending && !me?.institutionId;
+    const isPendingStandard = isPending && !me?.institutionId && !me?.institution;
 
     if (isPendingInstitution && pathname !== "/waiting") {
       navigate({ to: "/waiting", replace: true });
