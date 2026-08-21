@@ -7,6 +7,7 @@ import {
   MessageSquare,
   Send,
   UserCheck,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -60,6 +61,7 @@ export function EntryCard({
   author?: { full_name: string; course?: string | null } | null | undefined;
   footer?: React.ReactNode | undefined;
   className?: string | undefined;
+  onDelete?: () => void;
 }) {
   const [isPeekOpen, setIsPeekOpen] = useState(false);
   const displayPhoto = getEntryPhoto(entry, photoUrl);
@@ -98,6 +100,23 @@ export function EntryCard({
 
             <div className="flex items-center gap-1.5 shrink-0">
               <StatusChip status={entry.status} className="shrink-0" />
+              {onDelete && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                     if (window.confirm("Are you sure you want to delete this log? This action cannot be undone.")) {
+                         onDelete();
+                     }
+                  }}
+                  className="press size-7 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  title="Delete log"
+                  aria-label="Delete log"
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="ghost"

@@ -140,6 +140,31 @@ export async function reviewEntry(
   if (!data || data.length === 0) throw new Error("Not authorized to review this entry, or it doesn't exist.");
 }
 
+export async function deleteEntry(entryId: string) {
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) throw new Error("Not authorized");
+
+  // Remove from local cache
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("docko_custom_entries");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const updated = parsed.filter((e: any) => e.id !== entryId);
+        localStorage.setItem("docko_custom_entries", JSON.stringify(updated));
+      }
+    } catch {}
+  }
+
+  const { error } = await supabase
+    .from("entries")
+    .delete()
+    .eq("id", entryId)
+    .eq("student_id", auth.user.id);
+    
+  if (error) throw error;
+}
+
 export async function addComment(entryId: string, body: string) {
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) throw new Error("You need to be signed in to comment.");

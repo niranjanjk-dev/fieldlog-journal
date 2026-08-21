@@ -15,6 +15,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/docko/app-shell";
 import {
@@ -39,6 +41,7 @@ import {
 } from "@/components/ui/dialog";
 import { currentStreak, formatDay, sumHours, weeklyActivity } from "@/lib/docko";
 import { meQuery, myEntriesQuery, myNudgesQuery, photoUrlsQuery } from "@/lib/queries";
+import { deleteEntry } from "@/lib/entries";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/app/")({
@@ -56,10 +59,20 @@ export const Route = createFileRoute("/_authenticated/app/")({
 });
 
 function TodayPage() {
+  const queryClient = useQueryClient();
   const { data: me } = useQuery(meQuery);
   const { data: entries, isLoading } = useQuery(myEntriesQuery);
   const { data: nudges } = useQuery(myNudgesQuery);
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
+
+  const deleteEntryMutation = useMutation({
+    mutationFn: (id: string) => deleteEntry(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entries", "mine"] });
+      toast.success("Log deleted successfully");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   const mine = (entries ?? []).filter((entry) => Boolean(entry) && (!me?.id || entry.student_id === me.id));
   const verified = mine.filter((entry) => entry.status === "verified");
@@ -321,6 +334,7 @@ function TodayPage() {
                   key={entry.id}
                   entry={entry}
                   photoUrl={entry.photo_path ? photos?.[entry.photo_path] : undefined}
+                  onDelete={() => deleteEntryMutation.mutate(entry.id)}
                 />
               ))}
             </div>

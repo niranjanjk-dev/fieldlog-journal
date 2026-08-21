@@ -206,7 +206,10 @@ function VerifyPage() {
                     variant="outline"
                     className="press rounded-xl"
                     onClick={() => {
-                      const note = window.prompt("What needs changing?");
+                      let note = window.prompt("What needs changing? (Required)");
+                      while (note !== null && note.trim() === "") {
+                         note = window.prompt("A reason is required. What needs changing?");
+                      }
                       if (note) review.mutate({ id: entry.id, status: "rejected", note });
                     }}
                   >

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   CalendarClock,
@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/docko/app-shell";
 import { BentoCard, EmptyState, SkeletonTile, StatusChip } from "@/components/docko/bento";
@@ -22,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { currentStreak, dayKey, formatDay, sumHours, type EntryStatus } from "@/lib/docko";
 import { meQuery, myEntriesQuery, photoUrlsQuery } from "@/lib/queries";
+import { deleteEntry } from "@/lib/entries";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/app/timeline")({
@@ -47,9 +49,19 @@ const filters: { key: EntryStatus | "all"; label: string }[] = [
 
 function TimelinePage() {
   const { data: me } = useQuery(meQuery);
+  const queryClient = useQueryClient();
   const { data: entries, isLoading } = useQuery(myEntriesQuery);
   const [filter, setFilter] = useState<EntryStatus | "all">("all");
   const [viewMode, setViewMode] = useState<"calendar" | "all">("calendar");
+
+  const deleteEntryMutation = useMutation({
+    mutationFn: (id: string) => deleteEntry(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entries", "mine"] });
+      toast.success("Log deleted successfully");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   const mine = useMemo(
     () => (entries ?? []).filter((entry) => entry.student_id === me?.id),
@@ -239,12 +251,13 @@ function TimelinePage() {
                   {dayGroupEntries.length} log{dayGroupEntries.length > 1 ? "s" : ""} · {sumHours(dayGroupEntries)} h
                 </span>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {dayGroupEntries.map((entry) => (
                   <EntryCard
                     key={entry.id}
                     entry={entry}
                     photoUrl={entry.photo_path ? photos?.[entry.photo_path] : undefined}
+                    onDelete={() => deleteEntryMutation.mutate(entry.id)}
                   />
                 ))}
               </div>
@@ -413,6 +426,7 @@ function TimelinePage() {
                     key={entry.id}
                     entry={entry}
                     photoUrl={entry.photo_path ? photos?.[entry.photo_path] : undefined}
+                    onDelete={() => deleteEntryMutation.mutate(entry.id)}
                   />
                 ))}
               </div>

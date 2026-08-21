@@ -6,9 +6,18 @@ import { useState } from "react";
 import { AppShell } from "@/components/docko/app-shell";
 import { BentoCard, BentoGrid, MiniBars, SectionTitle, StatTile } from "@/components/docko/bento";
 import { ScannerModal } from "@/components/docko/scanner-modal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { sumHours, weeklyActivity } from "@/lib/docko";
-import { reviewQueueQuery, teamsQuery } from "@/lib/queries";
+import { reviewQueueQuery, teamsQuery, meQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/mentor/")({
   head: () => ({
@@ -29,10 +38,13 @@ function MentorOverview() {
   const [isScanning, setIsScanning] = useState(false);
   const { data: queue } = useQuery(reviewQueueQuery);
   const { data: teams } = useQuery(teamsQuery);
+  const { data: me } = useQuery(meQuery);
 
   const all = queue ?? [];
   const pending = all.filter((entry) => entry.status === "pending");
   const students = new Set(all.map((entry) => entry.student_id));
+
+  const isProfileIncomplete = !!(me && (!me.department || !me.position || !me.phone));
 
   return (
     <AppShell
@@ -139,6 +151,20 @@ function MentorOverview() {
           <MiniBars data={weeklyActivity(all)} />
         </BentoCard>
       </BentoGrid>
+
+      <AlertDialog open={isProfileIncomplete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Complete your profile</AlertDialogTitle>
+            <AlertDialogDescription>
+              Please fill out your department, position, and phone number to send your account for verification.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => navigate({ to: "/mentor/profile" })}>Go to Profile</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppShell>
   );
 }
