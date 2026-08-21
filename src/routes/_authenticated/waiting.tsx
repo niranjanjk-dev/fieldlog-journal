@@ -40,6 +40,34 @@ function WaitingPage() {
     const hasActiveRole = me && me.roles.some((r: string) => r !== "pending");
     if (me && hasActiveRole) {
       navigate({ to: "/app" });
+      return;
+    }
+
+    // SELF-HEALING: If this is an institution request that failed to insert (due to no session at signup)
+    if (me && !hasActiveRole && !me.institutionId && me.institution) {
+      supabase.from("institution_requests")
+        .select("id")
+        .eq("user_id", me.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (!data) {
+            // Fetch user metadata to get phone_number and proof_details
+            supabase.auth.getUser().then(({ data: authData }) => {
+              if (authData?.user) {
+                const meta = authData.user.user_metadata;
+                supabase.from("institution_requests").insert({
+                  user_id: me.id,
+                  institution_name: me.institution!,
+                  email: authData.user.email!,
+                  phone_number: meta?.phone_number || "",
+                  proof_details: meta?.proof_details || ""
+                }).then(() => {
+                  console.log("Self-healed institution request");
+                });
+              }
+            });
+          }
+        });
     }
   }, [me, navigate]);
 
