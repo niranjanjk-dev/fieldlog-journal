@@ -164,12 +164,20 @@ export function AppShell({
     // Standard pending = pending role WITHOUT an institution
     const isPendingStandard = isPending && !me?.institutionId && !me?.institution;
 
+    const isMentor = roles.includes("mentor");
+
     if (isPendingInstitution && pathname !== "/waiting") {
       navigate({ to: "/waiting", replace: true });
     } else if (isPendingStandard && pathname !== "/onboarding") {
       navigate({ to: "/onboarding", replace: true });
-    } else if (isInstitution && !isAdmin && !roles.includes("student") && pathname === "/app") {
-      navigate({ to: "/institution", replace: true });
+    } else if (pathname === "/app") {
+      if (isAdmin && !roles.includes("student")) {
+        navigate({ to: "/admin", replace: true });
+      } else if (isInstitution && !isAdmin && !roles.includes("student")) {
+        navigate({ to: "/institution", replace: true });
+      } else if (isMentor && !roles.includes("student")) {
+        navigate({ to: "/mentor", replace: true });
+      }
     }
   }, [roles, pathname, navigate, me]);
 
