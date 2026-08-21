@@ -246,7 +246,7 @@ export function AppShell({
       </div>
 
       {!pathname.startsWith("/admin") && (
-        <div className="mt-auto px-2 pb-2 flex flex-col gap-1">
+        <div className="mt-auto px-2 pb-2">
           <Link
             to="/support"
             onClick={() => setOpen(false)}
@@ -256,13 +256,6 @@ export function AppShell({
             <LifeBuoy className="size-4" />
             Help & Support
           </Link>
-          <button
-            onClick={() => { setDevModeActive(!devActive); window.location.reload(); }}
-            className="press flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          >
-            <Settings className="size-4" />
-            {devActive ? "Disable Dev Mode" : "Enable Dev Mode"}
-          </button>
         </div>
       )}
       <div className="raised flex items-center gap-3 rounded-2xl p-3">
