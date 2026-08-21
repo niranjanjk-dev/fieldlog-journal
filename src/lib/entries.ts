@@ -95,6 +95,7 @@ export async function createEntry(userId: string, input: NewEntryInput) {
     const { data, error } = await supabase
       .from("entries")
       .insert({
+        id: entryId,
         student_id: userId,
         team_id: input.teamId,
         title: input.title,

@@ -29,7 +29,7 @@ import { initials } from "@/lib/docko";
 import { meQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
-type NavItem = { to: string; label: string; icon: ReactNode };
+
 
 const studentNav: NavItem[] = [
   { to: "/app", label: "Today", icon: <LayoutDashboard className="size-4" /> },
@@ -113,6 +113,8 @@ function ThemeToggle() {
   );
 }
 
+type NavItem = { to: string; label: string; icon: ReactNode; badge?: number };
+
 function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => void }) {
   return (
     <nav className="flex flex-col gap-1">
@@ -122,10 +124,17 @@ function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => v
           to={item.to}
           onClick={onNavigate}
           activeOptions={{ exact: item.to === "/app" || item.to === "/mentor" || item.to === "/admin" || item.to === "/institution" }}
-          className="press flex items-center gap-2.5 rounded-2xl px-3 py-2 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground data-[status=active]:shadow-[var(--inset-top)]"
+          className="press flex items-center justify-between gap-2.5 rounded-2xl px-3 py-2 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground data-[status=active]:shadow-[var(--inset-top)]"
         >
-          {item.icon}
-          {item.label}
+          <div className="flex items-center gap-2.5">
+            {item.icon}
+            {item.label}
+          </div>
+          {item.badge !== undefined && item.badge > 0 && (
+            <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+              {item.badge}
+            </span>
+          )}
         </Link>
       ))}
     </nav>
@@ -182,9 +191,28 @@ export function AppShell({
   }, [roles, pathname, navigate, me]);
 
 
+  const { data: totalUnreadCount } = useQuery({
+    queryKey: ["direct_messages", "total_unread"],
+    queryFn: async () => {
+      if (!me) return 0;
+      const { count, error } = await supabase
+        .from("direct_messages")
+        .select("*", { count: "exact", head: true })
+        .eq("receiver_id", me.id)
+        .is("read_at", null);
+      if (error) return 0;
+      return count ?? 0;
+    },
+    enabled: !!me,
+    refetchInterval: 10000,
+  });
+
+  const studentNavWithBadge = studentNav.map(n => n.to === "/app/inbox" ? { ...n, badge: totalUnreadCount } : n);
+  const mentorNavWithBadge = mentorNav.map(n => n.to === "/mentor/inbox" ? { ...n, badge: totalUnreadCount } : n);
+
   const sections = [
-    { label: "Student", items: studentNav, show: devActive || roles.length === 0 || roles.includes("student") },
-    { label: "Mentor", items: mentorNav, show: devActive || roles.includes("mentor") },
+    { label: "Student", items: studentNavWithBadge, show: devActive || roles.length === 0 || roles.includes("student") },
+    { label: "Mentor", items: mentorNavWithBadge, show: devActive || roles.includes("mentor") },
     { label: "Institution", items: institutionNav, show: devActive || roles.includes("institution") },
     { label: "Admin", items: adminNav, show: devActive || roles.includes("admin") },
   ].filter((s) => s.show);

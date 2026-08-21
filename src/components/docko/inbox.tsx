@@ -46,11 +46,49 @@ export function InboxView({ role }: { role: "student" | "mentor" }) {
     enabled: !!activeContactId && !!me,
   });
 
+  const { data: unreadCounts } = useQuery({
+    queryKey: ["direct_messages", "unread_counts"],
+    queryFn: async () => {
+      if (!me) return {};
+      const { data, error } = await supabase
+        .from("direct_messages")
+        .select("sender_id")
+        .eq("receiver_id", me.id)
+        .is("read_at", null);
+      if (error) return {};
+      
+      const counts: Record<string, number> = {};
+      for (const msg of data) {
+        counts[msg.sender_id] = (counts[msg.sender_id] || 0) + 1;
+      }
+      return counts;
+    },
+    enabled: !!me,
+    refetchInterval: 10000,
+  });
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+    
+    // Mark as read
+    if (messages && messages.length > 0 && me && activeContactId) {
+      const unreadIds = messages
+        .filter(m => m.receiver_id === me.id && m.read_at === null)
+        .map(m => m.id);
+      
+      if (unreadIds.length > 0) {
+        supabase
+          .from("direct_messages")
+          .update({ read_at: new Date().toISOString() })
+          .in("id", unreadIds)
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ["direct_messages", "unread_counts"] });
+          });
+      }
+    }
+  }, [messages, me, activeContactId, queryClient]);
 
   const sendMessage = useMutation({
     mutationFn: async (content: string) => {
@@ -93,25 +131,37 @@ export function InboxView({ role }: { role: "student" | "mentor" }) {
                   No contacts found
                 </div>
               ) : (
-                contacts.map((c) => (
+                contacts.map((c) => {
+                  const unreadCount = unreadCounts?.[c.id] || 0;
+                  return (
                   <button
                     key={c.id}
                     onClick={() => setActiveContactId(c.id)}
                     className={cn(
-                      "w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-left",
-                      activeContactId === c.id ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                      "w-full text-left p-3 rounded-2xl flex items-center justify-between gap-3 transition-colors",
+                      activeContactId === c.id 
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-[var(--inset-top)]" 
+                        : "hover:bg-muted/50"
                     )}
                   >
-                    <Avatar className="size-10 shrink-0">
-                      <AvatarImage src={c.avatar_url} />
-                      <AvatarFallback>{initials(c.full_name)}</AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold truncate">{c.full_name}</p>
-                      <p className="text-[10px] uppercase tracking-wider opacity-70 truncate">{c.role}</p>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Avatar className="size-10 shrink-0 ring-2 ring-transparent">
+                        <AvatarImage src={c.avatar_url || ""} />
+                        <AvatarFallback className="bg-primary-soft text-primary font-bold">{initials(c.full_name)}</AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-sm truncate">{c.full_name}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest">{c.role}</p>
+                      </div>
                     </div>
+                    {unreadCount > 0 && (
+                      <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
+                        {unreadCount}
+                      </span>
+                    )}
                   </button>
-                ))
+                  );
+                })
               )}
             </div>
           </BentoCard>
