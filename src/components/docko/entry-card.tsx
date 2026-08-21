@@ -55,6 +55,7 @@ export function EntryCard({
   author,
   footer,
   className,
+  onDelete,
 }: {
   entry: Entry;
   photoUrl?: string | undefined;
