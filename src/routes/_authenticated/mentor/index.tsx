@@ -44,7 +44,7 @@ function MentorOverview() {
   const pending = all.filter((entry) => entry.status === "pending");
   const students = new Set(all.map((entry) => entry.student_id));
 
-  const isProfileIncomplete = !!(me && (!me.department || !me.position || !me.phone));
+  const isProfileIncomplete = !!(me && (!me.department || !me.position || !me.phone) && !me.institutionVerified);
 
   return (
     <AppShell

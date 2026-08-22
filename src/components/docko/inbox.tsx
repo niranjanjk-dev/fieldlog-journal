@@ -12,7 +12,7 @@ import { initials } from "@/lib/docko";
 import { meQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
-export function InboxView({ role }: { role: "student" | "mentor" }) {
+export function InboxView({ role }: { role: "student" | "mentor" | "institution" }) {
   const queryClient = useQueryClient();
   const { data: me } = useQuery(meQuery);
   const [activeContactId, setActiveContactId] = useState<string | null>(null);
@@ -113,7 +113,7 @@ export function InboxView({ role }: { role: "student" | "mentor" }) {
   return (
     <AppShell 
       title="Inbox" 
-      subtitle={role === "student" ? "Chat with your mentors" : "Chat with your students"}
+      subtitle={role === "student" ? "Chat with your mentors" : role === "mentor" ? "Chat with your students and institution" : "Chat with your mentors"}
     >
       <div className="max-w-6xl mx-auto pt-4 pb-12 px-4 h-[calc(100vh-120px)] min-h-[600px]">
         <BentoGrid className="h-full">

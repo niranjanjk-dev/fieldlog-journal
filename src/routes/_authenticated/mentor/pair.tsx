@@ -54,6 +54,9 @@ function MentorPairPage() {
     enabled: !!studentId,
     queryFn: async () => {
       if (!studentId) return null;
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studentId)) {
+        return null;
+      }
       const { data, error } = await supabase
         .from("profiles")
         .select("id, full_name, avatar_url, course, institution")

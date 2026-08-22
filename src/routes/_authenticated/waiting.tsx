@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { CheckCircle2, Clock, Loader2, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/waiting")({
 
 function WaitingPage() {
   const navigate = useNavigate();
+  const healed = useRef(false);
   const { data: me, isLoading: loadingMe } = useQuery(meQuery);
   const { data: settings, isLoading: loadingSettings } = useQuery(systemSettingsQuery);
 
@@ -44,7 +45,8 @@ function WaitingPage() {
     }
 
     // SELF-HEALING: If this is an institution request that failed to insert (due to no session at signup)
-    if (me && !hasActiveRole && !me.institutionId && me.institution) {
+    if (me && !hasActiveRole && !me.institutionId && me.institution && !healed.current) {
+      healed.current = true;
       supabase.from("institution_requests")
         .select("id")
         .eq("user_id", me.id)

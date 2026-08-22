@@ -95,6 +95,9 @@ function TeamsPage() {
 
   const addMember = useMutation({
     mutationFn: async (input: { teamId: string; studentId: string }) => {
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.studentId)) {
+        throw new Error("Invalid student QR code. Please scan a valid ID.");
+      }
       const { error } = await supabase
         .from("team_members")
         .insert({ team_id: input.teamId, student_id: input.studentId });

@@ -44,6 +44,7 @@ const mentorNav: NavItem[] = [
   { to: "/mentor", label: "Overview", icon: <Gauge className="size-4" /> },
   { to: "/mentor/verify", label: "Verify", icon: <CheckCircle2 className="size-4" /> },
   { to: "/mentor/teams", label: "Teams", icon: <Users className="size-4" /> },
+  { to: "/mentor/logs", label: "Logs", icon: <FolderOpen className="size-4" /> },
   { to: "/mentor/inbox", label: "Inbox", icon: <MessageSquare className="size-4" /> },
   { to: "/mentor/profile", label: "Profile", icon: <Settings className="size-4" /> },
 ];
@@ -52,6 +53,7 @@ const institutionNav: NavItem[] = [
   { to: "/institution", label: "Overview", icon: <BadgeCheck className="size-4" /> },
   { to: "/institution/people", label: "People", icon: <Users className="size-4" /> },
   { to: "/institution/teams", label: "Teams", icon: <Settings className="size-4" /> },
+  { to: "/institution/inbox", label: "Inbox", icon: <MessageSquare className="size-4" /> },
 ];
 
 const adminNav: NavItem[] = [
@@ -141,6 +143,32 @@ function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => v
   );
 }
 
+function BottomNav({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => void }) {
+  return (
+    <nav className="flex items-center justify-around w-full bg-background/95 backdrop-blur-md border-t border-border pb-safe">
+      {items.map((item) => (
+        <Link
+          key={item.to}
+          to={item.to}
+          onClick={onNavigate}
+          activeOptions={{ exact: item.to === "/app" || item.to === "/mentor" || item.to === "/admin" || item.to === "/institution" }}
+          className="press flex flex-col items-center justify-center gap-1 py-2 px-1 text-[10px] font-medium text-muted-foreground data-[status=active]:text-primary flex-1 min-w-0"
+        >
+          <div className="relative">
+            {item.icon}
+            {item.badge !== undefined && item.badge > 0 && (
+              <span className="absolute -top-1 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground">
+                {item.badge}
+              </span>
+            )}
+          </div>
+          <span className="truncate w-full text-center">{item.label}</span>
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
 export function AppShell({
   children,
   title,
@@ -215,13 +243,17 @@ export function AppShell({
 
   const studentNavWithBadge = studentNav.map(n => n.to === "/app/inbox" ? { ...n, badge: totalUnreadCount } : n);
   const mentorNavWithBadge = mentorNav.map(n => n.to === "/mentor/inbox" ? { ...n, badge: totalUnreadCount } : n);
+  const institutionNavWithBadge = institutionNav.map(n => n.to === "/institution/inbox" ? { ...n, badge: totalUnreadCount } : n);
 
   const sections = [
     { label: "Student", items: studentNavWithBadge, show: devActive || roles.length === 0 || roles.includes("student") },
     { label: "Mentor", items: mentorNavWithBadge, show: devActive || roles.includes("mentor") },
-    { label: "Institution", items: institutionNav, show: devActive || roles.includes("institution") },
+    { label: "Institution", items: institutionNavWithBadge, show: devActive || roles.includes("institution") },
     { label: "Admin", items: adminNav, show: devActive || roles.includes("admin") },
   ].filter((s) => s.show);
+
+  const activeSection = sections[0];
+  const bottomNavItems = activeSection?.items.filter(item => item.label !== "Profile") ?? [];
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -316,27 +348,23 @@ export function AppShell({
         <header className="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur-md">
           {/* Mobile header — avatar + greeting + action */}
           <div className="flex items-center gap-3 px-4 py-3 sm:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="press rounded-2xl shrink-0"
-              onClick={() => setOpen(true)}
-              aria-label="Open menu"
-            >
-              <Menu className="size-4" />
-            </Button>
             <div className="flex flex-1 items-center gap-2.5 min-w-0">
-              <Avatar className="size-8 shrink-0 ring-2 ring-primary/20">
-                {me?.avatarUrl ? <AvatarImage src={me.avatarUrl} alt="" /> : null}
-                <AvatarFallback className="bg-primary-soft text-[11px] font-bold text-primary">
-                  {initials(me?.fullName)}
-                </AvatarFallback>
-              </Avatar>
+              <Link to={roles.includes("mentor") ? "/mentor/profile" : "/app"} className="shrink-0">
+                <Avatar className="size-8 ring-2 ring-primary/20">
+                  {me?.avatarUrl ? <AvatarImage src={me.avatarUrl} alt="" /> : null}
+                  <AvatarFallback className="bg-primary-soft text-[11px] font-bold text-primary">
+                    {initials(me?.fullName)}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
               <h1 className="truncate text-base font-bold tracking-tight text-foreground">{title}</h1>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               {actions}
               <ThemeToggle />
+              <Link to={roles.includes("mentor") ? "/mentor/profile" : "/app"} className="text-muted-foreground p-1">
+                <Settings className="size-5" />
+              </Link>
             </div>
           </div>
 
@@ -362,7 +390,12 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-3 py-5 sm:px-4 sm:py-6 md:px-6 md:py-8">{children}</main>
+        <main className="mx-auto max-w-6xl px-3 py-5 pb-20 sm:pb-6 sm:px-4 sm:py-6 md:px-6 md:py-8">{children}</main>
+      </div>
+
+      {/* Mobile Bottom Nav */}
+      <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden">
+        <BottomNav items={bottomNavItems} onNavigate={() => window.scrollTo(0, 0)} />
       </div>
     </div>
   );

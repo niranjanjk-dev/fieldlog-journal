@@ -96,7 +96,7 @@ function SystemAdminPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("support_tickets")
-        .select(`*, profiles(full_name, email:auth.users(email))`)
+        .select(`*, profiles(full_name)`)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -151,7 +151,7 @@ function SystemAdminPage() {
           description: "Message initiated by system administrator",
           status: "open"
         })
-        .select("*, profiles(full_name, email:auth.users(email))")
+        .select("*, profiles(full_name)")
         .single();
         
       if (error) throw error;
